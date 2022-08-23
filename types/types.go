@@ -22,6 +22,15 @@ type Robot struct {
 	Position Position
 }
 
+type RobotColors uint8
+
+const (
+	Yellow RobotColors = iota
+	Red                = iota
+	Green              = iota
+	Blue               = iota
+)
+
 type RawTarget struct {
 	Color    string `json:"color"`
 	Symbol   string `json:"symbol"`
@@ -35,11 +44,12 @@ type RawBoard struct {
 }
 
 type BoardState struct {
-	Target uint16
-	Robots []uint16
+	MinimalMoveCount uint8
+	Robots           []uint8
 }
 
 type Board struct {
 	Board  [16][16]byte
+	Robots []uint8
 	Target uint16
 }
