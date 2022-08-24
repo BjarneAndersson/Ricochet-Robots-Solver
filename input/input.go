@@ -127,6 +127,21 @@ func convData(data types.RawBoard) (board types.Board, err error) {
 
 	board.Target = uint16(targetColorAndSymbol)<<8 | uint16(targetPosition)
 
+	// Robot conversion
+
+	for indexRobot, robot := range data.Robots {
+		switch robot.Color {
+		case "yellow":
+			convPosToByte(&board.Robots[types.Yellow], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
+		case "red":
+			convPosToByte(&board.Robots[types.Red], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
+		case "green":
+			convPosToByte(&board.Robots[types.Green], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
+		case "blue":
+			convPosToByte(&board.Robots[types.Blue], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
+		}
+	}
+
 	return board, nil
 }
 
