@@ -39,10 +39,7 @@ func getInitBoardState(board *types.Board) (initBoardState uint32, err error) {
 
 	robotsToSort = append(robotsToSort[:targetColor], robotsToSort[targetColor+1:]...)
 
-	initBoardState = uint32(board.Robots[targetColor]) << 24
-	initBoardState = uint32(board.Robots[robotsToSort[0]]) << 16
-	initBoardState = uint32(board.Robots[robotsToSort[1]]) << 8
-	initBoardState = uint32(board.Robots[robotsToSort[2]]) << 0
+	initBoardState = uint32(board.Robots[targetColor])<<24 | uint32(board.Robots[robotsToSort[0]])<<16 | uint32(board.Robots[robotsToSort[1]])<<8 | uint32(board.Robots[robotsToSort[2]])<<0
 
 	return initBoardState, nil
 }
