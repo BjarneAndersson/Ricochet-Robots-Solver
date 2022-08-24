@@ -1,6 +1,7 @@
 package input
 
 import (
+	"../bitOperations"
 	"../helper"
 	"../precomputation"
 	"../types"
