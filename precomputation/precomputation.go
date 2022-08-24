@@ -1,7 +1,7 @@
 package precomputation
 
 import (
-	"../helper"
+	"../bitOperations"
 	"../types"
 	"fmt"
 )
