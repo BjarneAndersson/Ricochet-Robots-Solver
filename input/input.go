@@ -8,18 +8,42 @@ import (
 	"os"
 )
 
-func GetData() (board types.Board, err error) {
+func GetData() (board types.Board, initBoardState uint32, err error) {
 	data, err := getJsonData("K:\\Coding\\Python\\Games\\Ricochet-Robots\\src\\board_data.json")
 	if err != nil {
-		return types.Board{}, err
+		return types.Board{}, 0, err
 	}
 
 	board, err = loadData(data)
 	if err != nil {
-		return types.Board{}, err
+		return types.Board{}, 0, err
 	}
 
-	return board, nil
+	initBoardState, err = getInitBoardState(&board)
+	if err != nil {
+		return types.Board{}, 0, err
+	}
+
+	return board, initBoardState, nil
+}
+
+func getInitBoardState(board *types.Board) (initBoardState uint32, err error) {
+
+	targetColor, err := helper.GetTargetColor(board.Target)
+	if err != nil {
+		return 0, err
+	}
+
+	robotsToSort := []uint8{0, 1, 2, 3}
+
+	robotsToSort = append(robotsToSort[:targetColor], robotsToSort[targetColor+1:]...)
+
+	initBoardState = uint32(board.Robots[targetColor]) << 24
+	initBoardState = uint32(board.Robots[robotsToSort[0]]) << 16
+	initBoardState = uint32(board.Robots[robotsToSort[1]]) << 8
+	initBoardState = uint32(board.Robots[robotsToSort[2]]) << 0
+
+	return initBoardState, nil
 }
 
 func getJsonData(path string) (jsonData []byte, err error) {
