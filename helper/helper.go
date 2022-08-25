@@ -19,3 +19,7 @@ func GetTargetColor(target uint16) (color types.Colors, err error) {
 	}
 	return 0, err
 }
+
+func ConvPosToByte(pB *byte, column uint8, row uint8) {
+	*pB = column<<4 + row
+}
