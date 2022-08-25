@@ -47,6 +47,6 @@ type BoardState uint32
 
 type Board struct {
 	Board  [16][16]byte
-	Robots []uint8
+	Robots [4]uint8
 	Target uint16
 }
