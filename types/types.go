@@ -43,10 +43,7 @@ type RawBoard struct {
 	Target RawTarget `json:"target"`
 }
 
-type BoardState struct {
-	MinimalMoveCount uint8
-	Robots           []uint8
-}
+type BoardState uint32
 
 type Board struct {
 	Board  [16][16]byte
