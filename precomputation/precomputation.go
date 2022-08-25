@@ -1,7 +1,7 @@
 package precomputation
 
 import (
-	"../bitOperations"
+	"../helper"
 	"../types"
 	"fmt"
 )
@@ -9,10 +9,10 @@ import (
 func PrecomputeBoard(board *types.Board) (err error) {
 	var status [16][16]bool
 
-	targetPosColumn, targetPosRow := convTargetPositionToPosition(board.Target)
-	pTargetNode := &(board.Board[targetPosRow][targetPosColumn])
+	targetPosition := helper.ConvTargetPositionToPosition(board.Target)
+	pTargetNode := &(board.Board[targetPosition.Row][targetPosition.Column])
 	setMoveCount(pTargetNode, 0)
-	status[targetPosRow][targetPosColumn] = true
+	status[targetPosition.Row][targetPosition.Column] = true
 
 	done := false
 
@@ -29,20 +29,20 @@ func PrecomputeBoard(board *types.Board) (err error) {
 				fmt.Printf("%v\n", node)
 
 				status[indexRow][indexColumn] = false
-				depth := getMoveCount(node) + 1
+				depth := helper.GetMoveCount(node) + 1
 
 				preIndex := types.Position{Row: uint8(indexRow), Column: uint8(indexColumn)}
 
 				for _, direction := range []string{"up", "down", "left", "right"} {
 					index := preIndex
 
-					for hasNeighbor(board.Board[index.Row][index.Column], direction) {
+					for helper.HasNeighbor(board.Board[index.Row][index.Column], direction) {
 						//pNeighborNode := getNeighborNode(board, &(board.Board[index.Row][index.Column]), direction)
-						index = getNeighborNodePosition(index, direction)
+						index = helper.GetNeighborNodePosition(index, direction)
 
-						fmt.Printf("%+v | %v - %v\n", index, getMoveCount(board.Board[index.Row][index.Column]), depth)
+						fmt.Printf("%+v | %v - %v\n", index, helper.GetMoveCount(board.Board[index.Row][index.Column]), depth)
 
-						if getMoveCount(board.Board[index.Row][index.Column]) > depth {
+						if helper.GetMoveCount(board.Board[index.Row][index.Column]) > depth {
 							setMoveCount(&(board.Board[index.Row][index.Column]), depth)
 							status[index.Row][index.Column] = true
 							done = false
@@ -53,58 +53,6 @@ func PrecomputeBoard(board *types.Board) (err error) {
 		}
 	}
 	return nil
-}
-
-func hasNeighbor(currentNode byte, direction string) bool {
-	switch direction {
-	case "up":
-		if bitOperations.HasBit(currentNode, 3) {
-			return true
-		}
-	case "down":
-		if bitOperations.HasBit(currentNode, 2) {
-			return true
-		}
-	case "left":
-		if bitOperations.HasBit(currentNode, 1) {
-			return true
-		}
-	case "right":
-		if bitOperations.HasBit(currentNode, 0) {
-			return true
-		}
-	}
-	return false
-}
-
-func getNeighborNodePosition(position types.Position, direction string) types.Position {
-	switch direction {
-	case "up":
-		position.Row -= 1
-	case "down":
-		position.Row += 1
-	case "left":
-		position.Column -= 1
-	case "right":
-		position.Column += 1
-	}
-	return position
-}
-
-func convTargetPositionToPosition(target uint16) (column uint8, row uint8) {
-	targetPosition := target & 255
-	return convBytePositionToPosition(byte(targetPosition))
-}
-
-func convBytePositionToPosition(position byte) (column uint8, row uint8) {
-	column = (position & (15 << 4)) >> 4
-	row = position & 15
-	return column, row
-}
-
-func getMoveCount(b byte) byte {
-	b = ((7 << 5) & b) >> 5
-	return b
 }
 
 func setMoveCount(pB *byte, moveCount uint8) {
