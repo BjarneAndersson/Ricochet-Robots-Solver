@@ -10,7 +10,7 @@ import (
 )
 
 func GetData() (board types.Board, initBoardState uint32, err error) {
-	data, err := getJsonData("K:\\Coding\\Python\\Games\\Ricochet-Robots\\src\\board_data.json")
+	data, err := getJsonData("K:\\Coding\\Golang\\ricochet-robot-solver\\board_data.json")
 	if err != nil {
 		return types.Board{}, 0, err
 	}
