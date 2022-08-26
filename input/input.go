@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func GetData() (board types.Board, initBoardState uint32, err error) {
+func GetData() (board types.Board, initBoardState types.BoardState, err error) {
 	data, err := getJsonData("K:\\Coding\\Golang\\ricochet-robot-solver\\board_data.json")
 	if err != nil {
 		return types.Board{}, 0, err
@@ -28,7 +28,7 @@ func GetData() (board types.Board, initBoardState uint32, err error) {
 	return board, initBoardState, nil
 }
 
-func getInitBoardState(board *types.Board) (initBoardState uint32, err error) {
+func getInitBoardState(board *types.Board) (initBoardState types.BoardState, err error) {
 
 	targetColor, err := helper.GetTargetColor(board.Target)
 	if err != nil {
@@ -39,7 +39,7 @@ func getInitBoardState(board *types.Board) (initBoardState uint32, err error) {
 
 	robotsToSort = append(robotsToSort[:targetColor], robotsToSort[targetColor+1:]...)
 
-	initBoardState = uint32(board.Robots[targetColor])<<24 | uint32(board.Robots[robotsToSort[0]])<<16 | uint32(board.Robots[robotsToSort[1]])<<8 | uint32(board.Robots[robotsToSort[2]])<<0
+	initBoardState = types.BoardState(uint32(board.Robots[targetColor])<<24 | uint32(board.Robots[robotsToSort[0]])<<16 | uint32(board.Robots[robotsToSort[1]])<<8 | uint32(board.Robots[robotsToSort[2]])<<0)
 
 	return initBoardState, nil
 }
