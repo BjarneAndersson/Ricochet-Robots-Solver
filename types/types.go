@@ -22,13 +22,13 @@ type Robot struct {
 	Position Position
 }
 
-type RobotColors uint8
+type Colors uint8
 
 const (
-	Yellow RobotColors = iota
-	Red                = iota
-	Green              = iota
-	Blue               = iota
+	Yellow Colors = iota
+	Red           = iota
+	Green         = iota
+	Blue          = iota
 )
 
 type RawTarget struct {
