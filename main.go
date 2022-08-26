@@ -14,5 +14,10 @@ func main() {
 
 	fmt.Printf("%+v\n", board)
 
-	solver.Solver(&board, initBoardState)
+	path, err := solver.Solver(&board, initBoardState)
+	if err != nil {
+		return
+	}
+
+	fmt.Printf("%+v\n", path)
 }
