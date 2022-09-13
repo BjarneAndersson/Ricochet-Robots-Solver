@@ -3,7 +3,6 @@ package precomputation
 import (
 	"../helper"
 	"../types"
-	"fmt"
 )
 
 func PrecomputeBoard(board *types.Board) (err error) {
@@ -26,8 +25,6 @@ func PrecomputeBoard(board *types.Board) (err error) {
 
 				node := board.Board[indexRow][indexColumn]
 
-				fmt.Printf("%v\n", node)
-
 				status[indexRow][indexColumn] = false
 				depth := helper.GetMoveCount(node) + 1
 
@@ -39,8 +36,6 @@ func PrecomputeBoard(board *types.Board) (err error) {
 					for helper.HasNeighbor(board.Board[index.Row][index.Column], direction) {
 						//pNeighborNode := getNeighborNode(board, &(board.Board[index.Row][index.Column]), direction)
 						index = helper.GetNeighborNodePosition(index, direction)
-
-						fmt.Printf("%+v | %v - %v\n", index, helper.GetMoveCount(board.Board[index.Row][index.Column]), depth)
 
 						if helper.GetMoveCount(board.Board[index.Row][index.Column]) > depth {
 							setMoveCount(&(board.Board[index.Row][index.Column]), depth)
