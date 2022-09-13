@@ -30,7 +30,7 @@ func reconstructPath(cameFrom map[types.BoardState]types.BoardState, currentBoar
 func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardState, error) {
 	openSet := make(priorityQueue.PriorityQueue, 1)
 
-	openSet[0] = &priorityQueue.Item{
+	openSet[0] = priorityQueue.Item{
 		Value:    initBoardState,
 		Priority: 0,
 	}
@@ -80,12 +80,11 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 					cameFrom[newBoardState] = currentBoardState.Value
 
 					// add the new board state to the queue
-					newPriorityQueueItem := priorityQueue.Item{
-						Value:    newBoardState,
-						Priority: int(currentFScore),
-					}
-
-					openSet.Push(newPriorityQueueItem)
+					openSet.Push(
+						priorityQueue.Item{
+							Value:    newBoardState,
+							Priority: int(currentFScore),
+						})
 				}
 
 			}
