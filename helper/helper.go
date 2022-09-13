@@ -79,9 +79,9 @@ func GetMoveCount(b byte) byte {
 }
 
 func SeparateRobots(boardState types.BoardState) (robots [4]byte) {
-	robots[0] = uint8(uint32(boardState) & (uint32(255) << 24))
-	robots[1] = uint8(uint32(boardState) & (uint32(255) << 16))
-	robots[2] = uint8(uint32(boardState) & (uint32(255) << 8))
-	robots[3] = uint8(uint32(boardState) & (uint32(255) << 0))
+	robots[0] = uint8((uint32(boardState) & (uint32(255) << 24)) >> 24)
+	robots[1] = uint8((uint32(boardState) & (uint32(255) << 16)) >> 16)
+	robots[2] = uint8((uint32(boardState) & (uint32(255) << 8)) >> 8)
+	robots[3] = uint8((uint32(boardState) & (uint32(255) << 0)) >> 0)
 	return robots
 }
