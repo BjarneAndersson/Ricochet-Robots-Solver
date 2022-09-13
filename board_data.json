@@ -3109,38 +3109,38 @@
     {
       "color": "red",
       "position": {
-        "column": 11,
-        "row": 5
+        "column": 0,
+        "row": 0
       }
     },
     {
       "color": "green",
       "position": {
-        "column": 13,
-        "row": 8
+        "column": 1,
+        "row": 0
       }
     },
     {
       "color": "blue",
       "position": {
-        "column": 7,
-        "row": 3
+        "column": 2,
+        "row": 0
       }
     },
     {
       "color": "yellow",
       "position": {
-        "column": 13,
-        "row": 2
+        "column": 5,
+        "row": 0
       }
     }
   ],
   "target": {
-    "color": "blue",
+    "color": "yellow",
     "symbol": "circle",
     "position": {
-      "column": 6,
-      "row": 1
+      "column": 9,
+      "row": 11
     }
   }
 }
