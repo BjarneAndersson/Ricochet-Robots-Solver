@@ -33,7 +33,6 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 		Value:    initBoardState,
 		Priority: 0,
 	}
-	heap.Init(&openSet)
 
 	cameFrom := make(map[types.BoardState]types.BoardState)
 
