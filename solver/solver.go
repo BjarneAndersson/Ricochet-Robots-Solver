@@ -36,10 +36,11 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 
 	cameFrom := make(map[types.BoardState]types.BoardState)
 
-	var searchDepth uint8 // g score
+	gScore := make(map[types.BoardState]uint8) // g score - distance from start
+	gScore[initBoardState] = 0
 
 	fScore := make(map[types.BoardState]uint8)
-	fScore[initBoardState] = calcFScore(board, initBoardState, searchDepth)
+	fScore[initBoardState] = calcFScore(board, initBoardState, gScore[initBoardState])
 
 	for openSet.Len() > 0 {
 		currentBoardState := heap.Pop(&openSet).(*priorityQueue.Item)
@@ -69,10 +70,8 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 					}
 
 					// calc fScore for the new board state
-					currentFScore := calcFScore(board, newBoardState, searchDepth)
-
-					// check if the new board state is already in the queue
-					isBoardStateInOpenSet(openSet, newBoardState)
+					gScore[newBoardState] = gScore[currentBoardState] + 1
+					currentFScore := calcFScore(board, newBoardState, gScore[newBoardState])
 
 					// add board state to cameFrom
 					cameFrom[newBoardState] = currentBoardState.Value
