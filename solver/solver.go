@@ -52,6 +52,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 
 			for _, direction := range []string{"up", "down", "left", "right"} {
 				cNode := node
+				cNodePosition := nodePosition
 
 				calculateStoppingPosition(board, cNode, direction)
 
