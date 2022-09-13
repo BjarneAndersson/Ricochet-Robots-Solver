@@ -43,7 +43,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 	fScore[initBoardState] = calcFScore(board, initBoardState, gScore[initBoardState])
 
 	for openSet.Len() > 0 {
-		currentBoardState := heap.Pop(&openSet).(*priorityQueue.Item)
+		currentBoardState := priorityQueue.Pop(&openSet).Value
 
 		for indexRobot, robot := range helper.SeparateRobots(currentBoardState.Value) {
 			robotPosition := helper.ConvBytePositionToPosition(robot)
