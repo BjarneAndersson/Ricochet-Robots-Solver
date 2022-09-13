@@ -48,6 +48,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 		for indexRobot, robot := range helper.SeparateRobots(currentBoardState) {
 			robotPosition := helper.ConvBytePositionToPosition(robot)
 			node := board.Board[robotPosition.Row][robotPosition.Column]
+			nodePosition := types.Position{Column: robotPosition.Column, Row: robotPosition.Row}
 
 			for _, direction := range []string{"up", "down", "left", "right"} {
 				cNode := node
