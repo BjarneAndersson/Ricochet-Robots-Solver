@@ -4,7 +4,6 @@ import (
 	"../helper"
 	"../priorityQueue"
 	"../types"
-	"container/heap"
 )
 
 func reconstructPath(cameFrom map[types.BoardState]types.BoardState, currentBoardState types.BoardState) (path []types.BoardState, err error) {
