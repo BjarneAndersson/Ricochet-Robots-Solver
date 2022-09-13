@@ -54,7 +54,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 				cNode := node
 				cNodePosition := nodePosition
 
-				calculateStoppingPosition(board, cNode, direction)
+				cNode, cNodePosition = calculateStoppingPosition(board, currentBoardState, cNode, cNodePosition, direction)
 
 				if cNode == node {
 					// move robot
