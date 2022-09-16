@@ -74,8 +74,8 @@ func loadData(data []byte) (board types.Board, err error) {
 // convData convert board_data in json format to board_data byte format
 func convData(data types.RawBoard) (board types.Board, err error) {
 	// node conversion
-	for rowIndex, rowOfNodes := range data.Nodes {
-		for columnIndex, node := range rowOfNodes {
+	for rowIndex := 0; rowIndex < 16; rowIndex++ {
+		for columnIndex := 0; columnIndex < 16; columnIndex++ {
 			var cell byte
 
 			// distance between node and target
@@ -85,12 +85,65 @@ func convData(data types.RawBoard) (board types.Board, err error) {
 
 			bitOperations.SetBit(&cell, 4, false) // is a robot present
 
-			bitOperations.SetBit(&cell, 3, node.Neighbors.Up)
-			bitOperations.SetBit(&cell, 2, node.Neighbors.Down)
-			bitOperations.SetBit(&cell, 1, node.Neighbors.Left)
-			bitOperations.SetBit(&cell, 0, node.Neighbors.Right)
+			// neighbors
+			bitOperations.SetBit(&cell, 3, true)
+			bitOperations.SetBit(&cell, 2, true)
+			bitOperations.SetBit(&cell, 1, true)
+			bitOperations.SetBit(&cell, 0, true)
 
 			board.Board[rowIndex][columnIndex] = cell
+		}
+	}
+
+	// set walls at edges
+	for _, edgeDirection := range [4]string{"top", "bottom", "left", "right"} {
+		switch edgeDirection {
+		case "top":
+			rowIndex := 0
+			for columnIndex := 0; columnIndex < 16; columnIndex++ {
+				bitOperations.SetBit(&(board.Board[rowIndex][columnIndex]), 3, false)
+			}
+		case "bottom":
+			rowIndex := 15
+			for columnIndex := 0; columnIndex < 16; columnIndex++ {
+				bitOperations.SetBit(&(board.Board[rowIndex][columnIndex]), 2, false)
+			}
+		case "left":
+			columnIndex := 0
+			for rowIndex := 0; rowIndex < 16; rowIndex++ {
+				bitOperations.SetBit(&(board.Board[rowIndex][columnIndex]), 1, false)
+			}
+		case "right":
+			columnIndex := 15
+			for rowIndex := 0; rowIndex < 16; rowIndex++ {
+				bitOperations.SetBit(&(board.Board[rowIndex][columnIndex]), 0, false)
+			}
+		}
+	}
+
+	// add walls to the board
+	for _, wall := range data.Walls {
+
+		switch wall.Direction1 {
+		case "top":
+			bitOperations.SetBit(&(board.Board[wall.Position1.Row][wall.Position1.Column]), 3, false)
+		case "bottom":
+			bitOperations.SetBit(&(board.Board[wall.Position1.Row][wall.Position1.Column]), 2, false)
+		case "left":
+			bitOperations.SetBit(&(board.Board[wall.Position1.Row][wall.Position1.Column]), 1, false)
+		case "right":
+			bitOperations.SetBit(&(board.Board[wall.Position1.Row][wall.Position1.Column]), 0, false)
+		}
+
+		switch wall.Direction2 {
+		case "top":
+			bitOperations.SetBit(&(board.Board[wall.Position2.Row][wall.Position2.Column]), 3, true)
+		case "bottom":
+			bitOperations.SetBit(&(board.Board[wall.Position2.Row][wall.Position2.Column]), 2, false)
+		case "left":
+			bitOperations.SetBit(&(board.Board[wall.Position2.Row][wall.Position2.Column]), 1, false)
+		case "right":
+			bitOperations.SetBit(&(board.Board[wall.Position2.Row][wall.Position2.Column]), 0, false)
 		}
 	}
 
