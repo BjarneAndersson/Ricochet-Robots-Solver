@@ -17,6 +17,13 @@ type Node struct {
 	Position  Position
 }
 
+type Wall struct {
+	Position1  Position `json:"position1"`
+	Position2  Position `json:"position2"`
+	Direction1 string   `json:"direction1"`
+	Direction2 string   `json:"direction2"`
+}
+
 type Robot struct {
 	Color    string `json:"color"`
 	Position Position
@@ -38,7 +45,7 @@ type RawTarget struct {
 }
 
 type RawBoard struct {
-	Nodes  [][]Node  `json:"nodes"`
+	Walls  []Wall    `json:"walls"`
 	Robots []Robot   `json:"robots"`
 	Target RawTarget `json:"target"`
 }
