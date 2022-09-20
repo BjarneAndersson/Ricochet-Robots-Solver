@@ -2,6 +2,7 @@ package solver
 
 import (
 	"../helper"
+	"../output"
 	"../priorityQueue"
 	"../types"
 )
@@ -44,6 +45,10 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 
 	for openSet.Len() > 0 {
 		currentBoardState := priorityQueue.Pop(&openSet).Value
+		err := output.BoardState(currentBoardState, board.RobotColors)
+		if err != nil {
+			return []types.BoardState{}, err
+		}
 
 		for indexRobot, robot := range helper.SeparateRobots(currentBoardState) {
 			robotPosition := helper.ConvBytePositionToPosition(robot)
