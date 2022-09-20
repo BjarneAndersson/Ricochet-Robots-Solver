@@ -29,14 +29,7 @@ type Robot struct {
 	Position Position
 }
 
-type Colors uint8
-
-const (
-	Yellow Colors = iota
-	Red           = iota
-	Green         = iota
-	Blue          = iota
-)
+type RobotColors map[string]uint8
 
 type RawTarget struct {
 	Color    string `json:"color"`
@@ -53,7 +46,8 @@ type RawBoard struct {
 type BoardState uint32
 
 type Board struct {
-	Board  [16][16]byte
-	Robots [4]uint8
-	Target uint16
+	Board       [16][16]byte
+	Robots      [4]uint8
+	RobotColors RobotColors
+	Target      uint16
 }
