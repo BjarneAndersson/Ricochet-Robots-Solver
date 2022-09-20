@@ -31,15 +31,37 @@ func GetData() (board types.Board, initBoardState types.BoardState, err error) {
 func getInitBoardState(board *types.Board) (initBoardState types.BoardState, err error) {
 
 	targetColor, err := helper.GetTargetColor(board.Target)
+	var targetColorBaseIndex uint8
 	if err != nil {
 		return 0, err
 	}
 
+	switch targetColor {
+	case "yellow":
+		targetColorBaseIndex = 0
+		board.RobotColors["yellow"] = 0
+	case "red":
+		targetColorBaseIndex = 1
+		board.RobotColors["yellow"] = 1
+		board.RobotColors["red"] = 0
+	case "green":
+		targetColorBaseIndex = 2
+		board.RobotColors["yellow"] = 1
+		board.RobotColors["red"] = 2
+		board.RobotColors["green"] = 0
+	case "blue":
+		targetColorBaseIndex = 3
+		board.RobotColors["yellow"] = 1
+		board.RobotColors["red"] = 2
+		board.RobotColors["green"] = 3
+		board.RobotColors["blue"] = 0
+	}
+
 	robotsToSort := []uint8{0, 1, 2, 3}
 
-	robotsToSort = append(robotsToSort[:targetColor], robotsToSort[targetColor+1:]...)
+	robotsToSort = append(robotsToSort[:targetColorBaseIndex], robotsToSort[targetColorBaseIndex+1:]...)
 
-	initBoardState = types.BoardState(uint32(board.Robots[targetColor])<<24 | uint32(board.Robots[robotsToSort[0]])<<16 | uint32(board.Robots[robotsToSort[1]])<<8 | uint32(board.Robots[robotsToSort[2]])<<0)
+	initBoardState = types.BoardState(uint32(board.Robots[targetColorBaseIndex])<<24 | uint32(board.Robots[robotsToSort[0]])<<16 | uint32(board.Robots[robotsToSort[1]])<<8 | uint32(board.Robots[robotsToSort[2]])<<0)
 
 	return initBoardState, nil
 }
@@ -178,17 +200,23 @@ func convData(data types.RawBoard) (board types.Board, err error) {
 	board.Target = uint16(targetColorAndSymbol)<<8 | uint16(targetPosition)
 
 	// Robot conversion
+	board.RobotColors = types.RobotColors{
+		"yellow": 0,
+		"red":    1,
+		"green":  2,
+		"blue":   3,
+	}
 
 	for indexRobot, robot := range data.Robots {
 		switch robot.Color {
 		case "yellow":
-			helper.ConvPosToByte(&board.Robots[types.Yellow], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
+			helper.ConvPosToByte(&board.Robots[board.RobotColors[robot.Color]], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
 		case "red":
-			helper.ConvPosToByte(&board.Robots[types.Red], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
+			helper.ConvPosToByte(&board.Robots[board.RobotColors[robot.Color]], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
 		case "green":
-			helper.ConvPosToByte(&board.Robots[types.Green], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
+			helper.ConvPosToByte(&board.Robots[board.RobotColors[robot.Color]], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
 		case "blue":
-			helper.ConvPosToByte(&board.Robots[types.Blue], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
+			helper.ConvPosToByte(&board.Robots[board.RobotColors[robot.Color]], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
 		}
 	}
 
