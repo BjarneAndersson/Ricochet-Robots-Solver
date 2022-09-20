@@ -3,6 +3,7 @@ package helper
 import (
 	"../bitOperations"
 	"../types"
+	"fmt"
 )
 
 func GetTargetColor(target uint16) (color string, err error) {
