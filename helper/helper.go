@@ -5,19 +5,19 @@ import (
 	"../types"
 )
 
-func GetTargetColor(target uint16) (color types.Colors, err error) {
+func GetTargetColor(target uint16) (color string, err error) {
 	colorInBit := uint8((target & (15 << 12)) >> 12)
 
 	if bitOperations.HasBit(colorInBit, 3) {
-		return types.Yellow, nil
+		return "yellow", nil
 	} else if bitOperations.HasBit(colorInBit, 2) {
-		return types.Red, nil
+		return "red", nil
 	} else if bitOperations.HasBit(colorInBit, 1) {
-		return types.Green, nil
+		return "green", nil
 	} else if bitOperations.HasBit(colorInBit, 0) {
-		return types.Blue, nil
+		return "blue", nil
 	}
-	return 0, err
+	return "", err
 }
 
 func ConvPosToByte(pB *byte, column uint8, row uint8) {
@@ -84,4 +84,13 @@ func SeparateRobots(boardState types.BoardState) (robots [4]byte) {
 	robots[2] = uint8((uint32(boardState) & (uint32(255) << 8)) >> 8)
 	robots[3] = uint8((uint32(boardState) & (uint32(255) << 0)) >> 0)
 	return robots
+}
+
+func GetRobotColorByIndex(robotColors types.RobotColors, index uint8) (string, error) {
+	for colorName, colorIndex := range robotColors {
+		if index == colorIndex {
+			return colorName, nil
+		}
+	}
+	return "", fmt.Errorf("index %d not found", index)
 }
