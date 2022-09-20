@@ -4,6 +4,7 @@ import (
 	"../helper"
 	"../output"
 	"../priorityQueue"
+	"../tracker"
 	"../types"
 )
 
@@ -28,6 +29,8 @@ func reconstructPath(cameFrom map[types.BoardState]types.BoardState, currentBoar
 }
 
 func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardState, error) {
+	defer tracker.Duration(tracker.TrackTime("solver"))
+
 	openSet := make(priorityQueue.PriorityQueue, 1)
 
 	openSet[0] = priorityQueue.Item{
