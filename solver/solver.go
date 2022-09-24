@@ -78,10 +78,12 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 
 					// check if the new board state is the target
 					// break -> reconstruct path
-					if isRobotOnTarget(newBoardState, board.Target) {
-						// add board state to cameFrom
-						cameFrom[newBoardState] = currentBoardState.Value
-						return reconstructPath(cameFrom, newBoardState)
+					if indexRobot == 0 { // if active robot was moved - only action to get to the target
+						if isRobotOnTarget(&newBoardState, board.Target) {
+							// add board state to cameFrom
+							cameFrom[newBoardState] = currentBoardState
+							return reconstructPath(cameFrom, newBoardState)
+						}
 					}
 
 					// calc fScore for the new board state
