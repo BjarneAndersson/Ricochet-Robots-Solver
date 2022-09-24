@@ -43,6 +43,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 	gScore := make(map[types.BoardState]uint8) // g score - distance from start
 	gScore[initBoardState] = 0
 
+	// g score + h score -> value to evaluate the priority of the current board state
 	fScore := make(map[types.BoardState]uint8)
 	fScore[initBoardState] = calcFScore(board, initBoardState, gScore[initBoardState])
 
