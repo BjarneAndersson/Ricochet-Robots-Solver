@@ -30,7 +30,7 @@ func PrecomputeBoard(board *types.Board) (err error) {
 
 				preIndex := types.Position{Row: uint8(indexRow), Column: uint8(indexColumn)}
 
-				for _, direction := range []string{"up", "down", "left", "right"} {
+				for _, direction := range []string{"top", "bottom", "left", "right"} {
 					index := preIndex
 
 					for helper.HasNeighbor(board.Board[index.Row][index.Column], direction) {

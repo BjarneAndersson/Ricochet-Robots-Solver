@@ -59,7 +59,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 			node := board.Board[robotPosition.Row][robotPosition.Column]
 			nodePosition := types.Position{Column: robotPosition.Column, Row: robotPosition.Row}
 
-			for _, direction := range []string{"up", "down", "left", "right"} {
+			for _, direction := range []string{"top", "bottom", "left", "right"} {
 				cNode := node
 				cNodePosition := nodePosition
 
@@ -147,14 +147,14 @@ stopPositionLoop:
 				cNodePosition = types.Position{Column: cNodePosition.Column + 1, Row: cNodePosition.Row}
 				cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
 			}
-		case "up":
+		case "top":
 			if checkRobotOnNode(boardState, types.Position{Column: cNodePosition.Column, Row: cNodePosition.Row - 1}) {
 				break stopPositionLoop
 			} else {
 				cNodePosition = types.Position{Column: cNodePosition.Column, Row: cNodePosition.Row - 1}
 				cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
 			}
-		case "down":
+		case "bottom":
 			if checkRobotOnNode(boardState, types.Position{Column: cNodePosition.Column, Row: cNodePosition.Row + 1}) {
 				break stopPositionLoop
 			} else {

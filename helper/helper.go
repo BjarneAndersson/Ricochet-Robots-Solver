@@ -27,11 +27,11 @@ func ConvPosToByte(pB *byte, column uint8, row uint8) {
 
 func HasNeighbor(currentNode byte, direction string) bool {
 	switch direction {
-	case "up":
+	case "top":
 		if bitOperations.HasBit(currentNode, 3) {
 			return true
 		}
-	case "down":
+	case "bottom":
 		if bitOperations.HasBit(currentNode, 2) {
 			return true
 		}
@@ -49,9 +49,9 @@ func HasNeighbor(currentNode byte, direction string) bool {
 
 func GetNeighborNodePosition(position types.Position, direction string) types.Position {
 	switch direction {
-	case "up":
+	case "top":
 		position.Row -= 1
-	case "down":
+	case "bottom":
 		position.Row += 1
 	case "left":
 		position.Column -= 1
