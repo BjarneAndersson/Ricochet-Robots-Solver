@@ -91,7 +91,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 					currentFScore := calcFScore(board, newBoardState, gScore[newBoardState])
 
 					// add board state to cameFrom
-					cameFrom[newBoardState] = currentBoardState.Value
+					cameFrom[newBoardState] = currentBoardState
 
 					// add the new board state to the queue
 					openSet.Push(
