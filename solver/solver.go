@@ -71,6 +71,11 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 					// create a new board state
 					newBoardState := createNewBoardState(newRobots)
 
+					// check if the new board state is already in the queue
+					if isBoardStateInOpenSet(openSet, newBoardState) {
+						continue
+					}
+
 					// check if the new board state is the target
 					// break -> reconstruct path
 					if isRobotOnTarget(newBoardState, board.Target) {
