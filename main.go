@@ -2,6 +2,7 @@ package main
 
 import (
 	"./input"
+	"./output"
 	"./precomputation"
 	"./solver"
 	"log"
@@ -28,4 +29,8 @@ func main() {
 		return
 	}
 	log.Printf("%+v\n", path)
+	err = output.Path(path, board.RobotColors)
+	if err != nil {
+		return
+	}
 }
