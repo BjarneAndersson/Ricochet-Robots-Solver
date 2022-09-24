@@ -112,13 +112,13 @@ func calcFScore(board *types.Board, boardState types.BoardState, gScore uint8) (
 	return fScore
 }
 
-func calcHScore(board *types.Board, boardState types.BoardState) (gScore uint8) {
-	activeRobotPosition := helper.ConvBytePositionToPosition(uint8(boardState & (255 << 24)))
+func calcHScore(board *types.Board, boardState types.BoardState) (hScore uint8) {
+	activeRobotPosition := helper.ConvBytePositionToPosition(uint8((boardState & (255 << 24)) >> 24))
 
 	node := board.Board[activeRobotPosition.Row][activeRobotPosition.Column]
 
-	gScore = helper.GetMoveCount(node)
-	return gScore
+	hScore = helper.GetMoveCount(node)
+	return hScore
 }
 
 func createNewBoardState(robots [4]byte) types.BoardState {
