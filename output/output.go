@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"strconv"
+	"time"
 )
 
 func BoardState(boardState types.BoardState, robotColors types.RobotColors) (err error) {
@@ -35,9 +36,10 @@ func BoardState(boardState types.BoardState, robotColors types.RobotColors) (err
 	return nil
 }
 
-func Path(path []types.BoardState, robotColors types.RobotColors) (err error) {
+func Path(path []types.BoardState, duration time.Duration, robotColors types.RobotColors) (err error) {
 	fmt.Printf("\n\n====================\n")
 	fmt.Printf("Moves\t%d\n", len(path)-1)
+	fmt.Printf("Time\t%s\n", duration)
 	fmt.Printf("Path\t%+v\n", path)
 	fmt.Println("")
 

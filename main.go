@@ -5,6 +5,7 @@ import (
 	"./output"
 	"./precomputation"
 	"./solver"
+	"./tracker"
 	"log"
 )
 
@@ -23,13 +24,12 @@ func main() {
 
 	// solve the board
 
-	path, err := solver.Solver(&board, initBoardState)
+	path, duration, err := tracker.DurationSolver(solver.Solver, &board, initBoardState)
 	if err != nil {
 		log.Printf("\nError solving:\n%v\n", err)
 		return
 	}
-	log.Printf("%+v\n", path)
-	err = output.Path(path, board.RobotColors)
+	err = output.Path(path, duration, board.RobotColors)
 	if err != nil {
 		return
 	}
