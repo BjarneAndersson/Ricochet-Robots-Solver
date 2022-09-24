@@ -78,13 +78,13 @@ func calculateRobotStoppingPosition(board *types.Board, startNodePosition types.
 
 		switch direction {
 		case "left":
-			cNodePosition = types.Position{Column: cNodePosition.Column - 1, Row: cNodePosition.Row}
+			cNodePosition.Column -= 1
 		case "right":
-			cNodePosition = types.Position{Column: cNodePosition.Column + 1, Row: cNodePosition.Row}
+			cNodePosition.Column += 1
 		case "top":
-			cNodePosition = types.Position{Column: cNodePosition.Column, Row: cNodePosition.Row - 1}
+			cNodePosition.Row -= 1
 		case "bottom":
-			cNodePosition = types.Position{Column: cNodePosition.Column, Row: cNodePosition.Row + 1}
+			cNodePosition.Row += 1
 		}
 	}
 
