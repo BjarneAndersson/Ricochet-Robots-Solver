@@ -66,7 +66,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 
 				if cNode != node { // robot can be moved into direction
 					// move robot
-					newRobots := moveRobot(helper.SeparateRobots(currentBoardState.Value), uint8(indexRobot), direction)
+					newRobots := moveRobot(helper.SeparateRobots(currentBoardState), uint8(indexRobot), cNodePosition)
 
 					// create a new board state
 					newBoardState := createNewBoardState(newRobots)
