@@ -181,20 +181,8 @@ func checkRobotOnNode(boardState types.BoardState, position types.Position) bool
 func moveRobot(robots [4]byte, robotIndex uint8, endPosition types.Position) (newRobots [4]byte) {
 	newRobots = robots
 	cRobot := &(newRobots[robotIndex])
-	cRobotPosition := helper.ConvBytePositionToPosition(*cRobot)
 
-	switch direction {
-	case "left":
-		cRobotPosition.Column -= 1
-	case "right":
-		cRobotPosition.Column += 1
-	case "up":
-		cRobotPosition.Row -= 1
-	case "down":
-		cRobotPosition.Row += 1
-	}
-
-	helper.ConvPosToByte(cRobot, cRobotPosition.Column, cRobotPosition.Row)
+	helper.ConvPosToByte(cRobot, endPosition.Column, endPosition.Row)
 	return newRobots
 }
 
