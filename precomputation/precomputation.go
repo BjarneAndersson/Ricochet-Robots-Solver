@@ -74,7 +74,6 @@ func calculateRobotStoppingPosition(board *types.Board, startNodePosition types.
 	cNode := board.Board[cNodePosition.Row][cNodePosition.Column]
 
 	for helper.HasNeighbor(cNode, direction) {
-		cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
 
 		switch direction {
 		case "left":
@@ -86,6 +85,7 @@ func calculateRobotStoppingPosition(board *types.Board, startNodePosition types.
 		case "bottom":
 			cNodePosition.Row += 1
 		}
+		cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
 	}
 
 	return cNodePosition
