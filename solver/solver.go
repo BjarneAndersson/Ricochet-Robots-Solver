@@ -195,8 +195,8 @@ func isBoardStateInOpenSet(openSet priorityQueue.PriorityQueue, boardState types
 	return false
 }
 
-func isRobotOnTarget(boardState types.BoardState, target uint16) bool {
+func isRobotOnTarget(boardState *types.BoardState, target uint16) bool {
 	targetPosition := helper.ConvBytePositionToPosition(byte(target & 255))
-	activeRobotPosition := helper.ConvBytePositionToPosition(byte(boardState & (255 << 24)))
-	return activeRobotPosition.Column == targetPosition.Column && activeRobotPosition.Row == targetPosition.Row
+	activeRobotPosition := helper.ConvBytePositionToPosition(byte((*boardState & (255 << 24)) >> 24))
+	return activeRobotPosition == targetPosition
 }
