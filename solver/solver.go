@@ -28,6 +28,7 @@ func reconstructPath(cameFrom map[types.BoardState]types.BoardState, currentBoar
 
 func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardState, error) {
 	openSet := make(priorityQueue.PriorityQueue, 1)
+	closedSet := make([]types.BoardState, 0)
 
 	openSet[0] = priorityQueue.Item{
 		Value:    initBoardState,
@@ -65,7 +66,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 					newBoardState := createNewBoardState(newRobots)
 
 					// check if the new board state is already in the queue
-					if isBoardStateInOpenSet(openSet, newBoardState) {
+					if isBoardStateInOpenSet(openSet, newBoardState) || isBoardStateInClosedSet(&closedSet, newBoardState) {
 						continue
 					}
 
@@ -96,6 +97,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 
 			}
 		}
+		closedSet = append(closedSet, currentBoardState)
 	}
 	return []types.BoardState{}, nil
 }
@@ -182,6 +184,15 @@ func moveRobot(robots [4]byte, robotIndex uint8, endPosition types.Position) (ne
 func isBoardStateInOpenSet(openSet priorityQueue.PriorityQueue, boardState types.BoardState) bool {
 	for _, iterateBoardState := range openSet {
 		if iterateBoardState.Value == boardState {
+			return true
+		}
+	}
+	return false
+}
+
+func isBoardStateInClosedSet(closedSet *[]types.BoardState, boardState types.BoardState) bool {
+	for _, iterateBoardState := range *closedSet {
+		if iterateBoardState == boardState {
 			return true
 		}
 	}
