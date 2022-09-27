@@ -3,6 +3,7 @@ package solver
 import (
 	"../helper"
 	"../priorityQueue"
+	"../tracker"
 	"../types"
 )
 
@@ -26,7 +27,9 @@ func reconstructPath(cameFrom map[types.BoardState]types.BoardState, currentBoar
 	return path, nil
 }
 
-func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardState, error) {
+func Solver(board *types.Board, initBoardState types.BoardState) (tracker.TrackingDataSolver, []types.BoardState, error) {
+	trackingData := tracker.TrackingDataSolver{}
+
 	openSet := make(priorityQueue.PriorityQueue, 1)
 	closedSet := make([]types.BoardState, 0)
 
@@ -34,6 +37,7 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 		Value:    initBoardState,
 		Priority: 0,
 	}
+	trackingData.InitializedBoardStates += 1
 
 	cameFrom := make(map[types.BoardState]types.BoardState)
 
@@ -70,13 +74,16 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 						continue
 					}
 
+					trackingData.InitializedBoardStates += 1
+
 					// check if the new board state is the target
 					// break -> reconstruct path
 					if indexRobot == 0 { // if active robot was moved - only action to get to the target
 						if isRobotOnTarget(&newBoardState, board.Target) {
 							// add board state to cameFrom
 							cameFrom[newBoardState] = currentBoardState
-							return reconstructPath(cameFrom, newBoardState)
+							path, err := reconstructPath(cameFrom, newBoardState)
+							return trackingData, path, err
 						}
 					}
 
@@ -97,9 +104,10 @@ func Solver(board *types.Board, initBoardState types.BoardState) ([]types.BoardS
 
 			}
 		}
+		trackingData.EvaluatedBoardStates += 1
 		closedSet = append(closedSet, currentBoardState)
 	}
-	return []types.BoardState{}, nil
+	return trackingData, []types.BoardState{}, nil
 }
 
 func calcFScore(board *types.Board, boardState types.BoardState, gScore uint8) (fScore uint8) {

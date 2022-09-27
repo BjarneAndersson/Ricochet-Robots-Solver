@@ -24,12 +24,12 @@ func main() {
 
 	// solve the board
 
-	path, duration, err := tracker.DurationSolver(solver.Solver, &board, initBoardState)
+	path, trackingData, err := tracker.TrackSolver(solver.Solver, &board, initBoardState)
 	if err != nil {
 		log.Printf("\nError solving:\n%v\n", err)
 		return
 	}
-	err = output.Path(path, duration, board.RobotColors)
+	err = output.Path(path, trackingData, board.RobotColors)
 	if err != nil {
 		return
 	}

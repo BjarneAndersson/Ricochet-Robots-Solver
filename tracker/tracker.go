@@ -13,10 +13,18 @@ func Duration(f func()) time.Duration {
 	return time.Since(start)
 }
 
-func DurationSolver(solver func(*types.Board, types.BoardState) ([]types.BoardState, error), board *types.Board, initBoardState types.BoardState) (path []types.BoardState, duration time.Duration, err error) {
+type TrackingDataSolver struct {
+	InitializedBoardStates uint
+	EvaluatedBoardStates   uint8
+	Duration               time.Duration
+}
+
+func TrackSolver(solver func(*types.Board, types.BoardState) (TrackingDataSolver, []types.BoardState, error), board *types.Board, initBoardState types.BoardState) (path []types.BoardState, trackingData TrackingDataSolver, err error) {
 	start := time.Now()
 
-	path, err = solver(board, initBoardState)
+	trackingData, path, err = solver(board, initBoardState)
 
-	return path, time.Since(start), err
+	trackingData.Duration = time.Since(start)
+
+	return path, trackingData, err
 }
