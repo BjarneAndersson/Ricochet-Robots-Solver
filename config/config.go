@@ -6,15 +6,14 @@ import (
 )
 
 type Mode struct {
-	name          string `yaml:"name"`
-	nodeNeighbors bool   `yaml:"node_neighbors"`
-	boardStates   bool   `yaml:"board_states"`
+	nodeNeighbors bool `yaml:"node_neighbors"`
+	boardStates   bool `yaml:"board_states"`
 }
 
 type Config struct {
-	Mode              string `yaml:"mode"`
-	BoardDataLocation string `yaml:"board_data_location"`
-	Modes             []Mode `yaml:"modes"`
+	Mode              string            `yaml:"mode"`
+	BoardDataLocation string            `yaml:"board_data_location"`
+	Modes             []map[string]Mode `yaml:"modes"`
 }
 
 func GetConfig(filename string) (c Config, err error) {
