@@ -159,7 +159,7 @@ func convData(data types.RawBoard) (board types.Board, err error) {
 
 		switch wall.Direction2 {
 		case "top":
-			bitOperations.SetBit(&(board.Board[wall.Position2.Row][wall.Position2.Column]), 3, true)
+			bitOperations.SetBit(&(board.Board[wall.Position2.Row][wall.Position2.Column]), 3, false)
 		case "bottom":
 			bitOperations.SetBit(&(board.Board[wall.Position2.Row][wall.Position2.Column]), 2, false)
 		case "left":
