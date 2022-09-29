@@ -90,6 +90,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, conf config.Con
 					if indexRobot == 0 { // if active robot was moved - only action to get to the target
 						if isRobotOnTarget(&newBoardState, board.Target) {
 							// add board state to cameFrom
+							trackingData.EvaluatedBoardStates += 1
 							cameFrom[newBoardState] = currentBoardState
 							path, err := reconstructPath(cameFrom, newBoardState)
 							return trackingData, path, err
