@@ -9,8 +9,8 @@ import (
 	"os"
 )
 
-func GetData() (board types.Board, initBoardState types.BoardState, err error) {
-	data, err := getJsonData("K:\\Coding\\Golang\\ricochet-robot-solver\\board_data.json")
+func GetData(boardDataLocation string) (board types.Board, initBoardState types.BoardState, err error) {
+	data, err := getJsonData(boardDataLocation)
 	if err != nil {
 		return types.Board{}, 0, err
 	}
