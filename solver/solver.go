@@ -1,7 +1,9 @@
 package solver
 
 import (
+	"../config"
 	"../helper"
+	"../output"
 	"../priorityQueue"
 	"../tracker"
 	"../types"
@@ -27,7 +29,7 @@ func reconstructPath(cameFrom map[types.BoardState]types.BoardState, currentBoar
 	return path, nil
 }
 
-func Solver(board *types.Board, initBoardState types.BoardState) (tracker.TrackingDataSolver, []types.BoardState, error) {
+func Solver(board *types.Board, initBoardState types.BoardState, conf config.Config) (tracker.TrackingDataSolver, []types.BoardState, error) {
 	trackingData := tracker.TrackingDataSolver{}
 
 	openSet := make(priorityQueue.PriorityQueue, 1)
@@ -50,6 +52,13 @@ func Solver(board *types.Board, initBoardState types.BoardState) (tracker.Tracki
 
 	for openSet.Len() > 0 {
 		currentBoardState := priorityQueue.Pop(&openSet).Value
+
+		if conf.Modes[conf.Mode]["output"].BoardStates == true {
+			err := output.BoardState(currentBoardState, board.RobotColors)
+			if err != nil {
+				return trackingData, []types.BoardState{}, nil
+			}
+		}
 
 		for indexRobot, robot := range helper.SeparateRobots(currentBoardState) {
 			robotPosition := helper.ConvBytePositionToPosition(robot)

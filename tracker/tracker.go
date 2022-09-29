@@ -1,6 +1,7 @@
 package tracker
 
 import (
+	"../config"
 	"../types"
 	"time"
 )
@@ -19,10 +20,10 @@ type TrackingDataSolver struct {
 	Duration               time.Duration
 }
 
-func TrackSolver(solver func(*types.Board, types.BoardState) (TrackingDataSolver, []types.BoardState, error), board *types.Board, initBoardState types.BoardState) (path []types.BoardState, trackingData TrackingDataSolver, err error) {
+func TrackSolver(solver func(*types.Board, types.BoardState, config.Config) (TrackingDataSolver, []types.BoardState, error), board *types.Board, initBoardState types.BoardState, conf config.Config) (path []types.BoardState, trackingData TrackingDataSolver, err error) {
 	start := time.Now()
 
-	trackingData, path, err = solver(board, initBoardState)
+	trackingData, path, err = solver(board, initBoardState, conf)
 
 	trackingData.Duration = time.Since(start)
 
