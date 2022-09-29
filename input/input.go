@@ -9,23 +9,28 @@ import (
 	"os"
 )
 
-func GetData(boardDataLocation string) (board types.Board, initBoardState types.BoardState, err error) {
+func GetData(boardDataLocation string) (board types.Board, initBoardState types.BoardState, robotStoppingPositions types.RobotStoppingPositions, err error) {
 	data, err := getJsonData(boardDataLocation)
 	if err != nil {
-		return types.Board{}, 0, err
+		return types.Board{}, 0, types.RobotStoppingPositions{}, err
 	}
 
 	board, err = loadData(data)
 	if err != nil {
-		return types.Board{}, 0, err
+		return types.Board{}, 0, types.RobotStoppingPositions{}, err
 	}
 
 	initBoardState, err = getInitBoardState(&board)
 	if err != nil {
-		return types.Board{}, 0, err
+		return types.Board{}, 0, types.RobotStoppingPositions{}, err
 	}
 
-	return board, initBoardState, nil
+	robotStoppingPositions, err = precomputation.PrecomputeRobotMoves(&board)
+	if err != nil {
+		return types.Board{}, 0, types.RobotStoppingPositions{}, err
+	}
+
+	return board, initBoardState, robotStoppingPositions, nil
 }
 
 func getInitBoardState(board *types.Board) (initBoardState types.BoardState, err error) {

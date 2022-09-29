@@ -4,7 +4,6 @@ import (
 	"./config"
 	"./input"
 	"./output"
-	"./precomputation"
 	"./solver"
 	"./tracker"
 	"log"
@@ -15,7 +14,7 @@ func main() {
 	conf, err := config.GetConfig("config")
 
 	// convert data into board object
-	board, initBoardState, err := input.GetData(conf.BoardDataLocation)
+	board, initBoardState, robotStoppingPositions, err := input.GetData(conf.BoardDataLocation)
 	if err != nil {
 		log.Printf("Error loading board data:\n%v\n", err)
 		return
@@ -28,9 +27,12 @@ func main() {
 		}
 	}
 
-	// calculate stopping positions for each node
-	robotMoves, err := precomputation.PrecomputeRobotMoves(&board)
-	log.Printf("\n%+v\n", robotMoves)
+	if conf.Modes[conf.Mode]["output"].RobotStoppingPositions == true {
+		err = output.RobotStoppingPositions(&robotStoppingPositions)
+		if err != nil {
+			return
+		}
+	}
 
 	// solve the board
 

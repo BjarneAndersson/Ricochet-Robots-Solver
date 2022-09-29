@@ -51,3 +51,5 @@ type Board struct {
 	RobotColors RobotColors
 	Target      uint16
 }
+
+type RobotStoppingPositions map[Position]map[string]Position

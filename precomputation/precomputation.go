@@ -54,7 +54,7 @@ func setMoveCount(pB *byte, moveCount uint8) {
 	*pB = (31 & *pB) | (moveCount << 5)
 }
 
-func PrecomputeRobotMoves(board *types.Board) (robotMoves map[types.Position]map[string]types.Position, err error) {
+func PrecomputeRobotMoves(board *types.Board) (robotMoves types.RobotStoppingPositions, err error) {
 	robotMoves = make(map[types.Position]map[string]types.Position)
 
 	for rowIndex := 0; rowIndex < 16; rowIndex++ {
