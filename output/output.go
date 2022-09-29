@@ -9,6 +9,39 @@ import (
 	"strconv"
 )
 
+func Neighbors(board *types.Board) (err error) {
+	fmt.Printf("%+v\n", board)
+	fmt.Printf("\n\n====================\n")
+	for rowIndex := range board.Board {
+		for _, node := range board.Board[rowIndex] {
+			outputString := fmt.Sprintf("")
+			if !helper.HasNeighbor(node, "top") {
+				outputString += "N"
+			}
+			if !helper.HasNeighbor(node, "bottom") {
+				outputString += "S"
+			}
+			if !helper.HasNeighbor(node, "left") {
+				outputString += "W"
+			}
+			if !helper.HasNeighbor(node, "right") {
+				outputString += "E"
+			}
+			if len(outputString) == 0 {
+				outputString = "A"
+			}
+			//pNode, err := convertNumberToBits(int(node&15), 4)
+			if err != nil {
+				return err
+			}
+			fmt.Printf("%v ", outputString)
+		}
+		fmt.Println("")
+	}
+	fmt.Printf("====================\n")
+	return nil
+}
+
 func BoardState(boardState types.BoardState, robotColors types.RobotColors) (err error) {
 	fmt.Printf("\n\n====================\n")
 	fmt.Printf("Board State: %v | %v\n", boardState, convertNumberToBits(int(boardState)))
