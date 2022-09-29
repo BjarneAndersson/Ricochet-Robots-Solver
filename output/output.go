@@ -9,7 +9,6 @@ import (
 )
 
 func Neighbors(board *types.Board) (err error) {
-	fmt.Printf("%+v\n", board)
 	fmt.Printf("\n\n====================\n")
 	for rowIndex := range board.Board {
 		for _, node := range board.Board[rowIndex] {
