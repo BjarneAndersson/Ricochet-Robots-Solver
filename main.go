@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// convert data into board object
-	board, initBoardState, err := input.GetData()
+	board, initBoardState, err := input.GetData(configuration.BoardDataLocation)
 	if err != nil {
 		log.Printf("Error loading board data:\n%v\n", err)
 		return
