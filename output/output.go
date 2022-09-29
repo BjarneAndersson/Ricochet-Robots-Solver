@@ -6,7 +6,6 @@ import (
 	"../types"
 	"fmt"
 	"github.com/fatih/color"
-	"strconv"
 )
 
 func Neighbors(board *types.Board) (err error) {
@@ -43,8 +42,13 @@ func Neighbors(board *types.Board) (err error) {
 }
 
 func BoardState(boardState types.BoardState, robotColors types.RobotColors) (err error) {
+	boardStateInBits, err := convertNumberToBits(int(boardState), 32)
+	if err != nil {
+		return err
+	}
+
 	fmt.Printf("\n\n====================\n")
-	fmt.Printf("Board State: %v | %v\n", boardState, convertNumberToBits(int(boardState)))
+	fmt.Printf("Board State: %v | %v\n", boardState, boardStateInBits)
 
 	robots := helper.SeparateRobots(boardState)
 	for indexRobot, robotPosition := range robots {
@@ -203,8 +207,16 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 	return nil
 }
 
-func convertNumberToBits(number int) string {
-	return strconv.FormatInt(int64(number), 2)
+func convertNumberToBits(number int, fill int) (string, error) {
+	switch fill {
+	case 4:
+		return fmt.Sprintf("%04b", number), nil
+	case 8:
+		return fmt.Sprintf("%08b", number), nil
+	case 32:
+		return fmt.Sprintf("%32b", number), nil
+	}
+	return "", fmt.Errorf("invalid operation")
 }
 
 func getMovedRobotColorAndDirection(previousBoardState types.BoardState, currentBoardState types.BoardState, robotColors types.RobotColors) (robotColor string, direction string, err error) {
