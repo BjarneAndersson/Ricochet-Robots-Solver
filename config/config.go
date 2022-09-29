@@ -6,8 +6,9 @@ import (
 )
 
 type Mode struct {
-	NodeNeighbors bool `yaml:"node_neighbors"`
-	BoardStates   bool `yaml:"board_states"`
+	NodeNeighbors          bool `yaml:"node_neighbors"`
+	BoardStates            bool `yaml:"board_states"`
+	RobotStoppingPositions bool `yaml:"robot_stopping_positions"`
 }
 
 type Config struct {
