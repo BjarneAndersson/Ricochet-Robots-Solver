@@ -3,9 +3,11 @@ board_data_location: 'K:\Coding\Golang\ricochet-robot-solver\board_data.json'
 
 modes:
   default:
-    node_neighbors: false
-    board_states: false
+    output:
+      node_neighbors: false
+      board_states: false
 
   debug:
-    node_neighbors: true
-    board_states: true
+    output:
+      node_neighbors: true
+      board_states: true

@@ -11,9 +11,9 @@ type Mode struct {
 }
 
 type Config struct {
-	Mode              string          `yaml:"mode"`
-	BoardDataLocation string          `yaml:"board_data_location"`
-	Modes             map[string]Mode `yaml:"modes"`
+	Mode              string                     `yaml:"mode"`
+	BoardDataLocation string                     `yaml:"board_data_location"`
+	Modes             map[string]map[string]Mode `yaml:"modes"`
 }
 
 func GetConfig(filename string) (c Config, err error) {
