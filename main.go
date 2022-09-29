@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./config"
 	"./input"
 	"./output"
 	"./precomputation"
@@ -10,13 +11,22 @@ import (
 )
 
 func main() {
+	// get configuration
+	configuration, err := config.GetConfig("config")
+
 	// convert data into board object
 	board, initBoardState, err := input.GetData(configuration.BoardDataLocation)
 	if err != nil {
 		log.Printf("Error loading board data:\n%v\n", err)
 		return
 	}
-	log.Printf("%+v\n", board)
+
+	if configuration.Modes[configuration.Mode].NodeNeighbors == true {
+		err = output.Neighbors(&board)
+		if err != nil {
+			return
+		}
+	}
 
 	// calculate stopping positions for each node
 	robotMoves, err := precomputation.PrecomputeRobotMoves(&board)
