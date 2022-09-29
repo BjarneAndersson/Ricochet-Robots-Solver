@@ -11,17 +11,17 @@ import (
 )
 
 func main() {
-	// get configuration
-	configuration, err := config.GetConfig("config")
+	// get conf
+	conf, err := config.GetConfig("config")
 
 	// convert data into board object
-	board, initBoardState, err := input.GetData(configuration.BoardDataLocation)
+	board, initBoardState, err := input.GetData(conf.BoardDataLocation)
 	if err != nil {
 		log.Printf("Error loading board data:\n%v\n", err)
 		return
 	}
 
-	if configuration.Modes[configuration.Mode].NodeNeighbors == true {
+	if conf.Modes[conf.Mode]["output"].NodeNeighbors == true {
 		err = output.Neighbors(&board)
 		if err != nil {
 			return
