@@ -206,6 +206,19 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 	return nil
 }
 
+func RobotStoppingPositions(robotStoppingPositions *types.RobotStoppingPositions) (err error) {
+	fmt.Printf("\n\n====================\n")
+	for nodePosition, stoppingPositions := range *robotStoppingPositions {
+		fmt.Printf("Node: %v\t| ", nodePosition)
+		for direction, stoppingPosition := range stoppingPositions {
+			fmt.Printf("%v: %v\t", direction, stoppingPosition)
+		}
+		fmt.Println("")
+	}
+	fmt.Printf("====================\n")
+	return nil
+}
+
 func convertNumberToBits(number int, fill int) (string, error) {
 	switch fill {
 	case 4:
