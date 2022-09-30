@@ -66,11 +66,8 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 			nodePosition := types.Position{Column: robotPosition.Column, Row: robotPosition.Row}
 
 			for _, direction := range []string{"top", "bottom", "left", "right"} {
-				cNode := node
-				cNodePosition := nodePosition
-
-				cNodePosition = calculateStoppingPosition(robotStoppingPositions, currentBoardState, cNodePosition, direction)
-				cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
+				cNodePosition := calculateStoppingPosition(robotStoppingPositions, currentBoardState, nodePosition, direction)
+				cNode := board.Board[cNodePosition.Row][cNodePosition.Column]
 
 				if cNode != node {
 					// robot can be moved into direction
@@ -159,38 +156,22 @@ func calculateStoppingPosition(robotStoppingPositions *types.RobotStoppingPositi
 		case "left":
 			if robotPosition.Row == stoppingPosition.Row && robotPosition.Column >= stoppingPosition.Column && robotPosition.Column < startNodePosition.Column {
 				stoppingPosition.Column = robotPosition.Column + 1
-				return stoppingPosition
 			}
 		case "right":
 			if robotPosition.Row == stoppingPosition.Row && robotPosition.Column <= stoppingPosition.Column && robotPosition.Column > startNodePosition.Column {
 				stoppingPosition.Column = robotPosition.Column - 1
-				return stoppingPosition
 			}
 		case "top":
 			if robotPosition.Column == stoppingPosition.Column && robotPosition.Row >= stoppingPosition.Row && robotPosition.Row < startNodePosition.Row {
 				stoppingPosition.Row = robotPosition.Row + 1
-				return stoppingPosition
 			}
 		case "bottom":
 			if robotPosition.Column == stoppingPosition.Column && robotPosition.Row <= stoppingPosition.Row && robotPosition.Row > startNodePosition.Row {
 				stoppingPosition.Row = robotPosition.Row - 1
-				return stoppingPosition
 			}
 		}
 	}
-	return
-}
-
-func checkRobotOnNode(boardState types.BoardState, position types.Position) bool {
-	robots := helper.SeparateRobots(boardState)
-
-	for _, robot := range robots {
-		if position == helper.ConvBytePositionToPosition(robot) {
-			return true
-		}
-	}
-
-	return false
+	return stoppingPosition
 }
 
 func moveRobot(robots [4]byte, robotIndex uint8, endPosition types.Position) (newRobots [4]byte) {
