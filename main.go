@@ -36,7 +36,7 @@ func main() {
 
 	// solve the board
 
-	path, trackingData, err := tracker.TrackSolver(solver.Solver, &board, initBoardState, conf)
+	path, trackingData, err := tracker.TrackSolver(solver.Solver, &board, initBoardState, &robotStoppingPositions, conf)
 	if err != nil {
 		log.Printf("\nError solving:\n%v\n", err)
 		return

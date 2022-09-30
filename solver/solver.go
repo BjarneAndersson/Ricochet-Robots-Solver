@@ -29,7 +29,7 @@ func reconstructPath(cameFrom map[types.BoardState]types.BoardState, currentBoar
 	return path, nil
 }
 
-func Solver(board *types.Board, initBoardState types.BoardState, conf config.Config) (tracker.TrackingDataSolver, []types.BoardState, error) {
+func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPositions *types.RobotStoppingPositions, conf config.Config) (tracker.TrackingDataSolver, []types.BoardState, error) {
 	trackingData := tracker.TrackingDataSolver{}
 
 	openSet := make(priorityQueue.PriorityQueue, 1)
@@ -69,9 +69,12 @@ func Solver(board *types.Board, initBoardState types.BoardState, conf config.Con
 				cNode := node
 				cNodePosition := nodePosition
 
-				cNode, cNodePosition = calculateStoppingPosition(board, currentBoardState, cNode, cNodePosition, direction)
+				cNodePosition = calculateStoppingPosition(robotStoppingPositions, currentBoardState, cNodePosition, direction)
+				cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
 
-				if cNode != node { // robot can be moved into direction
+				if cNode != node {
+					// robot can be moved into direction
+
 					// move robot
 					newRobots := moveRobot(helper.SeparateRobots(currentBoardState), uint8(indexRobot), cNodePosition)
 
@@ -138,45 +141,44 @@ func createNewBoardState(robots [4]byte) types.BoardState {
 	return types.BoardState(uint32(robots[0])<<24 | uint32(robots[1])<<16 | uint32(robots[2])<<8 | uint32(robots[3])<<0)
 }
 
-func calculateStoppingPosition(board *types.Board, boardState types.BoardState, startNode byte, startNodePosition types.Position, direction string) (cNode byte, cNodePosition types.Position) {
-	cNode = startNode
-	cNodePosition = startNodePosition
-stopPositionLoop:
-	for helper.HasNeighbor(cNode, direction) {
+func calculateStoppingPosition(robotStoppingPositions *types.RobotStoppingPositions, boardState types.BoardState, startNodePosition types.Position, direction string) (stoppingPosition types.Position) {
+	stoppingPosition = (*robotStoppingPositions)[startNodePosition][direction]
+
+	if stoppingPosition == startNodePosition {
+		return stoppingPosition
+	}
+
+	for _, robot := range helper.SeparateRobots(boardState) {
+		robotPosition := helper.ConvBytePositionToPosition(robot)
+
+		if robotPosition == startNodePosition {
+			continue
+		}
 
 		switch direction {
 		case "left":
-			if checkRobotOnNode(boardState, types.Position{Column: cNodePosition.Column - 1, Row: cNodePosition.Row}) {
-				break stopPositionLoop
-			} else {
-				cNodePosition = types.Position{Column: cNodePosition.Column - 1, Row: cNodePosition.Row}
-				cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
+			if robotPosition.Row == stoppingPosition.Row && robotPosition.Column >= stoppingPosition.Column && robotPosition.Column < startNodePosition.Column {
+				stoppingPosition.Column = robotPosition.Column + 1
+				return stoppingPosition
 			}
 		case "right":
-			if checkRobotOnNode(boardState, types.Position{Column: cNodePosition.Column + 1, Row: cNodePosition.Row}) {
-				break stopPositionLoop
-			} else {
-				cNodePosition = types.Position{Column: cNodePosition.Column + 1, Row: cNodePosition.Row}
-				cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
+			if robotPosition.Row == stoppingPosition.Row && robotPosition.Column <= stoppingPosition.Column && robotPosition.Column > startNodePosition.Column {
+				stoppingPosition.Column = robotPosition.Column - 1
+				return stoppingPosition
 			}
 		case "top":
-			if checkRobotOnNode(boardState, types.Position{Column: cNodePosition.Column, Row: cNodePosition.Row - 1}) {
-				break stopPositionLoop
-			} else {
-				cNodePosition = types.Position{Column: cNodePosition.Column, Row: cNodePosition.Row - 1}
-				cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
+			if robotPosition.Column == stoppingPosition.Column && robotPosition.Row >= stoppingPosition.Row && robotPosition.Row < startNodePosition.Row {
+				stoppingPosition.Row = robotPosition.Row + 1
+				return stoppingPosition
 			}
 		case "bottom":
-			if checkRobotOnNode(boardState, types.Position{Column: cNodePosition.Column, Row: cNodePosition.Row + 1}) {
-				break stopPositionLoop
-			} else {
-				cNodePosition = types.Position{Column: cNodePosition.Column, Row: cNodePosition.Row + 1}
-				cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
+			if robotPosition.Column == stoppingPosition.Column && robotPosition.Row <= stoppingPosition.Row && robotPosition.Row > startNodePosition.Row {
+				stoppingPosition.Row = robotPosition.Row - 1
+				return stoppingPosition
 			}
 		}
 	}
-	return cNode, cNodePosition
-	//return helper.ConvBytePositionToPosition(cNode)
+	return
 }
 
 func checkRobotOnNode(boardState types.BoardState, position types.Position) bool {
