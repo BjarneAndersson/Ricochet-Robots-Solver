@@ -1,5 +1,5 @@
 mode: 'debug'
-board_data_location: 'K:\Coding\Golang\ricochet-robot-solver\tests\data\3b.json'
+board_data_location: 'K:\Coding\Golang\ricochet-robot-solver\tests\data\test.json'
 
 modes:
   default:
