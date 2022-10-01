@@ -16,7 +16,7 @@ func Duration(f func()) time.Duration {
 
 type TrackingDataSolver struct {
 	InitializedBoardStates uint
-	EvaluatedBoardStates   uint8
+	EvaluatedBoardStates   uint
 	Duration               time.Duration
 }
 
