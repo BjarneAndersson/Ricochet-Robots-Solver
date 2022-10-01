@@ -54,7 +54,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 		currentBoardState := priorityQueue.Pop(&openSet).Value
 
 		if conf.Modes[conf.Mode]["output"].BoardStates == true {
-			err := output.BoardState(currentBoardState, board.RobotColors)
+			err := output.BoardState(currentBoardState, trackingData, board.RobotColors)
 			if err != nil {
 				return trackingData, []types.BoardState{}, nil
 			}

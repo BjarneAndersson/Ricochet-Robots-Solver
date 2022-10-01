@@ -40,7 +40,7 @@ func Neighbors(board *types.Board) (err error) {
 	return nil
 }
 
-func BoardState(boardState types.BoardState, robotColors types.RobotColors) (err error) {
+func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSolver, robotColors types.RobotColors) (err error) {
 	boardStateInBits, err := convertNumberToBits(int(boardState), 32)
 	if err != nil {
 		return err
@@ -68,6 +68,7 @@ func BoardState(boardState types.BoardState, robotColors types.RobotColors) (err
 			color.HiBlue(msg)
 		}
 	}
+	fmt.Printf("Initialized states: %v | Evaluated states: %v\n", trackingData.InitializedBoardStates, trackingData.EvaluatedBoardStates)
 	fmt.Printf("====================\n")
 	return nil
 }
