@@ -43,7 +43,7 @@ func calcPriority(item Item) uint8 {
 }
 
 func getHScore(item Item) uint8 {
-	return item.HAndGScore & (7 << 5)
+	return (item.HAndGScore & (7 << 5)) >> 5
 }
 
 func getGScore(item Item) uint8 {
