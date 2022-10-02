@@ -36,8 +36,9 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 	closedSet := make([]types.BoardState, 0)
 
 	openSet[0] = priorityQueue.Item{
-		Value:    initBoardState,
-		Priority: 0,
+		Value:      initBoardState,
+		RobotOrder: 0,
+		HAndGScore: 0,
 	}
 	trackingData.InitializedBoardStates += 1
 
@@ -95,7 +96,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 
 					// calc fScore for the new board state
 					gScore[newBoardState] = gScore[currentBoardState] + 1
-					currentFScore := calcFScore(board, newBoardState, gScore[newBoardState])
+					//currentFScore := calcFScore(board, newBoardState, gScore[newBoardState])
 
 					// add board state to cameFrom
 					cameFrom[newBoardState] = currentBoardState
@@ -103,8 +104,9 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 					// add the new board state to the queue
 					openSet.Push(
 						priorityQueue.Item{
-							Value:    newBoardState,
-							Priority: int(currentFScore),
+							Value:      newBoardState,
+							RobotOrder: 0,
+							HAndGScore: priorityQueue.CombineHAndGScore(gScore[newBoardState], calcHScore(board, newBoardState)),
 						})
 				}
 
