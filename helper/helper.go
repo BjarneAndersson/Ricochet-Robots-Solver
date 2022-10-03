@@ -21,8 +21,8 @@ func GetTargetColor(target uint16) (color string, err error) {
 	return "", err
 }
 
-func ConvPosToByte(pB *byte, column uint8, row uint8) {
-	*pB = column<<4 + row
+func ConvPosToByte(position types.Position) byte {
+	return position.Column<<4 + position.Row
 }
 
 func HasNeighbor(currentNode byte, direction string) bool {

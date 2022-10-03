@@ -174,9 +174,8 @@ func calculateStoppingPosition(robotStoppingPositions *types.RobotStoppingPositi
 
 func moveRobot(robots [4]byte, robotIndex uint8, endPosition types.Position) (newRobots [4]byte) {
 	newRobots = robots
-	cRobot := &(newRobots[robotIndex])
 
-	helper.ConvPosToByte(cRobot, endPosition.Column, endPosition.Row)
+	newRobots[robotIndex] = helper.ConvPosToByte(endPosition)
 	return newRobots
 }
 

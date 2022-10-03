@@ -176,7 +176,7 @@ func convData(data types.RawBoard) (board types.Board, err error) {
 
 	// target conversion
 	var targetColorAndSymbol byte
-	var targetPosition byte
+	targetPosition := helper.ConvPosToByte(data.Target.Position)
 
 	switch data.Target.Color {
 	case "yellow":
@@ -200,8 +200,6 @@ func convData(data types.RawBoard) (board types.Board, err error) {
 		bitOperations.SetBit(&targetColorAndSymbol, 0, true)
 	}
 
-	helper.ConvPosToByte(&targetPosition, data.Target.Position.Column, data.Target.Position.Row)
-
 	board.Target = uint16(targetColorAndSymbol)<<8 | uint16(targetPosition)
 
 	// Robot conversion
@@ -213,16 +211,7 @@ func convData(data types.RawBoard) (board types.Board, err error) {
 	}
 
 	for indexRobot, robot := range data.Robots {
-		switch robot.Color {
-		case "yellow":
-			helper.ConvPosToByte(&board.Robots[board.RobotColors[robot.Color]], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
-		case "red":
-			helper.ConvPosToByte(&board.Robots[board.RobotColors[robot.Color]], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
-		case "green":
-			helper.ConvPosToByte(&board.Robots[board.RobotColors[robot.Color]], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
-		case "blue":
-			helper.ConvPosToByte(&board.Robots[board.RobotColors[robot.Color]], data.Robots[indexRobot].Position.Column, data.Robots[indexRobot].Position.Row)
-		}
+		board.Robots[board.RobotColors[robot.Color]] = helper.ConvPosToByte(data.Robots[indexRobot].Position)
 	}
 
 	return board, nil
