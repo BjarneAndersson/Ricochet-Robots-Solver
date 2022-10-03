@@ -9,16 +9,20 @@ import (
 	"../types"
 )
 
-func reconstructPath(cameFrom map[types.BoardState]types.BoardState, currentBoardState types.BoardState) (path []types.BoardState, err error) {
-	path = append(path, currentBoardState)
+func reconstructPath(cameFrom []uint64, endBoardState types.BoardState) (path []types.BoardState, err error) {
+	path = append(path, endBoardState)
+	currentBoardState := endBoardState
 
 	for {
-		if _, ok := cameFrom[currentBoardState]; ok {
-			currentBoardState = cameFrom[currentBoardState]
-			path = append(path, currentBoardState)
-		} else {
-			break
+	startLoop:
+		for _, currentPair := range cameFrom {
+			if currentBoardState == types.BoardState((currentPair&(uint64(4294967295)<<32))>>32) {
+				currentBoardState = types.BoardState(currentPair & 4294967295)
+				path = append(path, currentBoardState)
+				goto startLoop
+			}
 		}
+		break
 	}
 
 	// reverse the path
@@ -42,7 +46,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 	}
 	trackingData.InitializedBoardStates += 1
 
-	cameFrom := make(map[types.BoardState]types.BoardState)
+	cameFrom := make([]uint64, 0)
 
 	gScore := make(map[types.BoardState]uint8) // g score - distance from start
 	gScore[initBoardState] = 0
@@ -88,7 +92,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 						if isRobotOnTarget(&newBoardState, board.Target) {
 							// add board state to cameFrom
 							trackingData.EvaluatedBoardStates += 1
-							cameFrom[newBoardState] = currentBoardState
+							cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
 							path, err := reconstructPath(cameFrom, newBoardState)
 							return trackingData, path, err
 						}
@@ -99,7 +103,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 					//currentFScore := calcFScore(board, newBoardState, gScore[newBoardState])
 
 					// add board state to cameFrom
-					cameFrom[newBoardState] = currentBoardState
+					cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
 
 					// add the new board state to the queue
 					openSet.Push(
