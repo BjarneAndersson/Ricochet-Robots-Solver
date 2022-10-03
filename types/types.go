@@ -52,4 +52,4 @@ type Board struct {
 	Target      uint16
 }
 
-type RobotStoppingPositions map[Position]map[string]Position
+type RobotStoppingPositions [16][16]uint32

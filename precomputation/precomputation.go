@@ -54,22 +54,28 @@ func setMoveCount(pB *byte, moveCount uint8) {
 	*pB = (31 & *pB) | (moveCount << 5)
 }
 
-func PrecomputeRobotMoves(board *types.Board) (robotMoves types.RobotStoppingPositions, err error) {
-	robotMoves = make(map[types.Position]map[string]types.Position)
-
+func PrecomputeRobotMoves(board *types.Board) (robotStoppingPositions types.RobotStoppingPositions, err error) {
 	for rowIndex := 0; rowIndex < 16; rowIndex++ {
 		for columnIndex := 0; columnIndex < 16; columnIndex++ {
-			robotMoves[types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}] = map[string]types.Position{"left": {}, "right": {}, "top": {}, "bottom": {}}
-			for _, direction := range []string{"left", "right", "top", "bottom"} {
-				robotMoves[types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}][direction] = calculateRobotStoppingPosition(board, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)
+			for _, direction := range []string{"top", "bottom", "left", "right"} {
+				switch direction {
+				case "top":
+					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(board, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 24)
+				case "bottom":
+					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(board, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 16)
+				case "left":
+					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(board, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 8)
+				case "right":
+					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(board, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 0)
+				}
 			}
 		}
 	}
 
-	return robotMoves, nil
+	return robotStoppingPositions, nil
 }
 
-func calculateRobotStoppingPosition(board *types.Board, startNodePosition types.Position, direction string) types.Position {
+func calculateRobotStoppingPosition(board *types.Board, startNodePosition types.Position, direction string) byte {
 	cNodePosition := startNodePosition
 	cNode := board.Board[cNodePosition.Row][cNodePosition.Column]
 
@@ -88,5 +94,5 @@ func calculateRobotStoppingPosition(board *types.Board, startNodePosition types.
 		cNode = board.Board[cNodePosition.Row][cNodePosition.Column]
 	}
 
-	return cNodePosition
+	return helper.ConvPosToByte(cNodePosition)
 }
