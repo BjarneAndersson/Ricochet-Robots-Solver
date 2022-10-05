@@ -52,7 +52,8 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 	gScore[initBoardState] = 0
 
 	for openSet.Len() > 0 {
-		currentBoardState := priorityQueue.Pop(&openSet).Value
+		currentPriorityQueueItem := priorityQueue.Pop(&openSet)
+		currentBoardState := currentPriorityQueueItem.Value
 
 		if conf.Modes[conf.Mode]["output"].BoardStates == true {
 			err := output.BoardState(currentBoardState, trackingData, gameRound.RobotColors)
@@ -86,31 +87,28 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 
 					trackingData.InitializedBoardStates += 1
 
+					gScoreNewBoardState := priorityQueue.GetGScore(currentPriorityQueueItem.HAndGScore) + 1
+					hScoreNewBoardState := calcHScore(gameRound, newBoardState)
+
+					// add gameRound state to cameFrom
+					cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
+
 					// check if the new gameRound state is the target
 					// break -> reconstruct path
 					if indexRobot == 0 { // if active robot was moved - only action to get to the target
-						if isRobotOnTarget(&newBoardState, gameRound.Target) {
-							// add gameRound state to cameFrom
+						if hScoreNewBoardState == 0 {
 							trackingData.EvaluatedBoardStates += 1
-							cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
 							path, err := reconstructPath(cameFrom, newBoardState)
 							return trackingData, path, err
 						}
 					}
-
-					// calc fScore for the new gameRound state
-					gScore[newBoardState] = gScore[currentBoardState] + 1
-					//currentFScore := calcFScore(gameRound, newBoardState, gScore[newBoardState])
-
-					// add gameRound state to cameFrom
-					cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
 
 					// add the new gameRound state to the queue
 					openSet.Push(
 						priorityQueue.Item{
 							Value:      newBoardState,
 							RobotOrder: 0,
-							HAndGScore: priorityQueue.CombineHAndGScore(gScore[newBoardState], calcHScore(gameRound, newBoardState)),
+							HAndGScore: priorityQueue.CombineHAndGScore(gScoreNewBoardState, hScoreNewBoardState),
 						})
 				}
 
