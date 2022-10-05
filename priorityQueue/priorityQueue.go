@@ -39,13 +39,13 @@ func CombineHAndGScore(gScore uint8, hScore uint8) uint8 {
 }
 
 func calcPriority(item Item) uint8 {
-	return getHScore(item) + getGScore(item)
+	return GetHScore(item) + GetGScore(item)
 }
 
-func getHScore(item Item) uint8 {
+func GetHScore(item Item) uint8 {
 	return (item.HAndGScore & (7 << 5)) >> 5
 }
 
-func getGScore(item Item) uint8 {
+func GetGScore(item Item) uint8 {
 	return item.HAndGScore & 31
 }
