@@ -24,7 +24,7 @@ func (pq *PriorityQueue) Push(item Item) {
 func sortQueue(pq PriorityQueue) {
 	// We want Pop to give us the lowest, not highest, priority, so we use less than here.
 	sort.Slice(pq, func(i, j int) bool {
-		return calcPriority((pq)[i]) < calcPriority((pq)[j])
+		return calcPriority((pq)[i].HAndGScore) < calcPriority((pq)[j].HAndGScore)
 	})
 }
 
@@ -38,14 +38,14 @@ func CombineHAndGScore(gScore uint8, hScore uint8) uint8 {
 	return uint8((hScore << 5) | gScore)
 }
 
-func calcPriority(item Item) uint8 {
-	return GetHScore(item) + GetGScore(item)
+func calcPriority(hAndGScore byte) uint8 {
+	return GetHScore(hAndGScore) + GetGScore(hAndGScore)
 }
 
-func GetHScore(item Item) uint8 {
-	return (item.HAndGScore & (7 << 5)) >> 5
+func GetHScore(hAndGScore byte) uint8 {
+	return (hAndGScore & (7 << 5)) >> 5
 }
 
-func GetGScore(item Item) uint8 {
-	return item.HAndGScore & 31
+func GetGScore(hAndGScore byte) uint8 {
+	return hAndGScore & 31
 }
