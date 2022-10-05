@@ -20,10 +20,10 @@ type TrackingDataSolver struct {
 	Duration               time.Duration
 }
 
-func TrackSolver(solver func(*types.Board, types.BoardState, *types.RobotStoppingPositions, config.Config) (TrackingDataSolver, []types.BoardState, error), board *types.Board, initBoardState types.BoardState, robotStoppingPositions *types.RobotStoppingPositions, conf config.Config) (path []types.BoardState, trackingData TrackingDataSolver, err error) {
+func TrackSolver(solver func(*types.GameRound, types.BoardState, *types.RobotStoppingPositions, config.Config) (TrackingDataSolver, []types.BoardState, error), gameRound *types.GameRound, initBoardState types.BoardState, robotStoppingPositions *types.RobotStoppingPositions, conf config.Config) (path []types.BoardState, trackingData TrackingDataSolver, err error) {
 	start := time.Now()
 
-	trackingData, path, err = solver(board, initBoardState, robotStoppingPositions, conf)
+	trackingData, path, err = solver(gameRound, initBoardState, robotStoppingPositions, conf)
 
 	trackingData.Duration = time.Since(start)
 

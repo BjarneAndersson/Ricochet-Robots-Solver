@@ -45,7 +45,7 @@ type RawBoard struct {
 
 type BoardState uint32
 
-type Board struct {
+type GameRound struct {
 	Board       [16][16]byte
 	Robots      [4]uint8
 	RobotColors RobotColors

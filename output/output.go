@@ -8,10 +8,10 @@ import (
 	"github.com/fatih/color"
 )
 
-func Neighbors(board *types.Board) (err error) {
+func Neighbors(gameRound *types.GameRound) (err error) {
 	fmt.Printf("\n\n====================\n")
-	for rowIndex := range board.Board {
-		for _, node := range board.Board[rowIndex] {
+	for rowIndex := range gameRound.Board {
+		for _, node := range gameRound.Board[rowIndex] {
 			outputString := fmt.Sprintf("")
 			if !helper.HasNeighbor(node, "top") {
 				outputString += "N"
@@ -47,7 +47,7 @@ func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSo
 	}
 
 	fmt.Printf("\n\n====================\n")
-	fmt.Printf("Board State: %v | %v\n", boardState, boardStateInBits)
+	fmt.Printf("GameRound State: %v | %v\n", boardState, boardStateInBits)
 
 	robots := helper.SeparateRobots(boardState)
 	for indexRobot, robotPosition := range robots {

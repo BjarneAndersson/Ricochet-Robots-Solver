@@ -33,7 +33,7 @@ func reconstructPath(cameFrom []uint64, endBoardState types.BoardState) (path []
 	return path, nil
 }
 
-func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPositions *types.RobotStoppingPositions, conf config.Config) (tracker.TrackingDataSolver, []types.BoardState, error) {
+func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotStoppingPositions *types.RobotStoppingPositions, conf config.Config) (tracker.TrackingDataSolver, []types.BoardState, error) {
 	trackingData := tracker.TrackingDataSolver{}
 
 	openSet := make(priorityQueue.PriorityQueue, 1)
@@ -55,7 +55,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 		currentBoardState := priorityQueue.Pop(&openSet).Value
 
 		if conf.Modes[conf.Mode]["output"].BoardStates == true {
-			err := output.BoardState(currentBoardState, trackingData, board.RobotColors)
+			err := output.BoardState(currentBoardState, trackingData, gameRound.RobotColors)
 			if err != nil {
 				return trackingData, []types.BoardState{}, nil
 			}
@@ -63,12 +63,12 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 
 		for indexRobot, robot := range helper.SeparateRobots(currentBoardState) {
 			robotPosition := helper.ConvBytePositionToPosition(robot)
-			node := board.Board[robotPosition.Row][robotPosition.Column]
+			node := gameRound.Board[robotPosition.Row][robotPosition.Column]
 			nodePosition := types.Position{Column: robotPosition.Column, Row: robotPosition.Row}
 
 			for _, direction := range []string{"top", "bottom", "left", "right"} {
 				cNodePosition := calculateStoppingPosition(robotStoppingPositions, currentBoardState, nodePosition, direction)
-				cNode := board.Board[cNodePosition.Row][cNodePosition.Column]
+				cNode := gameRound.Board[cNodePosition.Row][cNodePosition.Column]
 
 				if cNode != node {
 					// robot can be moved into direction
@@ -76,21 +76,21 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 					// move robot
 					newRobots := moveRobot(helper.SeparateRobots(currentBoardState), uint8(indexRobot), cNodePosition)
 
-					// create a new board state
+					// create a new gameRound state
 					newBoardState := createNewBoardState(newRobots)
 
-					// check if the new board state is already in the queue
+					// check if the new gameRound state is already in the queue
 					if isBoardStateInOpenSet(openSet, newBoardState) || isBoardStateInClosedSet(&closedSet, newBoardState) {
 						continue
 					}
 
 					trackingData.InitializedBoardStates += 1
 
-					// check if the new board state is the target
+					// check if the new gameRound state is the target
 					// break -> reconstruct path
 					if indexRobot == 0 { // if active robot was moved - only action to get to the target
-						if isRobotOnTarget(&newBoardState, board.Target) {
-							// add board state to cameFrom
+						if isRobotOnTarget(&newBoardState, gameRound.Target) {
+							// add gameRound state to cameFrom
 							trackingData.EvaluatedBoardStates += 1
 							cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
 							path, err := reconstructPath(cameFrom, newBoardState)
@@ -98,19 +98,19 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 						}
 					}
 
-					// calc fScore for the new board state
+					// calc fScore for the new gameRound state
 					gScore[newBoardState] = gScore[currentBoardState] + 1
-					//currentFScore := calcFScore(board, newBoardState, gScore[newBoardState])
+					//currentFScore := calcFScore(gameRound, newBoardState, gScore[newBoardState])
 
-					// add board state to cameFrom
+					// add gameRound state to cameFrom
 					cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
 
-					// add the new board state to the queue
+					// add the new gameRound state to the queue
 					openSet.Push(
 						priorityQueue.Item{
 							Value:      newBoardState,
 							RobotOrder: 0,
-							HAndGScore: priorityQueue.CombineHAndGScore(gScore[newBoardState], calcHScore(board, newBoardState)),
+							HAndGScore: priorityQueue.CombineHAndGScore(gScore[newBoardState], calcHScore(gameRound, newBoardState)),
 						})
 				}
 
@@ -122,15 +122,15 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 	return trackingData, []types.BoardState{}, nil
 }
 
-func calcFScore(board *types.Board, boardState types.BoardState, gScore uint8) (fScore uint8) {
-	fScore = gScore + calcHScore(board, boardState)
+func calcFScore(gameRound *types.GameRound, boardState types.BoardState, gScore uint8) (fScore uint8) {
+	fScore = gScore + calcHScore(gameRound, boardState)
 	return fScore
 }
 
-func calcHScore(board *types.Board, boardState types.BoardState) (hScore uint8) {
+func calcHScore(gameRound *types.GameRound, boardState types.BoardState) (hScore uint8) {
 	activeRobotPosition := helper.ConvBytePositionToPosition(uint8((boardState & (255 << 24)) >> 24))
 
-	node := board.Board[activeRobotPosition.Row][activeRobotPosition.Column]
+	node := gameRound.Board[activeRobotPosition.Row][activeRobotPosition.Column]
 
 	hScore = helper.GetMoveCount(node)
 	return hScore
