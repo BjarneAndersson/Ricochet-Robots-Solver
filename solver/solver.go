@@ -7,6 +7,8 @@ import (
 	"../priorityQueue"
 	"../tracker"
 	"../types"
+	"fmt"
+	"sort"
 )
 
 func reconstructPath(cameFrom []uint64, endBoardState types.BoardState) (path []types.BoardState, err error) {
@@ -77,7 +79,7 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 					newBoardState := createNewBoardState(newRobots)
 
 					// check if the new gameRound state is already in the queue
-					if isBoardStateInOpenSet(openSet, newBoardState) || isBoardStateInClosedSet(&closedSet, newBoardState) {
+					if isBoardStateInOpenSet(&openSet, newBoardState) || isBoardStateInClosedSet(&closedSet, newBoardState) {
 						continue
 					}
 
@@ -185,8 +187,8 @@ func moveRobot(robots [4]byte, robotIndex uint8, endPosition types.Position) (ne
 	return newRobots
 }
 
-func isBoardStateInOpenSet(openSet priorityQueue.PriorityQueue, boardState types.BoardState) bool {
-	for _, iterateBoardState := range openSet {
+func isBoardStateInOpenSet(openSet *priorityQueue.PriorityQueue, boardState types.BoardState) bool {
+	for _, iterateBoardState := range *openSet {
 		if iterateBoardState.Value == boardState {
 			return true
 		}
