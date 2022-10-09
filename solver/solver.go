@@ -54,7 +54,7 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 		if conf.Modes[conf.Mode]["output"].BoardStates == true {
 			err := output.BoardState(currentBoardState, trackingData)
 			if err != nil {
-				return trackingData, []types.BoardState{}, nil
+				return trackingData, []types.BoardState{}, err
 			}
 		}
 
@@ -112,7 +112,7 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 		trackingData.EvaluatedBoardStates += 1
 		closedSet = append(closedSet, currentBoardState)
 	}
-	return trackingData, []types.BoardState{}, nil
+	return trackingData, []types.BoardState{}, fmt.Errorf("no route found")
 }
 
 func calcFScore(gameRound *types.GameRound, boardState types.BoardState, gScore uint8) (fScore uint8) {
