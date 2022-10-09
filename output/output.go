@@ -40,7 +40,7 @@ func Neighbors(gameRound *types.GameRound) (err error) {
 	return nil
 }
 
-func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSolver, robotColors types.RobotColors) (err error) {
+func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSolver) (err error) {
 	boardStateInBits, err := convertNumberToBits(int(boardState), 32)
 	if err != nil {
 		return err
@@ -50,23 +50,8 @@ func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSo
 	fmt.Printf("GameRound State: %v | %v\n", boardState, boardStateInBits)
 
 	robots := helper.SeparateRobots(boardState)
-	for indexRobot, robotPosition := range robots {
-		robotColor, err := helper.GetRobotColorByIndex(robotColors, uint8(indexRobot))
-		if err != nil {
-			return err
-		}
-		msg := fmt.Sprintf("%+v\n", helper.ConvBytePositionToPosition(robotPosition))
-
-		switch robotColor {
-		case "yellow":
-			color.HiYellow(msg)
-		case "red":
-			color.HiRed(msg)
-		case "green":
-			color.HiGreen(msg)
-		case "blue":
-			color.HiBlue(msg)
-		}
+	for _, robotPosition := range robots {
+		fmt.Printf("%+v\n", helper.ConvBytePositionToPosition(robotPosition))
 	}
 	fmt.Printf("Initialized states: %v | Evaluated states: %v\n", trackingData.InitializedBoardStates, trackingData.EvaluatedBoardStates)
 	fmt.Printf("====================\n")
