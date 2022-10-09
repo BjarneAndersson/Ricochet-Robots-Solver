@@ -93,12 +93,10 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 
 					// check if the new gameRound state is the target
 					// break -> reconstruct path
-					if indexRobot == 0 { // if active robot was moved - only action to get to the target
-						if hScoreNewBoardState == 0 {
-							trackingData.EvaluatedBoardStates += 1
-							path, err := reconstructPath(cameFrom, newBoardState)
-							return trackingData, path, err
-						}
+					if hScoreNewBoardState == 0 {
+						trackingData.EvaluatedBoardStates += 1
+						path, err := reconstructPath(cameFrom, newBoardState)
+						return trackingData, path, err
 					}
 
 					// add the new gameRound state to the queue
