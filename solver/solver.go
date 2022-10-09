@@ -47,9 +47,6 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 
 	cameFrom := make([]uint64, 0)
 
-	gScore := make(map[types.BoardState]uint8) // g score - distance from start
-	gScore[initBoardState] = 0
-
 	for openSet.Len() > 0 {
 		currentPriorityQueueItem := priorityQueue.Pop(&openSet)
 		currentBoardState := currentPriorityQueueItem.Value
