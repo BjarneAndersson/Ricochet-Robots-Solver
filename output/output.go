@@ -73,7 +73,7 @@ func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSo
 	return nil
 }
 
-func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robotColors types.RobotColors) (err error) {
+func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robotOrder byte) (err error) {
 	fmt.Printf("\n\n====================\n")
 	fmt.Printf("Moves\t%d\n", len(path)-1)
 	fmt.Printf("Time\t%s\n", trackingData.Duration)
@@ -89,7 +89,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 		case 0:
 			fmt.Printf("Start\t| ")
 			for indexRobot, robotPosition := range robots {
-				robotColor, err := helper.GetRobotColorByIndex(robotColors, uint8(indexRobot))
+				robotColor, err := getRobotColorByIndex(robotOrder, uint8(indexRobot))
 				if err != nil {
 					return err
 				}
@@ -109,7 +109,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 
 			previousBoardState = boardState
 		case len(path) - 1:
-			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, robotColors)
+			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, robotOrder)
 			if err != nil {
 				return err
 			}
@@ -134,7 +134,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 			fmt.Printf("\nFinish\t| ")
 
 			for indexRobot, robotPosition := range robots {
-				robotColor, err := helper.GetRobotColorByIndex(robotColors, uint8(indexRobot))
+				robotColor, err := getRobotColorByIndex(robotOrder, uint8(indexRobot))
 				if err != nil {
 					return err
 				}
@@ -152,7 +152,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 				}
 			}
 		default:
-			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, robotColors)
+			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, robotOrder)
 			if err != nil {
 				return err
 			}
@@ -177,7 +177,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 			fmt.Printf("\nMove: %v\t| ", indexBoardState)
 
 			for indexRobot, robotPosition := range robots {
-				robotColor, err := helper.GetRobotColorByIndex(robotColors, uint8(indexRobot))
+				robotColor, err := getRobotColorByIndex(robotOrder, uint8(indexRobot))
 				if err != nil {
 					return err
 				}
@@ -232,7 +232,23 @@ func convertNumberToBits(number int, fill int) (string, error) {
 	return "", fmt.Errorf("invalid operation")
 }
 
-func getMovedRobotColorAndDirection(previousBoardState types.BoardState, currentBoardState types.BoardState, robotColors types.RobotColors) (robotColor string, direction string, err error) {
+func getRobotColorByIndex(robotOrder byte, index uint8) (string, error) {
+	robotColorCode := helper.GetRobotColorCodeByIndex(robotOrder, index)
+
+	switch robotColorCode {
+	case 0:
+		return "yellow", nil
+	case 1:
+		return "red", nil
+	case 2:
+		return "green", nil
+	case 3:
+		return "blue", nil
+	}
+	return "", fmt.Errorf("index out of range")
+}
+
+func getMovedRobotColorAndDirection(previousBoardState types.BoardState, currentBoardState types.BoardState, robotOrder byte) (robotColor string, direction string, err error) {
 	preRobots := helper.SeparateRobots(previousBoardState)
 	curRobots := helper.SeparateRobots(currentBoardState)
 
@@ -246,7 +262,7 @@ func getMovedRobotColorAndDirection(previousBoardState types.BoardState, current
 		}
 	}
 
-	robotColor, err = helper.GetRobotColorByIndex(robotColors, robotIndex)
+	robotColor, err = getRobotColorByIndex(robotOrder, robotIndex)
 	if err != nil {
 		return "", "", err
 	}

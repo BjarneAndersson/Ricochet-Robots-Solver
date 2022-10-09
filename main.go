@@ -14,7 +14,7 @@ func main() {
 	conf, err := config.GetConfig("config")
 
 	// convert data into board object
-	board, initBoardState, robotStoppingPositions, err := input.GetData(conf.BoardDataLocation)
+	board, initBoardState, initRobotOrder, robotStoppingPositions, err := input.GetData(conf.BoardDataLocation)
 	if err != nil {
 		log.Printf("Error loading board data:\n%v\n", err)
 		return
@@ -41,7 +41,7 @@ func main() {
 		log.Printf("\nError solving:\n%v\n", err)
 		return
 	}
-	err = output.Path(path, trackingData, board.RobotColors)
+	err = output.Path(path, trackingData, initRobotOrder)
 	if err != nil {
 		return
 	}

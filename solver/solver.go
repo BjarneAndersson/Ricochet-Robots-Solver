@@ -41,7 +41,6 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 
 	openSet[0] = priorityQueue.Item{
 		Value:      initBoardState,
-		RobotOrder: 0,
 		HAndGScore: 0,
 	}
 	trackingData.InitializedBoardStates += 1
@@ -56,7 +55,7 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 		currentBoardState := currentPriorityQueueItem.Value
 
 		if conf.Modes[conf.Mode]["output"].BoardStates == true {
-			err := output.BoardState(currentBoardState, trackingData, gameRound.RobotColors)
+			err := output.BoardState(currentBoardState, trackingData)
 			if err != nil {
 				return trackingData, []types.BoardState{}, nil
 			}
@@ -107,7 +106,6 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 					openSet.Push(
 						priorityQueue.Item{
 							Value:      newBoardState,
-							RobotOrder: 0,
 							HAndGScore: priorityQueue.CombineHAndGScore(gScoreNewBoardState, hScoreNewBoardState),
 						})
 				}

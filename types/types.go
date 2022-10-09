@@ -29,7 +29,14 @@ type Robot struct {
 	Position Position
 }
 
-type RobotColors map[string]uint8
+type RobotColor byte
+
+const (
+	RobotColorYellow RobotColor = iota
+	RobotColorRed    RobotColor = iota
+	RobotColorGreen  RobotColor = iota
+	RobotColorBlue   RobotColor = iota
+)
 
 type RawTarget struct {
 	Color    string `json:"color"`
@@ -46,10 +53,8 @@ type RawBoard struct {
 type BoardState uint32
 
 type GameRound struct {
-	Board       [16][16]byte
-	Robots      [4]uint8
-	RobotColors RobotColors
-	Target      uint16
+	Board  [16][16]byte
+	Target uint16
 }
 
 type RobotStoppingPositions [16][16]uint32

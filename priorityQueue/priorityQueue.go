@@ -8,7 +8,6 @@ import (
 // An Item is something we manage in a priority queue.
 type Item struct {
 	Value      types.BoardState
-	RobotOrder uint8
 	HAndGScore uint8
 }
 

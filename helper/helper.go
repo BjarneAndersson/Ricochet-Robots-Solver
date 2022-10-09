@@ -3,7 +3,6 @@ package helper
 import (
 	"../bitOperations"
 	"../types"
-	"fmt"
 )
 
 func GetTargetColor(target uint16) (color string, err error) {
@@ -87,11 +86,42 @@ func SeparateRobots(boardState types.BoardState) (robots [4]byte) {
 	return robots
 }
 
-func GetRobotColorByIndex(robotColors types.RobotColors, index uint8) (string, error) {
-	for colorName, colorIndex := range robotColors {
-		if index == colorIndex {
-			return colorName, nil
-		}
+func GetRobotColorCodeByIndex(robotOrder byte, index uint8) (robotColor types.RobotColor) {
+	switch index {
+	case 0:
+		robotColor = types.RobotColor(robotOrder & (3 << 6) >> 6)
+	case 1:
+		robotColor = types.RobotColor(robotOrder & (3 << 4) >> 4)
+	case 2:
+		robotColor = types.RobotColor(robotOrder & (3 << 2) >> 2)
+	case 3:
+		robotColor = types.RobotColor(robotOrder & (3 << 0) >> 0)
 	}
-	return "", fmt.Errorf("index %d not found", index)
+	return robotColor
+}
+
+func SetRobotColorByIndex(robotOrder *byte, colorName string, index uint8) {
+	var colorCode types.RobotColor
+
+	switch colorName {
+	case "yellow":
+		colorCode = types.RobotColorYellow
+	case "red":
+		colorCode = types.RobotColorRed
+	case "green":
+		colorCode = types.RobotColorGreen
+	case "blue":
+		colorCode = types.RobotColorBlue
+	}
+
+	switch index {
+	case 0:
+		*robotOrder = (*robotOrder) | (byte(colorCode) << 6)
+	case 1:
+		*robotOrder = (*robotOrder) | (byte(colorCode) << 4)
+	case 2:
+		*robotOrder = (*robotOrder) | (byte(colorCode) << 2)
+	case 3:
+		*robotOrder = (*robotOrder) | (byte(colorCode) << 0)
+	}
 }
