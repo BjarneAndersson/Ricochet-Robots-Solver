@@ -130,7 +130,13 @@ func calcHScore(gameRound *types.GameRound, boardState types.BoardState) (hScore
 }
 
 func createNewBoardState(robots [4]byte) types.BoardState {
-	return types.BoardState(uint32(robots[0])<<24 | uint32(robots[1])<<16 | uint32(robots[2])<<8 | uint32(robots[3])<<0)
+	tRobots := robots
+
+	var robotsSlice = tRobots[1:4]
+	sort.Slice(robotsSlice, func(i, j int) bool {
+		return robotsSlice[i] < robotsSlice[j]
+	})
+	return types.BoardState(uint32(robots[0])<<24 | uint32(robotsSlice[0])<<16 | uint32(robotsSlice[1])<<8 | uint32(robotsSlice[2])<<0)
 }
 
 func calculateStoppingPosition(robotStoppingPositions *types.RobotStoppingPositions, boardState types.BoardState, startNodePosition types.Position, direction string) (stoppingPosition types.Position) {
