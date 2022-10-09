@@ -7,68 +7,87 @@ import (
 	"../types"
 	"encoding/json"
 	"os"
+	"sort"
 )
 
-func GetData(boardDataLocation string) (gameRound types.GameRound, initBoardState types.BoardState, robotStoppingPositions types.RobotStoppingPositions, err error) {
+func GetData(boardDataLocation string) (gameRound types.GameRound, initBoardState types.BoardState, initRobotOrder byte, robotStoppingPositions types.RobotStoppingPositions, err error) {
 	data, err := getJsonData(boardDataLocation)
 	if err != nil {
-		return types.GameRound{}, 0, types.RobotStoppingPositions{}, err
+		return types.GameRound{}, 0, 0, types.RobotStoppingPositions{}, err
 	}
 
-	gameRound, err = loadData(data)
+	gameRound, initRobotPositions, err := loadData(data)
 	if err != nil {
-		return types.GameRound{}, 0, types.RobotStoppingPositions{}, err
+		return types.GameRound{}, 0, 0, types.RobotStoppingPositions{}, err
 	}
 
-	initBoardState, err = getInitBoardState(&gameRound)
+	initBoardState, initRobotOrder, err = getInitBoardState(&gameRound, initRobotPositions)
 	if err != nil {
-		return types.GameRound{}, 0, types.RobotStoppingPositions{}, err
+		return types.GameRound{}, 0, 0, types.RobotStoppingPositions{}, err
 	}
 
 	robotStoppingPositions, err = precomputation.PrecomputeRobotMoves(&gameRound)
 	if err != nil {
-		return types.GameRound{}, 0, types.RobotStoppingPositions{}, err
+		return types.GameRound{}, 0, 0, types.RobotStoppingPositions{}, err
 	}
 
-	return gameRound, initBoardState, robotStoppingPositions, nil
+	return gameRound, initBoardState, initRobotOrder, robotStoppingPositions, nil
 }
 
-func getInitBoardState(gameRound *types.GameRound) (initBoardState types.BoardState, err error) {
+func getInitBoardState(gameRound *types.GameRound, initRobotPositions [4]byte) (initBoardState types.BoardState, initRobotOrder byte, err error) {
 
 	targetColor, err := helper.GetTargetColor(gameRound.Target)
-	var targetColorBaseIndex uint8
 	if err != nil {
-		return 0, err
+		return 0, 0, err
 	}
+
+	robots := initRobotPositions
+
+	var robotsSlice = robots[0:4]
+	sort.Slice(robotsSlice, func(i, j int) bool {
+		return robotsSlice[i] < robotsSlice[j]
+	})
+
+	var colors = []string{"yellow", "red", "green", "blue"}
 
 	switch targetColor {
 	case "yellow":
-		targetColorBaseIndex = 0
-		gameRound.RobotColors["yellow"] = 0
+		colors = append(colors[:0], colors[1:]...)
 	case "red":
-		targetColorBaseIndex = 1
-		gameRound.RobotColors["yellow"] = 1
-		gameRound.RobotColors["red"] = 0
+		colors = append(colors[:1], colors[2:]...)
 	case "green":
-		targetColorBaseIndex = 2
-		gameRound.RobotColors["yellow"] = 1
-		gameRound.RobotColors["red"] = 2
-		gameRound.RobotColors["green"] = 0
+		colors = append(colors[:2], colors[3:]...)
 	case "blue":
-		targetColorBaseIndex = 3
-		gameRound.RobotColors["yellow"] = 1
-		gameRound.RobotColors["red"] = 2
-		gameRound.RobotColors["green"] = 3
-		gameRound.RobotColors["blue"] = 0
+		colors = append(colors[:3], colors[4:]...)
 	}
 
-	robotsToSort := []uint8{0, 1, 2, 3}
+	helper.SetRobotColorByIndex(&initRobotOrder, targetColor, 0)
 
-	robotsToSort = append(robotsToSort[:targetColorBaseIndex], robotsToSort[targetColorBaseIndex+1:]...)
+	for _, color := range colors {
+		for indexRobotSlice, robotSlice := range robotsSlice {
+			switch color {
+			case "yellow":
+				if robotSlice == initRobotPositions[0] {
+					helper.SetRobotColorByIndex(&initRobotOrder, "yellow", uint8(indexRobotSlice))
+				}
+			case "red":
+				if robotSlice == initRobotPositions[1] {
+					helper.SetRobotColorByIndex(&initRobotOrder, "red", uint8(indexRobotSlice))
+				}
+			case "green":
+				if robotSlice == initRobotPositions[2] {
+					helper.SetRobotColorByIndex(&initRobotOrder, "green", uint8(indexRobotSlice))
+				}
+			case "blue":
+				if robotSlice == initRobotPositions[3] {
+					helper.SetRobotColorByIndex(&initRobotOrder, "blue", uint8(indexRobotSlice))
+				}
+			}
+		}
+	}
 
-	initBoardState = types.BoardState(uint32(gameRound.Robots[targetColorBaseIndex])<<24 | uint32(gameRound.Robots[robotsToSort[0]])<<16 | uint32(gameRound.Robots[robotsToSort[1]])<<8 | uint32(gameRound.Robots[robotsToSort[2]])<<0)
-
-	return initBoardState, nil
+	initBoardState = types.BoardState(uint32(initRobotPositions[helper.GetRobotColorCodeByIndex(initRobotOrder, 0)])<<24 | uint32(initRobotPositions[helper.GetRobotColorCodeByIndex(initRobotOrder, 1)])<<16 | uint32(initRobotPositions[helper.GetRobotColorCodeByIndex(initRobotOrder, 2)])<<8 | uint32(initRobotPositions[helper.GetRobotColorCodeByIndex(initRobotOrder, 3)])<<0)
+	return initBoardState, initRobotOrder, nil
 }
 
 func getJsonData(path string) (jsonData []byte, err error) {
@@ -79,27 +98,27 @@ func getJsonData(path string) (jsonData []byte, err error) {
 	return jsonData, nil
 }
 
-func loadData(data []byte) (gameRound types.GameRound, err error) {
+func loadData(data []byte) (gameRound types.GameRound, initRobotPositions [4]byte, err error) {
 	var rawBoard types.RawBoard
 	err = json.Unmarshal(data, &rawBoard)
 
 	if err != nil {
-		return types.GameRound{}, err
+		return types.GameRound{}, [4]byte{}, err
 	}
 
 	// convert board_data
-	gameRound, err = convData(rawBoard)
+	gameRound, initRobotPositions, err = convData(rawBoard)
 	if err != nil {
-		return types.GameRound{}, err
+		return types.GameRound{}, [4]byte{}, err
 	}
 
 	err = precomputation.PrecomputeBoard(&gameRound)
 
-	return gameRound, nil
+	return gameRound, initRobotPositions, nil
 }
 
 // convData convert board_data in json format to board_data byte format
-func convData(data types.RawBoard) (gameRound types.GameRound, err error) {
+func convData(data types.RawBoard) (gameRound types.GameRound, initRobotPositions [4]byte, err error) {
 	// node conversion
 	for rowIndex := 0; rowIndex < 16; rowIndex++ {
 		for columnIndex := 0; columnIndex < 16; columnIndex++ {
@@ -203,16 +222,13 @@ func convData(data types.RawBoard) (gameRound types.GameRound, err error) {
 	gameRound.Target = uint16(targetColorAndSymbol)<<8 | uint16(targetPosition)
 
 	// Robot conversion
-	gameRound.RobotColors = types.RobotColors{
-		"yellow": 0,
-		"red":    1,
-		"green":  2,
-		"blue":   3,
+	for colorIndex, color := range [4]string{"yellow", "red", "green", "blue"} {
+		for _, robot := range data.Robots {
+			if color == robot.Color {
+				initRobotPositions[colorIndex] = helper.ConvPosToByte(robot.Position)
+			}
+		}
 	}
 
-	for indexRobot, robot := range data.Robots {
-		gameRound.Robots[gameRound.RobotColors[robot.Color]] = helper.ConvPosToByte(data.Robots[indexRobot].Position)
-	}
-
-	return gameRound, nil
+	return gameRound, initRobotPositions, nil
 }
