@@ -115,11 +115,6 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 	return trackingData, []types.BoardState{}, fmt.Errorf("no route found")
 }
 
-func calcFScore(gameRound *types.GameRound, boardState types.BoardState, gScore uint8) (fScore uint8) {
-	fScore = gScore + calcHScore(gameRound, boardState)
-	return fScore
-}
-
 func calcHScore(gameRound *types.GameRound, boardState types.BoardState) (hScore uint8) {
 	activeRobotPosition := helper.ConvBytePositionToPosition(uint8((boardState & (255 << 24)) >> 24))
 
@@ -207,10 +202,4 @@ func isBoardStateInClosedSet(closedSet *[]types.BoardState, boardState types.Boa
 		}
 	}
 	return false
-}
-
-func isRobotOnTarget(boardState *types.BoardState, target uint16) bool {
-	targetPosition := helper.ConvBytePositionToPosition(byte(target & 255))
-	activeRobotPosition := helper.ConvBytePositionToPosition(byte((*boardState & (255 << 24)) >> 24))
-	return activeRobotPosition == targetPosition
 }
