@@ -114,6 +114,10 @@ func SetRobotColorByIndex(robotOrder *byte, colorName string, index uint8) {
 		colorCode = types.RobotColorBlue
 	}
 
+	SetRobotColorCodeByIndex(robotOrder, colorCode, index)
+}
+
+func SetRobotColorCodeByIndex(robotOrder *byte, colorCode types.RobotColor, index uint8) {
 	switch index {
 	case 0:
 		*robotOrder = (*robotOrder) | (byte(colorCode) << 6)
