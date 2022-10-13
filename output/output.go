@@ -67,8 +67,13 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 	fmt.Println("")
 
 	var previousBoardState types.BoardState
+	var previousRobotOrder byte = robotOrder
 	for indexBoardState, boardState := range path {
 		robots := helper.SeparateRobots(boardState)
+		cRobotOrder, err := getNewRobotOrder(previousBoardState, previousRobotOrder, boardState)
+		if err != nil {
+			return err
+		}
 
 		switch indexBoardState {
 		case 0:
@@ -94,7 +99,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 
 			previousBoardState = boardState
 		case len(path) - 1:
-			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, robotOrder)
+			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, cRobotOrder)
 			if err != nil {
 				return err
 			}
@@ -119,7 +124,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 			fmt.Printf("\nFinish\t| ")
 
 			for indexRobot, robotPosition := range robots {
-				robotColor, err := getRobotColorByIndex(robotOrder, uint8(indexRobot))
+				robotColor, err := getRobotColorByIndex(cRobotOrder, uint8(indexRobot))
 				if err != nil {
 					return err
 				}
@@ -137,7 +142,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 				}
 			}
 		default:
-			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, robotOrder)
+			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, cRobotOrder)
 			if err != nil {
 				return err
 			}
@@ -162,7 +167,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 			fmt.Printf("\nMove: %v\t| ", indexBoardState)
 
 			for indexRobot, robotPosition := range robots {
-				robotColor, err := getRobotColorByIndex(robotOrder, uint8(indexRobot))
+				robotColor, err := getRobotColorByIndex(cRobotOrder, uint8(indexRobot))
 				if err != nil {
 					return err
 				}
