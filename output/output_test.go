@@ -13,7 +13,7 @@ func TestCalcNewRobotOrder(t *testing.T) {
 
 	nextRobotOrder := createRobotOrder([4]types.RobotColor{3, 0, 2, 1})
 
-	result, err := GetNewRobotOrder(previousBoardState, previousRobotOrder, nextBoardState)
+	result, err := getNewRobotOrder(previousBoardState, previousRobotOrder, nextBoardState)
 	if err != nil {
 		t.Errorf("CreateNewRobotOrder() FAILED. Error: %v", err)
 	}
