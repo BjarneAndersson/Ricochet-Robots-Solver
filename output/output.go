@@ -276,3 +276,40 @@ func evaluateDirectionChange(previousRobot byte, currentRobot byte) (direction s
 
 	return "", fmt.Errorf("robot position has not changed")
 }
+
+func getNewRobotOrder(previousBoardState types.BoardState, previousRobotOrder byte, currentBoardState types.BoardState) (currentRobotOrder byte, err error) {
+	previousRobots := helper.SeparateRobots(previousBoardState)
+	currentRobots := helper.SeparateRobots(currentBoardState)
+
+	usedColorCodes := map[types.RobotColor]bool{0: false, 1: false, 2: false, 3: false}
+
+	var indexCurrentNotExistingRobot int
+
+	for indexCurrentRobot, currentRobot := range currentRobots {
+		exist, indexPreviousRobotOrder := robotInRobots(currentRobot, previousRobots)
+
+		if exist == false {
+			indexCurrentNotExistingRobot = indexCurrentRobot
+		} else {
+			usedColorCodes[helper.GetRobotColorCodeByIndex(previousRobotOrder, uint8(indexPreviousRobotOrder))] = true
+			helper.SetRobotColorCodeByIndex(&currentRobotOrder, helper.GetRobotColorCodeByIndex(previousRobotOrder, uint8(indexPreviousRobotOrder)), uint8(indexCurrentRobot))
+		}
+	}
+
+	for colorCode, exist := range usedColorCodes {
+		if exist == false {
+			helper.SetRobotColorCodeByIndex(&currentRobotOrder, colorCode, uint8(indexCurrentNotExistingRobot))
+		}
+	}
+
+	return currentRobotOrder, nil
+}
+
+func robotInRobots(robot byte, robots [4]byte) (exist bool, index int) {
+	for iterIndexRobot, iterRobot := range robots {
+		if iterRobot == robot {
+			return true, iterIndexRobot
+		}
+	}
+	return false, -1
+}
