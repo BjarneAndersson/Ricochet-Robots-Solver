@@ -7,11 +7,11 @@ import (
 )
 
 func TestCalcNewRobotOrder(t *testing.T) {
-	previousRobotOrder := createRobotOrder([4]types.RobotColor{3, 2, 1, 4})
+	previousRobotOrder := createRobotOrder([4]types.RobotColor{3, 2, 1, 0})
 	previousBoardState := createNewBoardState([4]byte{175, 22, 53, 117})
-	nextBoardState := createNewBoardState([4]byte{175, 53, 89, 117})
+	nextBoardState := createNewBoardState([4]byte{175, 11, 22, 53})
 
-	nextRobotOrder := createRobotOrder([4]types.RobotColor{3, 1, 2, 4})
+	nextRobotOrder := createRobotOrder([4]types.RobotColor{3, 0, 2, 1})
 
 	result, err := GetNewRobotOrder(previousBoardState, previousRobotOrder, nextBoardState)
 	if err != nil {
@@ -19,9 +19,9 @@ func TestCalcNewRobotOrder(t *testing.T) {
 	}
 
 	if result != nextRobotOrder {
-		t.Errorf("CreateNewRobotOrder() FAILED. Expected %v, got %v", nextBoardState, result)
+		t.Errorf("CreateNewRobotOrder() FAILED. Expected %v, got %v", nextRobotOrder, result)
 	} else {
-		t.Logf("CreateNewRobotOrder() PASSED. Expected %v, got %v", nextBoardState, result)
+		t.Logf("CreateNewRobotOrder() PASSED. Expected %v, got %v", nextRobotOrder, result)
 	}
 }
 
