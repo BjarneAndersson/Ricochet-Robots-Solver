@@ -3,27 +3,32 @@ package helper
 import (
 	"../bitOperations"
 	"../types"
+	"fmt"
+	"math"
 )
 
 func GetTargetColor(target uint16) (color string, err error) {
-	colorInBit := uint8((target & (15 << 12)) >> 12)
+	mask := uint16(math.Pow(2, 4)-1) << 12
+	colorInBits := uint8((target & mask) >> 12)
 
-	if bitOperations.HasBit(colorInBit, 3) {
+	if bitOperations.HasBit(colorInBits, 3) {
 		return "yellow", nil
-	} else if bitOperations.HasBit(colorInBit, 2) {
+	} else if bitOperations.HasBit(colorInBits, 2) {
 		return "red", nil
-	} else if bitOperations.HasBit(colorInBit, 1) {
+	} else if bitOperations.HasBit(colorInBits, 1) {
 		return "green", nil
-	} else if bitOperations.HasBit(colorInBit, 0) {
+	} else if bitOperations.HasBit(colorInBits, 0) {
 		return "blue", nil
 	}
-	return "", err
+	return "", fmt.Errorf("target has no color")
 }
 
+// ConvPosToByte Converts position to byte position: column (bit 7 to 4) | row (bit 3 to 0)
 func ConvPosToByte(position types.Position) byte {
 	return position.Column<<4 + position.Row
 }
 
+// HasNeighbor Check if node has neighbor in the given direction
 func HasNeighbor(currentNode byte, direction string) bool {
 	switch direction {
 	case "top":
@@ -73,11 +78,13 @@ func ConvBytePositionToPosition(bytePosition byte) (position types.Position) {
 	return position
 }
 
+// GetMoveCount Get the minimum number of moves that a robot has to make in order to get to the target cell, if it could stop everywhere.
 func GetMoveCount(b byte) byte {
 	b = ((7 << 5) & b) >> 5
 	return b
 }
 
+// SeparateRobots Separate robot into ordered array
 func SeparateRobots(boardState types.BoardState) (robots [4]byte) {
 	robots[0] = uint8((uint32(boardState) & (uint32(255) << 24)) >> 24)
 	robots[1] = uint8((uint32(boardState) & (uint32(255) << 16)) >> 16)
