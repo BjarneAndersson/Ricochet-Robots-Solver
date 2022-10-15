@@ -6,14 +6,6 @@ import (
 	"time"
 )
 
-func Duration(f func()) time.Duration {
-	start := time.Now()
-
-	f()
-
-	return time.Since(start)
-}
-
 type TrackingDataSolver struct {
 	InitializedBoardStates uint
 	EvaluatedBoardStates   uint
