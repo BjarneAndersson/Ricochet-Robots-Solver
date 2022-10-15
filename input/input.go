@@ -10,33 +10,33 @@ import (
 	"sort"
 )
 
-func GetData(boardDataLocation string) (gameRound types.GameRound, initBoardState types.BoardState, initRobotOrder byte, robotStoppingPositions types.RobotStoppingPositions, err error) {
+func GetData(boardDataLocation string) (board types.Board, initBoardState types.BoardState, initRobotOrder byte, robotStoppingPositions types.RobotStoppingPositions, err error) {
 	data, err := getJsonData(boardDataLocation)
 	if err != nil {
-		return types.GameRound{}, 0, 0, types.RobotStoppingPositions{}, err
+		return types.Board{}, 0, 0, types.RobotStoppingPositions{}, err
 	}
 
-	gameRound, initRobotPositions, err := loadData(data)
+	board, initRobotPositions, err := loadData(data)
 	if err != nil {
-		return types.GameRound{}, 0, 0, types.RobotStoppingPositions{}, err
+		return types.Board{}, 0, 0, types.RobotStoppingPositions{}, err
 	}
 
-	initBoardState, initRobotOrder, err = getInitBoardState(&gameRound, initRobotPositions)
+	initBoardState, initRobotOrder, err = getInitBoardState(&board, initRobotPositions)
 	if err != nil {
-		return types.GameRound{}, 0, 0, types.RobotStoppingPositions{}, err
+		return types.Board{}, 0, 0, types.RobotStoppingPositions{}, err
 	}
 
-	robotStoppingPositions, err = precomputation.PrecomputeRobotMoves(&gameRound)
+	robotStoppingPositions, err = precomputation.PrecomputeRobotMoves(&board)
 	if err != nil {
-		return types.GameRound{}, 0, 0, types.RobotStoppingPositions{}, err
+		return types.Board{}, 0, 0, types.RobotStoppingPositions{}, err
 	}
 
-	return gameRound, initBoardState, initRobotOrder, robotStoppingPositions, nil
+	return board, initBoardState, initRobotOrder, robotStoppingPositions, nil
 }
 
-func getInitBoardState(gameRound *types.GameRound, initRobotPositions [4]byte) (initBoardState types.BoardState, initRobotOrder byte, err error) {
+func getInitBoardState(board *types.Board, initRobotPositions [4]byte) (initBoardState types.BoardState, initRobotOrder byte, err error) {
 
-	targetColor, err := helper.GetTargetColor(gameRound.Target)
+	targetColor, err := helper.GetTargetColor(board.Target)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -98,27 +98,27 @@ func getJsonData(path string) (jsonData []byte, err error) {
 	return jsonData, nil
 }
 
-func loadData(data []byte) (gameRound types.GameRound, initRobotPositions [4]byte, err error) {
+func loadData(data []byte) (board types.Board, initRobotPositions [4]byte, err error) {
 	var rawBoard types.RawBoard
 	err = json.Unmarshal(data, &rawBoard)
 
 	if err != nil {
-		return types.GameRound{}, [4]byte{}, err
+		return types.Board{}, [4]byte{}, err
 	}
 
 	// convert board_data
-	gameRound, initRobotPositions, err = convData(rawBoard)
+	board, initRobotPositions, err = convData(rawBoard)
 	if err != nil {
-		return types.GameRound{}, [4]byte{}, err
+		return types.Board{}, [4]byte{}, err
 	}
 
-	err = precomputation.PrecomputeBoard(&gameRound)
+	err = precomputation.PrecomputeBoard(&board)
 
-	return gameRound, initRobotPositions, nil
+	return board, initRobotPositions, nil
 }
 
 // convData convert board_data in json format to board_data byte format
-func convData(data types.RawBoard) (gameRound types.GameRound, initRobotPositions [4]byte, err error) {
+func convData(data types.RawBoard) (board types.Board, initRobotPositions [4]byte, err error) {
 	// node conversion
 	for rowIndex := 0; rowIndex < 16; rowIndex++ {
 		for columnIndex := 0; columnIndex < 16; columnIndex++ {
@@ -137,7 +137,7 @@ func convData(data types.RawBoard) (gameRound types.GameRound, initRobotPosition
 			bitOperations.SetBit(&cell, 1, true)
 			bitOperations.SetBit(&cell, 0, true)
 
-			gameRound.Grid[rowIndex][columnIndex] = cell
+			board.Grid[rowIndex][columnIndex] = cell
 		}
 	}
 
@@ -147,49 +147,49 @@ func convData(data types.RawBoard) (gameRound types.GameRound, initRobotPosition
 		case "top":
 			rowIndex := 0
 			for columnIndex := 0; columnIndex < 16; columnIndex++ {
-				bitOperations.SetBit(&(gameRound.Grid[rowIndex][columnIndex]), 3, false)
+				bitOperations.SetBit(&(board.Grid[rowIndex][columnIndex]), 3, false)
 			}
 		case "bottom":
 			rowIndex := 15
 			for columnIndex := 0; columnIndex < 16; columnIndex++ {
-				bitOperations.SetBit(&(gameRound.Grid[rowIndex][columnIndex]), 2, false)
+				bitOperations.SetBit(&(board.Grid[rowIndex][columnIndex]), 2, false)
 			}
 		case "left":
 			columnIndex := 0
 			for rowIndex := 0; rowIndex < 16; rowIndex++ {
-				bitOperations.SetBit(&(gameRound.Grid[rowIndex][columnIndex]), 1, false)
+				bitOperations.SetBit(&(board.Grid[rowIndex][columnIndex]), 1, false)
 			}
 		case "right":
 			columnIndex := 15
 			for rowIndex := 0; rowIndex < 16; rowIndex++ {
-				bitOperations.SetBit(&(gameRound.Grid[rowIndex][columnIndex]), 0, false)
+				bitOperations.SetBit(&(board.Grid[rowIndex][columnIndex]), 0, false)
 			}
 		}
 	}
 
-	// add walls to the gameRound
+	// add walls to the board
 	for _, wall := range data.Walls {
 
 		switch wall.Direction1 {
 		case "top":
-			bitOperations.SetBit(&(gameRound.Grid[wall.Position1.Row][wall.Position1.Column]), 3, false)
+			bitOperations.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 3, false)
 		case "bottom":
-			bitOperations.SetBit(&(gameRound.Grid[wall.Position1.Row][wall.Position1.Column]), 2, false)
+			bitOperations.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 2, false)
 		case "left":
-			bitOperations.SetBit(&(gameRound.Grid[wall.Position1.Row][wall.Position1.Column]), 1, false)
+			bitOperations.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 1, false)
 		case "right":
-			bitOperations.SetBit(&(gameRound.Grid[wall.Position1.Row][wall.Position1.Column]), 0, false)
+			bitOperations.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 0, false)
 		}
 
 		switch wall.Direction2 {
 		case "top":
-			bitOperations.SetBit(&(gameRound.Grid[wall.Position2.Row][wall.Position2.Column]), 3, false)
+			bitOperations.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 3, false)
 		case "bottom":
-			bitOperations.SetBit(&(gameRound.Grid[wall.Position2.Row][wall.Position2.Column]), 2, false)
+			bitOperations.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 2, false)
 		case "left":
-			bitOperations.SetBit(&(gameRound.Grid[wall.Position2.Row][wall.Position2.Column]), 1, false)
+			bitOperations.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 1, false)
 		case "right":
-			bitOperations.SetBit(&(gameRound.Grid[wall.Position2.Row][wall.Position2.Column]), 0, false)
+			bitOperations.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 0, false)
 		}
 	}
 
@@ -219,7 +219,7 @@ func convData(data types.RawBoard) (gameRound types.GameRound, initRobotPosition
 		bitOperations.SetBit(&targetColorAndSymbol, 0, true)
 	}
 
-	gameRound.Target = uint16(targetColorAndSymbol)<<8 | uint16(targetPosition)
+	board.Target = uint16(targetColorAndSymbol)<<8 | uint16(targetPosition)
 
 	// Robot conversion
 	for colorIndex, color := range [4]string{"yellow", "red", "green", "blue"} {
@@ -230,5 +230,5 @@ func convData(data types.RawBoard) (gameRound types.GameRound, initRobotPosition
 		}
 	}
 
-	return gameRound, initRobotPositions, nil
+	return board, initRobotPositions, nil
 }

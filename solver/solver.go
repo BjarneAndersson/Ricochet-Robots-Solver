@@ -35,7 +35,7 @@ func reconstructPath(cameFrom []uint64, endBoardState types.BoardState) (path []
 	return path, nil
 }
 
-func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotStoppingPositions *types.RobotStoppingPositions, conf config.Config) (tracker.TrackingDataSolver, []types.BoardState, error) {
+func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPositions *types.RobotStoppingPositions, conf config.Config) (tracker.TrackingDataSolver, []types.BoardState, error) {
 	trackingData := tracker.TrackingDataSolver{}
 
 	openSet := make(priorityQueue.PriorityQueue, 1)
@@ -62,12 +62,12 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 
 		for indexRobot, robot := range helper.SeparateRobots(currentBoardState) {
 			robotPosition := helper.ConvBytePositionToPosition(robot)
-			node := gameRound.Grid[robotPosition.Row][robotPosition.Column]
+			node := board.Grid[robotPosition.Row][robotPosition.Column]
 			nodePosition := types.Position{Column: robotPosition.Column, Row: robotPosition.Row}
 
 			for _, direction := range []string{"top", "bottom", "left", "right"} {
 				cNodePosition := calculateStoppingPosition(robotStoppingPositions, currentBoardState, nodePosition, direction)
-				cNode := gameRound.Grid[cNodePosition.Row][cNodePosition.Column]
+				cNode := board.Grid[cNodePosition.Row][cNodePosition.Column]
 
 				if cNode != node {
 					// robot can be moved into direction
@@ -75,10 +75,10 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 					// move robot
 					newRobots := moveRobot(helper.SeparateRobots(currentBoardState), uint8(indexRobot), cNodePosition)
 
-					// create a new gameRound state
+					// create a new board state
 					newBoardState := createNewBoardState(newRobots)
 
-					// check if the new gameRound state is already in the queue
+					// check if the new board state is already in the queue
 					if isBoardStateInOpenSet(&openSet, newBoardState) || isBoardStateInClosedSet(&closedSet, newBoardState) {
 						continue
 					}
@@ -86,12 +86,12 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 					trackingData.InitializedBoardStates += 1
 
 					gScoreNewBoardState := priorityQueue.GetGScore(currentPriorityQueueItem.HAndGScore) + 1
-					hScoreNewBoardState := calcHScore(gameRound, newBoardState)
+					hScoreNewBoardState := calcHScore(board, newBoardState)
 
-					// add gameRound state to cameFrom
+					// add board state to cameFrom
 					cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
 
-					// check if the new gameRound state is the target
+					// check if the new board state is the target
 					// break -> reconstruct path
 					if hScoreNewBoardState == 0 {
 						trackingData.EvaluatedBoardStates += 1
@@ -99,7 +99,7 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 						return trackingData, path, err
 					}
 
-					// add the new gameRound state to the queue
+					// add the new board state to the queue
 					openSet.Push(
 						priorityQueue.Item{
 							Value:      newBoardState,
@@ -115,10 +115,10 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 	return trackingData, []types.BoardState{}, fmt.Errorf("no route found")
 }
 
-func calcHScore(gameRound *types.GameRound, boardState types.BoardState) (hScore uint8) {
+func calcHScore(board *types.Board, boardState types.BoardState) (hScore uint8) {
 	activeRobotPosition := helper.ConvBytePositionToPosition(uint8((boardState & (255 << 24)) >> 24))
 
-	node := gameRound.Grid[activeRobotPosition.Row][activeRobotPosition.Column]
+	node := board.Grid[activeRobotPosition.Row][activeRobotPosition.Column]
 
 	hScore = helper.GetMoveCount(node)
 	return hScore

@@ -5,11 +5,11 @@ import (
 	"../types"
 )
 
-func PrecomputeBoard(gameRound *types.GameRound) (err error) {
+func PrecomputeBoard(board *types.Board) (err error) {
 	var status [16][16]bool
 
-	targetPosition := helper.ConvTargetPositionToPosition(gameRound.Target)
-	pTargetNode := &(gameRound.Grid[targetPosition.Row][targetPosition.Column])
+	targetPosition := helper.ConvTargetPositionToPosition(board.Target)
+	pTargetNode := &(board.Grid[targetPosition.Row][targetPosition.Column])
 	setMoveCount(pTargetNode, 0)
 	status[targetPosition.Row][targetPosition.Column] = true
 
@@ -17,13 +17,13 @@ func PrecomputeBoard(gameRound *types.GameRound) (err error) {
 
 	for !done {
 		done = true
-		for indexRow, boardRow := range gameRound.Grid {
+		for indexRow, boardRow := range board.Grid {
 			for indexColumn := range boardRow {
 				if !status[indexRow][indexColumn] {
 					continue
 				}
 
-				node := gameRound.Grid[indexRow][indexColumn]
+				node := board.Grid[indexRow][indexColumn]
 
 				status[indexRow][indexColumn] = false
 				depth := helper.GetMoveCount(node) + 1
@@ -33,12 +33,12 @@ func PrecomputeBoard(gameRound *types.GameRound) (err error) {
 				for _, direction := range []string{"top", "bottom", "left", "right"} {
 					index := preIndex
 
-					for helper.HasNeighbor(gameRound.Grid[index.Row][index.Column], direction) {
-						//pNeighborNode := getNeighborNode(gameRound, &(gameRound.GameRound[index.Row][index.Column]), direction)
+					for helper.HasNeighbor(board.Grid[index.Row][index.Column], direction) {
+						//pNeighborNode := getNeighborNode(board, &(board.Board[index.Row][index.Column]), direction)
 						index = helper.GetNeighborNodePosition(index, direction)
 
-						if helper.GetMoveCount(gameRound.Grid[index.Row][index.Column]) > depth {
-							setMoveCount(&(gameRound.Grid[index.Row][index.Column]), depth)
+						if helper.GetMoveCount(board.Grid[index.Row][index.Column]) > depth {
+							setMoveCount(&(board.Grid[index.Row][index.Column]), depth)
 							status[index.Row][index.Column] = true
 							done = false
 						}
@@ -54,19 +54,19 @@ func setMoveCount(pB *byte, moveCount uint8) {
 	*pB = (31 & *pB) | (moveCount << 5)
 }
 
-func PrecomputeRobotMoves(gameRound *types.GameRound) (robotStoppingPositions types.RobotStoppingPositions, err error) {
+func PrecomputeRobotMoves(board *types.Board) (robotStoppingPositions types.RobotStoppingPositions, err error) {
 	for rowIndex := 0; rowIndex < 16; rowIndex++ {
 		for columnIndex := 0; columnIndex < 16; columnIndex++ {
 			for _, direction := range []string{"top", "bottom", "left", "right"} {
 				switch direction {
 				case "top":
-					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(gameRound, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 24)
+					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(board, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 24)
 				case "bottom":
-					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(gameRound, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 16)
+					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(board, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 16)
 				case "left":
-					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(gameRound, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 8)
+					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(board, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 8)
 				case "right":
-					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(gameRound, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 0)
+					robotStoppingPositions[rowIndex][columnIndex] = robotStoppingPositions[rowIndex][columnIndex] | (uint32(calculateRobotStoppingPosition(board, types.Position{Row: uint8(rowIndex), Column: uint8(columnIndex)}, direction)) << 0)
 				}
 			}
 		}
@@ -75,9 +75,9 @@ func PrecomputeRobotMoves(gameRound *types.GameRound) (robotStoppingPositions ty
 	return robotStoppingPositions, nil
 }
 
-func calculateRobotStoppingPosition(gameRound *types.GameRound, startNodePosition types.Position, direction string) byte {
+func calculateRobotStoppingPosition(board *types.Board, startNodePosition types.Position, direction string) byte {
 	cNodePosition := startNodePosition
-	cNode := gameRound.Grid[cNodePosition.Row][cNodePosition.Column]
+	cNode := board.Grid[cNodePosition.Row][cNodePosition.Column]
 
 	for helper.HasNeighbor(cNode, direction) {
 
@@ -91,7 +91,7 @@ func calculateRobotStoppingPosition(gameRound *types.GameRound, startNodePositio
 		case "bottom":
 			cNodePosition.Row += 1
 		}
-		cNode = gameRound.Grid[cNodePosition.Row][cNodePosition.Column]
+		cNode = board.Grid[cNodePosition.Row][cNodePosition.Column]
 	}
 
 	return helper.ConvPosToByte(cNodePosition)
