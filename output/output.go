@@ -10,8 +10,8 @@ import (
 
 func Neighbors(gameRound *types.GameRound) (err error) {
 	fmt.Printf("\n\n====================\n")
-	for rowIndex := range gameRound.Board {
-		for _, node := range gameRound.Board[rowIndex] {
+	for rowIndex := range gameRound.Grid {
+		for _, node := range gameRound.Grid[rowIndex] {
 			outputString := fmt.Sprintf("")
 			if !helper.HasNeighbor(node, "top") {
 				outputString += "N"

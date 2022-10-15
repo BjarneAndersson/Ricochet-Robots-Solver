@@ -9,7 +9,7 @@ func PrecomputeBoard(gameRound *types.GameRound) (err error) {
 	var status [16][16]bool
 
 	targetPosition := helper.ConvTargetPositionToPosition(gameRound.Target)
-	pTargetNode := &(gameRound.Board[targetPosition.Row][targetPosition.Column])
+	pTargetNode := &(gameRound.Grid[targetPosition.Row][targetPosition.Column])
 	setMoveCount(pTargetNode, 0)
 	status[targetPosition.Row][targetPosition.Column] = true
 
@@ -17,13 +17,13 @@ func PrecomputeBoard(gameRound *types.GameRound) (err error) {
 
 	for !done {
 		done = true
-		for indexRow, boardRow := range gameRound.Board {
+		for indexRow, boardRow := range gameRound.Grid {
 			for indexColumn := range boardRow {
 				if !status[indexRow][indexColumn] {
 					continue
 				}
 
-				node := gameRound.Board[indexRow][indexColumn]
+				node := gameRound.Grid[indexRow][indexColumn]
 
 				status[indexRow][indexColumn] = false
 				depth := helper.GetMoveCount(node) + 1
@@ -33,12 +33,12 @@ func PrecomputeBoard(gameRound *types.GameRound) (err error) {
 				for _, direction := range []string{"top", "bottom", "left", "right"} {
 					index := preIndex
 
-					for helper.HasNeighbor(gameRound.Board[index.Row][index.Column], direction) {
+					for helper.HasNeighbor(gameRound.Grid[index.Row][index.Column], direction) {
 						//pNeighborNode := getNeighborNode(gameRound, &(gameRound.GameRound[index.Row][index.Column]), direction)
 						index = helper.GetNeighborNodePosition(index, direction)
 
-						if helper.GetMoveCount(gameRound.Board[index.Row][index.Column]) > depth {
-							setMoveCount(&(gameRound.Board[index.Row][index.Column]), depth)
+						if helper.GetMoveCount(gameRound.Grid[index.Row][index.Column]) > depth {
+							setMoveCount(&(gameRound.Grid[index.Row][index.Column]), depth)
 							status[index.Row][index.Column] = true
 							done = false
 						}
@@ -77,7 +77,7 @@ func PrecomputeRobotMoves(gameRound *types.GameRound) (robotStoppingPositions ty
 
 func calculateRobotStoppingPosition(gameRound *types.GameRound, startNodePosition types.Position, direction string) byte {
 	cNodePosition := startNodePosition
-	cNode := gameRound.Board[cNodePosition.Row][cNodePosition.Column]
+	cNode := gameRound.Grid[cNodePosition.Row][cNodePosition.Column]
 
 	for helper.HasNeighbor(cNode, direction) {
 
@@ -91,7 +91,7 @@ func calculateRobotStoppingPosition(gameRound *types.GameRound, startNodePositio
 		case "bottom":
 			cNodePosition.Row += 1
 		}
-		cNode = gameRound.Board[cNodePosition.Row][cNodePosition.Column]
+		cNode = gameRound.Grid[cNodePosition.Row][cNodePosition.Column]
 	}
 
 	return helper.ConvPosToByte(cNodePosition)

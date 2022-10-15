@@ -137,7 +137,7 @@ func convData(data types.RawBoard) (gameRound types.GameRound, initRobotPosition
 			bitOperations.SetBit(&cell, 1, true)
 			bitOperations.SetBit(&cell, 0, true)
 
-			gameRound.Board[rowIndex][columnIndex] = cell
+			gameRound.Grid[rowIndex][columnIndex] = cell
 		}
 	}
 
@@ -147,22 +147,22 @@ func convData(data types.RawBoard) (gameRound types.GameRound, initRobotPosition
 		case "top":
 			rowIndex := 0
 			for columnIndex := 0; columnIndex < 16; columnIndex++ {
-				bitOperations.SetBit(&(gameRound.Board[rowIndex][columnIndex]), 3, false)
+				bitOperations.SetBit(&(gameRound.Grid[rowIndex][columnIndex]), 3, false)
 			}
 		case "bottom":
 			rowIndex := 15
 			for columnIndex := 0; columnIndex < 16; columnIndex++ {
-				bitOperations.SetBit(&(gameRound.Board[rowIndex][columnIndex]), 2, false)
+				bitOperations.SetBit(&(gameRound.Grid[rowIndex][columnIndex]), 2, false)
 			}
 		case "left":
 			columnIndex := 0
 			for rowIndex := 0; rowIndex < 16; rowIndex++ {
-				bitOperations.SetBit(&(gameRound.Board[rowIndex][columnIndex]), 1, false)
+				bitOperations.SetBit(&(gameRound.Grid[rowIndex][columnIndex]), 1, false)
 			}
 		case "right":
 			columnIndex := 15
 			for rowIndex := 0; rowIndex < 16; rowIndex++ {
-				bitOperations.SetBit(&(gameRound.Board[rowIndex][columnIndex]), 0, false)
+				bitOperations.SetBit(&(gameRound.Grid[rowIndex][columnIndex]), 0, false)
 			}
 		}
 	}
@@ -172,24 +172,24 @@ func convData(data types.RawBoard) (gameRound types.GameRound, initRobotPosition
 
 		switch wall.Direction1 {
 		case "top":
-			bitOperations.SetBit(&(gameRound.Board[wall.Position1.Row][wall.Position1.Column]), 3, false)
+			bitOperations.SetBit(&(gameRound.Grid[wall.Position1.Row][wall.Position1.Column]), 3, false)
 		case "bottom":
-			bitOperations.SetBit(&(gameRound.Board[wall.Position1.Row][wall.Position1.Column]), 2, false)
+			bitOperations.SetBit(&(gameRound.Grid[wall.Position1.Row][wall.Position1.Column]), 2, false)
 		case "left":
-			bitOperations.SetBit(&(gameRound.Board[wall.Position1.Row][wall.Position1.Column]), 1, false)
+			bitOperations.SetBit(&(gameRound.Grid[wall.Position1.Row][wall.Position1.Column]), 1, false)
 		case "right":
-			bitOperations.SetBit(&(gameRound.Board[wall.Position1.Row][wall.Position1.Column]), 0, false)
+			bitOperations.SetBit(&(gameRound.Grid[wall.Position1.Row][wall.Position1.Column]), 0, false)
 		}
 
 		switch wall.Direction2 {
 		case "top":
-			bitOperations.SetBit(&(gameRound.Board[wall.Position2.Row][wall.Position2.Column]), 3, false)
+			bitOperations.SetBit(&(gameRound.Grid[wall.Position2.Row][wall.Position2.Column]), 3, false)
 		case "bottom":
-			bitOperations.SetBit(&(gameRound.Board[wall.Position2.Row][wall.Position2.Column]), 2, false)
+			bitOperations.SetBit(&(gameRound.Grid[wall.Position2.Row][wall.Position2.Column]), 2, false)
 		case "left":
-			bitOperations.SetBit(&(gameRound.Board[wall.Position2.Row][wall.Position2.Column]), 1, false)
+			bitOperations.SetBit(&(gameRound.Grid[wall.Position2.Row][wall.Position2.Column]), 1, false)
 		case "right":
-			bitOperations.SetBit(&(gameRound.Board[wall.Position2.Row][wall.Position2.Column]), 0, false)
+			bitOperations.SetBit(&(gameRound.Grid[wall.Position2.Row][wall.Position2.Column]), 0, false)
 		}
 	}
 

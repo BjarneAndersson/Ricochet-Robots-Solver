@@ -62,12 +62,12 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 
 		for indexRobot, robot := range helper.SeparateRobots(currentBoardState) {
 			robotPosition := helper.ConvBytePositionToPosition(robot)
-			node := gameRound.Board[robotPosition.Row][robotPosition.Column]
+			node := gameRound.Grid[robotPosition.Row][robotPosition.Column]
 			nodePosition := types.Position{Column: robotPosition.Column, Row: robotPosition.Row}
 
 			for _, direction := range []string{"top", "bottom", "left", "right"} {
 				cNodePosition := calculateStoppingPosition(robotStoppingPositions, currentBoardState, nodePosition, direction)
-				cNode := gameRound.Board[cNodePosition.Row][cNodePosition.Column]
+				cNode := gameRound.Grid[cNodePosition.Row][cNodePosition.Column]
 
 				if cNode != node {
 					// robot can be moved into direction
@@ -118,7 +118,7 @@ func Solver(gameRound *types.GameRound, initBoardState types.BoardState, robotSt
 func calcHScore(gameRound *types.GameRound, boardState types.BoardState) (hScore uint8) {
 	activeRobotPosition := helper.ConvBytePositionToPosition(uint8((boardState & (255 << 24)) >> 24))
 
-	node := gameRound.Board[activeRobotPosition.Row][activeRobotPosition.Column]
+	node := gameRound.Grid[activeRobotPosition.Row][activeRobotPosition.Column]
 
 	hScore = helper.GetMoveCount(node)
 	return hScore

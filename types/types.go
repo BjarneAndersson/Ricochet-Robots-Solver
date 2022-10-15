@@ -53,7 +53,7 @@ type RawBoard struct {
 type BoardState uint32
 
 type GameRound struct {
-	Board  [16][16]byte
+	Grid   [16][16]byte
 	Target uint16
 }
 
