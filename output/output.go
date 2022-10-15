@@ -58,7 +58,7 @@ func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSo
 	return nil
 }
 
-func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robotOrder byte) (err error) {
+func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robotOrder types.RobotOrder) (err error) {
 	fmt.Printf("\n\n====================\n")
 	fmt.Printf("Moves\t%d\n", len(path)-1)
 	fmt.Printf("Time\t%s\n", trackingData.Duration)
@@ -67,7 +67,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 	fmt.Println("")
 
 	var previousBoardState types.BoardState
-	var previousRobotOrder byte = robotOrder
+	var previousRobotOrder = robotOrder
 	for indexBoardState, boardState := range path {
 		robots := helper.SeparateRobots(boardState)
 		cRobotOrder, err := getNewRobotOrder(previousBoardState, previousRobotOrder, boardState)
@@ -222,7 +222,7 @@ func convertNumberToBits(number int, fill int) (string, error) {
 	return "", fmt.Errorf("invalid operation")
 }
 
-func getRobotColorByIndex(robotOrder byte, index uint8) (string, error) {
+func getRobotColorByIndex(robotOrder types.RobotOrder, index uint8) (string, error) {
 	robotColorCode := helper.GetRobotColorCodeByIndex(robotOrder, index)
 
 	switch robotColorCode {
@@ -238,7 +238,7 @@ func getRobotColorByIndex(robotOrder byte, index uint8) (string, error) {
 	return "", fmt.Errorf("index out of range")
 }
 
-func getMovedRobotColorAndDirection(previousBoardState types.BoardState, currentBoardState types.BoardState, robotOrder byte) (robotColor string, direction string, err error) {
+func getMovedRobotColorAndDirection(previousBoardState types.BoardState, currentBoardState types.BoardState, robotOrder types.RobotOrder) (robotColor string, direction string, err error) {
 	preRobots := helper.SeparateRobots(previousBoardState)
 	curRobots := helper.SeparateRobots(currentBoardState)
 
@@ -282,7 +282,7 @@ func evaluateDirectionChange(previousRobot byte, currentRobot byte) (direction s
 	return "", fmt.Errorf("robot position has not changed")
 }
 
-func getNewRobotOrder(previousBoardState types.BoardState, previousRobotOrder byte, currentBoardState types.BoardState) (currentRobotOrder byte, err error) {
+func getNewRobotOrder(previousBoardState types.BoardState, previousRobotOrder types.RobotOrder, currentBoardState types.BoardState) (currentRobotOrder types.RobotOrder, err error) {
 	previousRobots := helper.SeparateRobots(previousBoardState)
 	currentRobots := helper.SeparateRobots(currentBoardState)
 

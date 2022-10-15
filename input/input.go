@@ -10,7 +10,7 @@ import (
 	"sort"
 )
 
-func GetData(boardDataLocation string) (board types.Board, initBoardState types.BoardState, initRobotOrder byte, robotStoppingPositions types.RobotStoppingPositions, err error) {
+func GetData(boardDataLocation string) (board types.Board, initBoardState types.BoardState, initRobotOrder types.RobotOrder, robotStoppingPositions types.RobotStoppingPositions, err error) {
 	data, err := getJsonData(boardDataLocation)
 	if err != nil {
 		return types.Board{}, 0, 0, types.RobotStoppingPositions{}, err
@@ -34,7 +34,7 @@ func GetData(boardDataLocation string) (board types.Board, initBoardState types.
 	return board, initBoardState, initRobotOrder, robotStoppingPositions, nil
 }
 
-func getInitBoardState(board *types.Board, initRobotPositions [4]byte) (initBoardState types.BoardState, initRobotOrder byte, err error) {
+func getInitBoardState(board *types.Board, initRobotPositions [4]byte) (initBoardState types.BoardState, initRobotOrder types.RobotOrder, err error) {
 
 	targetColor, err := helper.GetTargetColor(board.Target)
 	if err != nil {

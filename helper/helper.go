@@ -86,7 +86,7 @@ func SeparateRobots(boardState types.BoardState) (robots [4]byte) {
 	return robots
 }
 
-func GetRobotColorCodeByIndex(robotOrder byte, index uint8) (robotColor types.RobotColor) {
+func GetRobotColorCodeByIndex(robotOrder types.RobotOrder, index uint8) (robotColor types.RobotColor) {
 	switch index {
 	case 0:
 		robotColor = types.RobotColor(robotOrder & (3 << 6) >> 6)
@@ -100,7 +100,7 @@ func GetRobotColorCodeByIndex(robotOrder byte, index uint8) (robotColor types.Ro
 	return robotColor
 }
 
-func SetRobotColorByIndex(robotOrder *byte, colorName string, index uint8) {
+func SetRobotColorByIndex(robotOrder *types.RobotOrder, colorName string, index uint8) {
 	var colorCode types.RobotColor
 
 	switch colorName {
@@ -117,15 +117,15 @@ func SetRobotColorByIndex(robotOrder *byte, colorName string, index uint8) {
 	SetRobotColorCodeByIndex(robotOrder, colorCode, index)
 }
 
-func SetRobotColorCodeByIndex(robotOrder *byte, colorCode types.RobotColor, index uint8) {
+func SetRobotColorCodeByIndex(robotOrder *types.RobotOrder, colorCode types.RobotColor, index uint8) {
 	switch index {
 	case 0:
-		*robotOrder = (*robotOrder) | (byte(colorCode) << 6)
+		*robotOrder = types.RobotOrder(byte(*robotOrder) | (byte(colorCode) << 6))
 	case 1:
-		*robotOrder = (*robotOrder) | (byte(colorCode) << 4)
+		*robotOrder = types.RobotOrder(byte(*robotOrder) | (byte(colorCode) << 4))
 	case 2:
-		*robotOrder = (*robotOrder) | (byte(colorCode) << 2)
+		*robotOrder = types.RobotOrder(byte(*robotOrder) | (byte(colorCode) << 2))
 	case 3:
-		*robotOrder = (*robotOrder) | (byte(colorCode) << 0)
+		*robotOrder = types.RobotOrder(byte(*robotOrder) | (byte(colorCode) << 0))
 	}
 }

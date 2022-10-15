@@ -30,6 +30,7 @@ type Robot struct {
 }
 
 type RobotColor byte
+type RobotOrder byte
 
 const (
 	RobotColorYellow RobotColor = iota
