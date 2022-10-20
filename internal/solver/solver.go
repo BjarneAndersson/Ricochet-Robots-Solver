@@ -53,7 +53,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 	cameFrom := make([]uint64, 0)
 
 	// add initial board state to open set
-	openSet[0] = Item{
+	openSet[0] = item{
 		Value:      initBoardState,
 		HAndGScore: 0,
 	}
@@ -61,7 +61,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 
 	for openSet.Len() > 0 {
 		// get the item with the lowest f score
-		currentPriorityQueueItem := Pop(&openSet)
+		currentPriorityQueueItem := openSet.Pop()
 		currentBoardState := currentPriorityQueueItem.Value
 
 		// output current board state based on the configuration
@@ -113,7 +113,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 
 					// add the new board state to the queue
 					openSet.Push(
-						Item{
+						item{
 							Value:      newBoardState,
 							HAndGScore: CombineHAndGScore(gScoreNewBoardState, hScoreNewBoardState),
 						})
