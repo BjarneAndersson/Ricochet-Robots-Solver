@@ -1,9 +1,9 @@
 package output
 
 import (
-	"../helper"
-	"../tracker"
-	"../types"
+	"Ricochet-Robot-Solver/internal/helper"
+	"Ricochet-Robot-Solver/internal/tracker"
+	"Ricochet-Robot-Solver/internal/types"
 	"fmt"
 	"github.com/fatih/color"
 )

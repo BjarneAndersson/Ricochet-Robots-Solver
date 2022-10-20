@@ -1,10 +1,10 @@
 package input
 
 import (
-	"../bitOperations"
-	"../helper"
-	"../precomputation"
-	"../types"
+	"Ricochet-Robot-Solver/internal/bitOperations"
+	"Ricochet-Robot-Solver/internal/helper"
+	"Ricochet-Robot-Solver/internal/precomputation"
+	"Ricochet-Robot-Solver/internal/types"
 	"encoding/json"
 	"os"
 )

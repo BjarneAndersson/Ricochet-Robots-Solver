@@ -1,7 +1,7 @@
 package priorityQueue
 
 import (
-	"../types"
+	"Ricochet-Robot-Solver/internal/types"
 	"sort"
 )
 

@@ -19,7 +19,7 @@ type Config struct {
 
 func GetConfig(filename string) (c Config, err error) {
 
-	yamlFile, err := os.ReadFile(filename + ".yaml")
+	yamlFile, err := os.ReadFile("config\\" + filename + ".yaml")
 	if err != nil {
 		return Config{}, err
 	}

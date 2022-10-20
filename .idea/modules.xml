@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/ricochet-robot-solver.iml" filepath="$PROJECT_DIR$/.idea/ricochet-robot-solver.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Ricochet-Robots-Solver.iml" filepath="$PROJECT_DIR$/.idea/Ricochet-Robots-Solver.iml" />
     </modules>
   </component>
 </project>

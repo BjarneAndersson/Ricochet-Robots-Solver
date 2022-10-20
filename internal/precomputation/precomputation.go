@@ -1,8 +1,8 @@
 package precomputation
 
 import (
-	"../helper"
-	"../types"
+	"Ricochet-Robot-Solver/internal/helper"
+	"Ricochet-Robot-Solver/internal/types"
 )
 
 func PrecomputeBoard(board *types.Board) (err error) {

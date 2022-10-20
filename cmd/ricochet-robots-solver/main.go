@@ -1,11 +1,11 @@
 package main
 
 import (
-	"./config"
-	"./input"
-	"./output"
-	"./solver"
-	"./tracker"
+	"Ricochet-Robot-Solver/internal/config"
+	"Ricochet-Robot-Solver/internal/input"
+	"Ricochet-Robot-Solver/internal/output"
+	"Ricochet-Robot-Solver/internal/solver"
+	"Ricochet-Robot-Solver/internal/tracker"
 	"log"
 )
 
