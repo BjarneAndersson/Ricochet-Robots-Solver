@@ -1,4 +1,4 @@
-package priorityQueue
+package solver
 
 import (
 	"Ricochet-Robot-Solver/internal/types"
@@ -11,23 +11,23 @@ type Item struct {
 	HAndGScore uint8
 }
 
-type PriorityQueue []Item
+type priorityQueue []Item
 
-func (pq *PriorityQueue) Len() int { return len(*pq) }
+func (pq *priorityQueue) Len() int { return len(*pq) }
 
-func (pq *PriorityQueue) Push(item Item) {
+func (pq *priorityQueue) Push(item Item) {
 	*pq = append(*pq, item)
 	sortQueue(*pq)
 }
 
-func sortQueue(pq PriorityQueue) {
+func sortQueue(pq priorityQueue) {
 	// We want Pop to give us the lowest, not highest, priority, so we use less than here.
 	sort.Slice(pq, func(i, j int) bool {
 		return calcPriority((pq)[i].HAndGScore) < calcPriority((pq)[j].HAndGScore)
 	})
 }
 
-func Pop(pq *PriorityQueue) Item {
+func Pop(pq *priorityQueue) Item {
 	item := (*pq)[0]
 	*pq = append((*pq)[:0], (*pq)[1:]...)
 	return item

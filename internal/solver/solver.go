@@ -4,7 +4,6 @@ import (
 	"Ricochet-Robot-Solver/internal/config"
 	"Ricochet-Robot-Solver/internal/helper"
 	"Ricochet-Robot-Solver/internal/output"
-	"Ricochet-Robot-Solver/internal/priorityQueue"
 	"Ricochet-Robot-Solver/internal/tracker"
 	"Ricochet-Robot-Solver/internal/types"
 	"fmt"
@@ -48,13 +47,13 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 	// initialization
 	trackingData := tracker.TrackingDataSolver{}
 
-	openSet := make(priorityQueue.PriorityQueue, 1)
+	openSet := make(priorityQueue, 1)
 	closedSet := make([]types.BoardState, 0)
 
 	cameFrom := make([]uint64, 0)
 
 	// add initial board state to open set
-	openSet[0] = priorityQueue.Item{
+	openSet[0] = Item{
 		Value:      initBoardState,
 		HAndGScore: 0,
 	}
@@ -62,7 +61,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 
 	for openSet.Len() > 0 {
 		// get the item with the lowest f score
-		currentPriorityQueueItem := priorityQueue.Pop(&openSet)
+		currentPriorityQueueItem := Pop(&openSet)
 		currentBoardState := currentPriorityQueueItem.Value
 
 		// output current board state based on the configuration
@@ -99,7 +98,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 					cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
 
 					// calculate g score: current g score + 1
-					gScoreNewBoardState := priorityQueue.GetGScore(currentPriorityQueueItem.HAndGScore) + 1
+					gScoreNewBoardState := GetGScore(currentPriorityQueueItem.HAndGScore) + 1
 
 					// calculate h score: prediction of minimal moves to go
 					hScoreNewBoardState := calcHScore(board, newBoardState)
@@ -114,9 +113,9 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 
 					// add the new board state to the queue
 					openSet.Push(
-						priorityQueue.Item{
+						Item{
 							Value:      newBoardState,
-							HAndGScore: priorityQueue.CombineHAndGScore(gScoreNewBoardState, hScoreNewBoardState),
+							HAndGScore: CombineHAndGScore(gScoreNewBoardState, hScoreNewBoardState),
 						})
 				}
 
@@ -208,7 +207,7 @@ func moveRobot(robots [4]byte, robotIndex uint8, endPosition types.Position) [4]
 	return robots
 }
 
-func isBoardStateInOpenSet(openSet *priorityQueue.PriorityQueue, boardState types.BoardState) bool {
+func isBoardStateInOpenSet(openSet *priorityQueue, boardState types.BoardState) bool {
 	for _, iterateBoardState := range *openSet {
 		if iterateBoardState.Value == boardState {
 			return true
