@@ -1,4 +1,4 @@
-package bitOperations
+package helper
 
 // SetBit Sets the bit at pos in the byte pB.
 func SetBit(pB *byte, position uint8, value bool) {

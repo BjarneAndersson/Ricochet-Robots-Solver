@@ -1,7 +1,6 @@
 package input
 
 import (
-	"Ricochet-Robot-Solver/internal/bitOperations"
 	"Ricochet-Robot-Solver/internal/helper"
 	"Ricochet-Robot-Solver/internal/precomputation"
 	"Ricochet-Robot-Solver/internal/types"
@@ -125,17 +124,17 @@ func convData(data types.RawBoard) (board types.Board, initRobotPositions [4]byt
 			var cell byte
 
 			// distance between node and target
-			bitOperations.SetBit(&cell, 7, true)
-			bitOperations.SetBit(&cell, 6, true)
-			bitOperations.SetBit(&cell, 5, true)
+			helper.SetBit(&cell, 7, true)
+			helper.SetBit(&cell, 6, true)
+			helper.SetBit(&cell, 5, true)
 
-			bitOperations.SetBit(&cell, 4, false) // is a robot present
+			helper.SetBit(&cell, 4, false) // is a robot present
 
 			// neighbors
-			bitOperations.SetBit(&cell, 3, true)
-			bitOperations.SetBit(&cell, 2, true)
-			bitOperations.SetBit(&cell, 1, true)
-			bitOperations.SetBit(&cell, 0, true)
+			helper.SetBit(&cell, 3, true)
+			helper.SetBit(&cell, 2, true)
+			helper.SetBit(&cell, 1, true)
+			helper.SetBit(&cell, 0, true)
 
 			board.Grid[rowIndex][columnIndex] = cell
 		}
@@ -147,22 +146,22 @@ func convData(data types.RawBoard) (board types.Board, initRobotPositions [4]byt
 		case "top":
 			rowIndex := 0
 			for columnIndex := 0; columnIndex < 16; columnIndex++ {
-				bitOperations.SetBit(&(board.Grid[rowIndex][columnIndex]), 3, false)
+				helper.SetBit(&(board.Grid[rowIndex][columnIndex]), 3, false)
 			}
 		case "bottom":
 			rowIndex := 15
 			for columnIndex := 0; columnIndex < 16; columnIndex++ {
-				bitOperations.SetBit(&(board.Grid[rowIndex][columnIndex]), 2, false)
+				helper.SetBit(&(board.Grid[rowIndex][columnIndex]), 2, false)
 			}
 		case "left":
 			columnIndex := 0
 			for rowIndex := 0; rowIndex < 16; rowIndex++ {
-				bitOperations.SetBit(&(board.Grid[rowIndex][columnIndex]), 1, false)
+				helper.SetBit(&(board.Grid[rowIndex][columnIndex]), 1, false)
 			}
 		case "right":
 			columnIndex := 15
 			for rowIndex := 0; rowIndex < 16; rowIndex++ {
-				bitOperations.SetBit(&(board.Grid[rowIndex][columnIndex]), 0, false)
+				helper.SetBit(&(board.Grid[rowIndex][columnIndex]), 0, false)
 			}
 		}
 	}
@@ -172,24 +171,24 @@ func convData(data types.RawBoard) (board types.Board, initRobotPositions [4]byt
 
 		switch wall.Direction1 {
 		case "top":
-			bitOperations.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 3, false)
+			helper.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 3, false)
 		case "bottom":
-			bitOperations.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 2, false)
+			helper.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 2, false)
 		case "left":
-			bitOperations.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 1, false)
+			helper.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 1, false)
 		case "right":
-			bitOperations.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 0, false)
+			helper.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 0, false)
 		}
 
 		switch wall.Direction2 {
 		case "top":
-			bitOperations.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 3, false)
+			helper.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 3, false)
 		case "bottom":
-			bitOperations.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 2, false)
+			helper.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 2, false)
 		case "left":
-			bitOperations.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 1, false)
+			helper.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 1, false)
 		case "right":
-			bitOperations.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 0, false)
+			helper.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 0, false)
 		}
 	}
 
@@ -199,24 +198,24 @@ func convData(data types.RawBoard) (board types.Board, initRobotPositions [4]byt
 
 	switch data.Target.Color {
 	case "yellow":
-		bitOperations.SetBit(&targetColorAndSymbol, 7, true)
+		helper.SetBit(&targetColorAndSymbol, 7, true)
 	case "red":
-		bitOperations.SetBit(&targetColorAndSymbol, 6, true)
+		helper.SetBit(&targetColorAndSymbol, 6, true)
 	case "green":
-		bitOperations.SetBit(&targetColorAndSymbol, 5, true)
+		helper.SetBit(&targetColorAndSymbol, 5, true)
 	case "blue":
-		bitOperations.SetBit(&targetColorAndSymbol, 4, true)
+		helper.SetBit(&targetColorAndSymbol, 4, true)
 	}
 
 	switch data.Target.Symbol {
 	case "circle":
-		bitOperations.SetBit(&targetColorAndSymbol, 3, true)
+		helper.SetBit(&targetColorAndSymbol, 3, true)
 	case "triangle":
-		bitOperations.SetBit(&targetColorAndSymbol, 2, true)
+		helper.SetBit(&targetColorAndSymbol, 2, true)
 	case "square":
-		bitOperations.SetBit(&targetColorAndSymbol, 1, true)
+		helper.SetBit(&targetColorAndSymbol, 1, true)
 	case "hexagon":
-		bitOperations.SetBit(&targetColorAndSymbol, 0, true)
+		helper.SetBit(&targetColorAndSymbol, 0, true)
 	}
 
 	board.Target = uint16(targetColorAndSymbol)<<8 | uint16(targetPosition)

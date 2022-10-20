@@ -1,7 +1,6 @@
 package helper
 
 import (
-	"Ricochet-Robot-Solver/internal/bitOperations"
 	"Ricochet-Robot-Solver/internal/types"
 	"fmt"
 	"math"
@@ -11,13 +10,13 @@ func GetTargetColor(target uint16) (color string, err error) {
 	mask := uint16(math.Pow(2, 4)-1) << 12
 	colorInBits := uint8((target & mask) >> 12)
 
-	if bitOperations.HasBit(colorInBits, 3) {
+	if HasBit(colorInBits, 3) {
 		return "yellow", nil
-	} else if bitOperations.HasBit(colorInBits, 2) {
+	} else if HasBit(colorInBits, 2) {
 		return "red", nil
-	} else if bitOperations.HasBit(colorInBits, 1) {
+	} else if HasBit(colorInBits, 1) {
 		return "green", nil
-	} else if bitOperations.HasBit(colorInBits, 0) {
+	} else if HasBit(colorInBits, 0) {
 		return "blue", nil
 	}
 	return "", fmt.Errorf("target has no color")
@@ -32,19 +31,19 @@ func ConvPosToByte(position types.Position) byte {
 func HasNeighbor(currentNode byte, direction string) bool {
 	switch direction {
 	case "top":
-		if bitOperations.HasBit(currentNode, 3) {
+		if HasBit(currentNode, 3) {
 			return true
 		}
 	case "bottom":
-		if bitOperations.HasBit(currentNode, 2) {
+		if HasBit(currentNode, 2) {
 			return true
 		}
 	case "left":
-		if bitOperations.HasBit(currentNode, 1) {
+		if HasBit(currentNode, 1) {
 			return true
 		}
 	case "right":
-		if bitOperations.HasBit(currentNode, 0) {
+		if HasBit(currentNode, 0) {
 			return true
 		}
 	}
