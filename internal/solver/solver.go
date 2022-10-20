@@ -1,12 +1,12 @@
 package solver
 
 import (
-	"../config"
-	"../helper"
-	"../output"
-	"../priorityQueue"
-	"../tracker"
-	"../types"
+	"Ricochet-Robot-Solver/internal/config"
+	"Ricochet-Robot-Solver/internal/helper"
+	"Ricochet-Robot-Solver/internal/output"
+	"Ricochet-Robot-Solver/internal/priorityQueue"
+	"Ricochet-Robot-Solver/internal/tracker"
+	"Ricochet-Robot-Solver/internal/types"
 	"fmt"
 	"math"
 	"sort"
