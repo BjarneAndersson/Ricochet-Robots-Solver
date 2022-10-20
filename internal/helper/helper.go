@@ -1,8 +1,8 @@
 package helper
 
 import (
-	"../bitOperations"
-	"../types"
+	"Ricochet-Robot-Solver/internal/bitOperations"
+	"Ricochet-Robot-Solver/internal/types"
 	"fmt"
 	"math"
 )

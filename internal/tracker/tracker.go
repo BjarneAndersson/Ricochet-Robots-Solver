@@ -1,8 +1,8 @@
 package tracker
 
 import (
-	"../config"
-	"../types"
+	"Ricochet-Robot-Solver/internal/config"
+	"Ricochet-Robot-Solver/internal/types"
 	"time"
 )
 
