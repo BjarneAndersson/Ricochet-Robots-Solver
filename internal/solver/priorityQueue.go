@@ -22,7 +22,7 @@ func (pq *priorityQueue) Push(item item) {
 
 func (pq *priorityQueue) sortQueue() {
 	// We want Pop to give us the lowest, not highest, priority, so we use less than here.
-	sort.Slice(pq, func(i, j int) bool {
+	sort.Slice(*pq, func(i, j int) bool {
 		return calcPriority((*pq)[i].HAndGScore) < calcPriority((*pq)[j].HAndGScore)
 	})
 }
