@@ -8,6 +8,7 @@ import (
 	"github.com/fatih/color"
 )
 
+// Neighbors Prints per node the direction of the neighbors
 func Neighbors(board *types.Board) (err error) {
 	fmt.Printf("\n\n====================\n")
 	for rowIndex := range board.Grid {
@@ -40,6 +41,7 @@ func Neighbors(board *types.Board) (err error) {
 	return nil
 }
 
+// BoardState Prints the board state and current tracking data
 func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSolver) (err error) {
 	boardStateInBits, err := convertNumberToBits(int(boardState), 32)
 	if err != nil {
@@ -51,13 +53,14 @@ func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSo
 
 	robots := helper.SeparateRobots(boardState)
 	for _, robotPosition := range robots {
-		fmt.Printf("%+v\n", helper.ConvBytePositionToPosition(robotPosition))
+		fmt.Printf("%+v\n", helper.ConvBytePositionToPosition(byte(robotPosition)))
 	}
 	fmt.Printf("Initialized states: %v | Evaluated states: %v\n", trackingData.InitializedBoardStates, trackingData.EvaluatedBoardStates)
 	fmt.Printf("====================\n")
 	return nil
 }
 
+// Path Prints out the path from start state to end state
 func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robotOrder types.RobotOrder) (err error) {
 	fmt.Printf("\n\n====================\n")
 	fmt.Printf("Moves\t%d\n", len(path)-1)
@@ -83,7 +86,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 				if err != nil {
 					return err
 				}
-				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(robotPosition))
+				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(byte(robotPosition)))
 
 				switch robotColor {
 				case "yellow":
@@ -128,7 +131,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 				if err != nil {
 					return err
 				}
-				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(robotPosition))
+				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(byte(robotPosition)))
 
 				switch robotColor {
 				case "yellow":
@@ -171,7 +174,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 				if err != nil {
 					return err
 				}
-				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(robotPosition))
+				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(byte(robotPosition)))
 
 				switch robotColor {
 				case "yellow":
@@ -197,6 +200,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 	return nil
 }
 
+// RobotStoppingPositions Prints per node the stopping positions of a theoretical moved robot per direction
 func RobotStoppingPositions(robotStoppingPositions *types.RobotStoppingPositions) (err error) {
 	fmt.Printf("\n\n====================\n")
 	for nodePosition, stoppingPositions := range *robotStoppingPositions {
@@ -210,6 +214,7 @@ func RobotStoppingPositions(robotStoppingPositions *types.RobotStoppingPositions
 	return nil
 }
 
+// convertNumberToBits Converts a number into a representation as bits
 func convertNumberToBits(number int, fill int) (string, error) {
 	switch fill {
 	case 4:
@@ -222,6 +227,7 @@ func convertNumberToBits(number int, fill int) (string, error) {
 	return "", fmt.Errorf("invalid operation")
 }
 
+// getRobotColorByIndex Returns the color name of the robot at the given index
 func getRobotColorByIndex(robotOrder types.RobotOrder, index uint8) (string, error) {
 	robotColorCode := helper.GetRobotColorCodeByIndex(robotOrder, index)
 
@@ -238,6 +244,7 @@ func getRobotColorByIndex(robotOrder types.RobotOrder, index uint8) (string, err
 	return "", fmt.Errorf("index out of range")
 }
 
+// getMovedRobotColorAndDirection Returns the moved robot color name and the direction
 func getMovedRobotColorAndDirection(previousBoardState types.BoardState, currentBoardState types.BoardState, robotOrder types.RobotOrder) (robotColor string, direction string, err error) {
 	preRobots := helper.SeparateRobots(previousBoardState)
 	curRobots := helper.SeparateRobots(currentBoardState)
@@ -265,9 +272,10 @@ func getMovedRobotColorAndDirection(previousBoardState types.BoardState, current
 	return robotColor, direction, nil
 }
 
-func evaluateDirectionChange(previousRobot byte, currentRobot byte) (direction string, err error) {
-	preRobotPos := helper.ConvBytePositionToPosition(previousRobot)
-	curRobotPos := helper.ConvBytePositionToPosition(currentRobot)
+// evaluateDirectionChange Returns the direction the robot moved
+func evaluateDirectionChange(previousRobot types.Robot, currentRobot types.Robot) (direction string, err error) {
+	preRobotPos := helper.ConvBytePositionToPosition(byte(previousRobot))
+	curRobotPos := helper.ConvBytePositionToPosition(byte(currentRobot))
 
 	if preRobotPos.Column > curRobotPos.Column {
 		return "left", nil
@@ -282,6 +290,7 @@ func evaluateDirectionChange(previousRobot byte, currentRobot byte) (direction s
 	return "", fmt.Errorf("robot position has not changed")
 }
 
+// getNewRobotOrder Calculated the new robot order based on the old order and the new robots
 func getNewRobotOrder(previousBoardState types.BoardState, previousRobotOrder types.RobotOrder, currentBoardState types.BoardState) (currentRobotOrder types.RobotOrder, err error) {
 	previousRobots := helper.SeparateRobots(previousBoardState)
 	currentRobots := helper.SeparateRobots(currentBoardState)
@@ -310,7 +319,8 @@ func getNewRobotOrder(previousBoardState types.BoardState, previousRobotOrder ty
 	return currentRobotOrder, nil
 }
 
-func robotInRobots(robot byte, robots [4]byte) (exist bool, index int) {
+// robotInRobots Checks if the robot is in the robots
+func robotInRobots(robot types.Robot, robots [4]types.Robot) (exist bool, index int) {
 	for iterIndexRobot, iterRobot := range robots {
 		if iterRobot == robot {
 			return true, iterIndexRobot

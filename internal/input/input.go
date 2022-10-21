@@ -9,6 +9,7 @@ import (
 	"sort"
 )
 
+// GetData Manages the complete data loading process and returns the formatted data
 func GetData(boardDataLocation string) (board types.Board, initBoardState types.BoardState, initRobotOrder types.RobotOrder, robotStoppingPositions types.RobotStoppingPositions, err error) {
 	data, err := getJsonData(boardDataLocation)
 	if err != nil {
@@ -33,8 +34,8 @@ func GetData(boardDataLocation string) (board types.Board, initBoardState types.
 	return board, initBoardState, initRobotOrder, robotStoppingPositions, nil
 }
 
+// getInitBoardState Builds the initial board state based on the board configuration
 func getInitBoardState(board *types.Board, initRobotPositions [4]byte) (initBoardState types.BoardState, initRobotOrder types.RobotOrder, err error) {
-
 	targetColor, err := helper.GetTargetColor(board.Target)
 	if err != nil {
 		return 0, 0, err
@@ -89,6 +90,7 @@ func getInitBoardState(board *types.Board, initRobotPositions [4]byte) (initBoar
 	return initBoardState, initRobotOrder, nil
 }
 
+// getJsonDate Loads the json date into a byte array
 func getJsonData(path string) (jsonData []byte, err error) {
 	jsonData, err = os.ReadFile(path)
 	if err != nil {
@@ -97,6 +99,7 @@ func getJsonData(path string) (jsonData []byte, err error) {
 	return jsonData, nil
 }
 
+// loadData Loads the json byte array into the predefined data structure
 func loadData(data []byte) (board types.Board, initRobotPositions [4]byte, err error) {
 	var rawBoard types.RawBoard
 	err = json.Unmarshal(data, &rawBoard)
@@ -111,32 +114,33 @@ func loadData(data []byte) (board types.Board, initRobotPositions [4]byte, err e
 		return types.Board{}, [4]byte{}, err
 	}
 
-	err = precomputation.PrecomputeBoard(&board)
+	// precompute the minimal moves that a robot has to make in order to get to the target node, if it could stop wherever it wants
+	err = precomputation.PrecomputeMinimalMoveCounts(&board)
 
 	return board, initRobotPositions, nil
 }
 
-// convData convert board_data in json format to board_data byte format
+// convData Translates the raw data into the optimized data structure
 func convData(data types.RawBoard) (board types.Board, initRobotPositions [4]byte, err error) {
 	// node conversion
 	for rowIndex := 0; rowIndex < 16; rowIndex++ {
 		for columnIndex := 0; columnIndex < 16; columnIndex++ {
-			var cell byte
+			var node types.Node
 
 			// distance between node and target
-			helper.SetBit(&cell, 7, true)
-			helper.SetBit(&cell, 6, true)
-			helper.SetBit(&cell, 5, true)
+			helper.SetBit((*byte)(&node), 7, true)
+			helper.SetBit((*byte)(&node), 6, true)
+			helper.SetBit((*byte)(&node), 5, true)
 
-			helper.SetBit(&cell, 4, false) // is a robot present
+			helper.SetBit((*byte)(&node), 4, false) // is a robot present
 
 			// neighbors
-			helper.SetBit(&cell, 3, true)
-			helper.SetBit(&cell, 2, true)
-			helper.SetBit(&cell, 1, true)
-			helper.SetBit(&cell, 0, true)
+			helper.SetBit((*byte)(&node), 3, true)
+			helper.SetBit((*byte)(&node), 2, true)
+			helper.SetBit((*byte)(&node), 1, true)
+			helper.SetBit((*byte)(&node), 0, true)
 
-			board.Grid[rowIndex][columnIndex] = cell
+			board.Grid[rowIndex][columnIndex] = node
 		}
 	}
 
@@ -146,55 +150,55 @@ func convData(data types.RawBoard) (board types.Board, initRobotPositions [4]byt
 		case "top":
 			rowIndex := 0
 			for columnIndex := 0; columnIndex < 16; columnIndex++ {
-				helper.SetBit(&(board.Grid[rowIndex][columnIndex]), 3, false)
+				helper.SetBit((*byte)(&(board.Grid[rowIndex][columnIndex])), 3, false)
 			}
 		case "bottom":
 			rowIndex := 15
 			for columnIndex := 0; columnIndex < 16; columnIndex++ {
-				helper.SetBit(&(board.Grid[rowIndex][columnIndex]), 2, false)
+				helper.SetBit((*byte)(&(board.Grid[rowIndex][columnIndex])), 2, false)
 			}
 		case "left":
 			columnIndex := 0
 			for rowIndex := 0; rowIndex < 16; rowIndex++ {
-				helper.SetBit(&(board.Grid[rowIndex][columnIndex]), 1, false)
+				helper.SetBit((*byte)(&(board.Grid[rowIndex][columnIndex])), 1, false)
 			}
 		case "right":
 			columnIndex := 15
 			for rowIndex := 0; rowIndex < 16; rowIndex++ {
-				helper.SetBit(&(board.Grid[rowIndex][columnIndex]), 0, false)
+				helper.SetBit((*byte)(&(board.Grid[rowIndex][columnIndex])), 0, false)
 			}
 		}
 	}
 
-	// add walls to the board
+	// add walls to the board -> set the designated  bits of the nodes
 	for _, wall := range data.Walls {
 
 		switch wall.Direction1 {
 		case "top":
-			helper.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 3, false)
+			helper.SetBit((*byte)(&(board.Grid[wall.Position1.Row][wall.Position1.Column])), 3, false)
 		case "bottom":
-			helper.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 2, false)
+			helper.SetBit((*byte)(&(board.Grid[wall.Position1.Row][wall.Position1.Column])), 2, false)
 		case "left":
-			helper.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 1, false)
+			helper.SetBit((*byte)(&(board.Grid[wall.Position1.Row][wall.Position1.Column])), 1, false)
 		case "right":
-			helper.SetBit(&(board.Grid[wall.Position1.Row][wall.Position1.Column]), 0, false)
+			helper.SetBit((*byte)(&(board.Grid[wall.Position1.Row][wall.Position1.Column])), 0, false)
 		}
 
 		switch wall.Direction2 {
 		case "top":
-			helper.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 3, false)
+			helper.SetBit((*byte)(&(board.Grid[wall.Position2.Row][wall.Position2.Column])), 3, false)
 		case "bottom":
-			helper.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 2, false)
+			helper.SetBit((*byte)(&(board.Grid[wall.Position2.Row][wall.Position2.Column])), 2, false)
 		case "left":
-			helper.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 1, false)
+			helper.SetBit((*byte)(&(board.Grid[wall.Position2.Row][wall.Position2.Column])), 1, false)
 		case "right":
-			helper.SetBit(&(board.Grid[wall.Position2.Row][wall.Position2.Column]), 0, false)
+			helper.SetBit((*byte)(&(board.Grid[wall.Position2.Row][wall.Position2.Column])), 0, false)
 		}
 	}
 
 	// target conversion
 	var targetColorAndSymbol byte
-	targetPosition := helper.ConvPosToByte(data.Target.Position)
+	targetPosition := helper.ConvPositionToByte(data.Target.Position)
 
 	switch data.Target.Color {
 	case "yellow":
@@ -218,13 +222,13 @@ func convData(data types.RawBoard) (board types.Board, initRobotPositions [4]byt
 		helper.SetBit(&targetColorAndSymbol, 0, true)
 	}
 
-	board.Target = uint16(targetColorAndSymbol)<<8 | uint16(targetPosition)
+	board.Target = types.Target(uint16(targetColorAndSymbol)<<8 | uint16(targetPosition))
 
 	// Robot conversion
 	for colorIndex, color := range [4]string{"yellow", "red", "green", "blue"} {
 		for _, robot := range data.Robots {
 			if color == robot.Color {
-				initRobotPositions[colorIndex] = helper.ConvPosToByte(robot.Position)
+				initRobotPositions[colorIndex] = helper.ConvPositionToByte(robot.Position)
 			}
 		}
 	}
