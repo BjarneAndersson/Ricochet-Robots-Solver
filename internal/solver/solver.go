@@ -11,7 +11,7 @@ import (
 	"sort"
 )
 
-// reconstruct the path of board states if solution was found
+// reconstructPath Reconstructs the path of board states, if a solution was found
 func reconstructPath(cameFrom []uint64, endBoardState types.BoardState) (path []types.BoardState, err error) {
 	path = append(path, endBoardState)
 	currentBoardState := endBoardState
@@ -73,7 +73,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 		}
 
 		for indexRobot, robot := range helper.SeparateRobots(currentBoardState) {
-			robotPosition := helper.ConvBytePositionToPosition(robot)
+			robotPosition := helper.ConvBytePositionToPosition(byte(robot))
 			node := board.Grid[robotPosition.Row][robotPosition.Column]
 
 			for _, direction := range []string{"top", "bottom", "left", "right"} {
@@ -127,6 +127,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 	return trackingData, []types.BoardState{}, fmt.Errorf("no route found")
 }
 
+// calcHScore Gets the minimal move count of from the node the active robot is currently on
 func calcHScore(board *types.Board, boardState types.BoardState) (hScore uint8) {
 	activeRobotPosition := helper.ConvBytePositionToPosition(uint8((boardState & (255 << 24)) >> 24))
 
@@ -138,8 +139,8 @@ func calcHScore(board *types.Board, boardState types.BoardState) (hScore uint8) 
 	return hScore
 }
 
-// CreateNewBoardState Creates a new board state based on the robots passed as parameters
-func CreateNewBoardState(robots [4]byte) types.BoardState {
+// CreateNewBoardState Creates a new board state based on the robot positions
+func CreateNewBoardState(robots [4]types.Robot) types.BoardState {
 	tRobots := robots
 
 	// sort none active robots
@@ -151,7 +152,7 @@ func CreateNewBoardState(robots [4]byte) types.BoardState {
 	return types.BoardState(uint32(robots[0])<<24 | uint32(robotsSlice[0])<<16 | uint32(robotsSlice[1])<<8 | uint32(robotsSlice[2])<<0)
 }
 
-// calculateStoppingPosition Calculate the stopping position from the given start position and direction
+// calculateStoppingPosition Calculates the stopping position from the given start position and direction
 func calculateStoppingPosition(robotStoppingPositions *types.RobotStoppingPositions, boardState types.BoardState, startNodePosition types.Position, direction string) (stoppingPosition types.Position) {
 	// get the precomputed stopping position of the given position and direction
 	switch direction {
@@ -172,7 +173,7 @@ func calculateStoppingPosition(robotStoppingPositions *types.RobotStoppingPositi
 
 	// check if robots are in the path
 	for _, robot := range helper.SeparateRobots(boardState) {
-		robotPosition := helper.ConvBytePositionToPosition(robot)
+		robotPosition := helper.ConvBytePositionToPosition(byte(robot))
 
 		if robotPosition == startNodePosition {
 			continue
@@ -201,12 +202,13 @@ func calculateStoppingPosition(robotStoppingPositions *types.RobotStoppingPositi
 	return stoppingPosition
 }
 
-// moveRobot Move robot to end position
-func moveRobot(robots [4]byte, robotIndex uint8, endPosition types.Position) [4]byte {
-	robots[robotIndex] = helper.ConvPosToByte(endPosition)
+// moveRobot Moves the robot to the end position
+func moveRobot(robots [4]types.Robot, robotIndex uint8, endPosition types.Position) [4]types.Robot {
+	robots[robotIndex] = types.Robot(helper.ConvPositionToByte(endPosition))
 	return robots
 }
 
+// isBoardStateInOpenSet Checks if the board state is in the open set
 func isBoardStateInOpenSet(openSet *priorityQueue, boardState types.BoardState) bool {
 	for _, iterateBoardState := range *openSet {
 		if iterateBoardState.Value == boardState {
@@ -216,6 +218,7 @@ func isBoardStateInOpenSet(openSet *priorityQueue, boardState types.BoardState) 
 	return false
 }
 
+// isBoardStateInClosedSet Checks if the board state is in the closed set
 func isBoardStateInClosedSet(closedSet *[]types.BoardState, boardState types.BoardState) bool {
 	for _, iterateBoardState := range *closedSet {
 		if iterateBoardState == boardState {

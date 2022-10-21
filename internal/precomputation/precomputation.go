@@ -5,7 +5,8 @@ import (
 	"Ricochet-Robot-Solver/internal/types"
 )
 
-func PrecomputeBoard(board *types.Board) (err error) {
+// PrecomputeMinimalMoveCounts Computes the minimum number of moves that a theoretical robot has to make for each node to get to the target if it could stop everywhere
+func PrecomputeMinimalMoveCounts(board *types.Board) (err error) {
 	var status [16][16]bool
 
 	targetPosition := helper.ConvTargetPositionToPosition(board.Target)
@@ -50,10 +51,12 @@ func PrecomputeBoard(board *types.Board) (err error) {
 	return nil
 }
 
-func setMoveCount(pB *byte, moveCount uint8) {
-	*pB = (31 & *pB) | (moveCount << 5)
+// setMoveCount Sets the minimal move count of a node to the target
+func setMoveCount(pB *types.Node, moveCount uint8) {
+	*pB = types.Node((31 & uint8(*pB)) | (moveCount << 5))
 }
 
+// PrecomputeRobotMoves Computes the stopping positions of a robot in every direction of a node
 func PrecomputeRobotMoves(board *types.Board) (robotStoppingPositions types.RobotStoppingPositions, err error) {
 	for rowIndex := 0; rowIndex < 16; rowIndex++ {
 		for columnIndex := 0; columnIndex < 16; columnIndex++ {
@@ -75,6 +78,7 @@ func PrecomputeRobotMoves(board *types.Board) (robotStoppingPositions types.Robo
 	return robotStoppingPositions, nil
 }
 
+// calculateRobotStoppingPosition Evaluates the stopping position of the robot in the direction
 func calculateRobotStoppingPosition(board *types.Board, startNodePosition types.Position, direction string) byte {
 	cNodePosition := startNodePosition
 	cNode := board.Grid[cNodePosition.Row][cNodePosition.Column]
@@ -94,5 +98,5 @@ func calculateRobotStoppingPosition(board *types.Board, startNodePosition types.
 		cNode = board.Grid[cNodePosition.Row][cNodePosition.Column]
 	}
 
-	return helper.ConvPosToByte(cNodePosition)
+	return helper.ConvPositionToByte(cNodePosition)
 }
