@@ -59,9 +59,9 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 	}
 	trackingData.InitializedBoardStates += 1
 
-	for openSet.Len() > 0 {
+	for openSet.len() > 0 {
 		// get the item with the lowest f score
-		currentPriorityQueueItem := openSet.Pop()
+		currentPriorityQueueItem := openSet.pop()
 		currentBoardState := currentPriorityQueueItem.Value
 
 		// output current board state based on the configuration
@@ -98,7 +98,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 					cameFrom = append(cameFrom, (uint64(newBoardState)<<32)|uint64(currentBoardState))
 
 					// calculate g score: current g score + 1
-					gScoreNewBoardState := GetGScore(currentPriorityQueueItem.HAndGScore) + 1
+					gScoreNewBoardState := getGScore(currentPriorityQueueItem.HAndGScore) + 1
 
 					// calculate h score: prediction of minimal moves to go
 					hScoreNewBoardState := calcHScore(board, newBoardState)
@@ -112,10 +112,10 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 					}
 
 					// add the new board state to the queue
-					openSet.Push(
+					openSet.push(
 						item{
 							Value:      newBoardState,
-							HAndGScore: CombineHAndGScore(gScoreNewBoardState, hScoreNewBoardState),
+							HAndGScore: combineHAndGScore(gScoreNewBoardState, hScoreNewBoardState),
 						})
 				}
 

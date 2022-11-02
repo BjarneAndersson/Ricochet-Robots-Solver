@@ -13,38 +13,38 @@ type item struct {
 
 type priorityQueue []item
 
-func (pq *priorityQueue) Len() int { return len(*pq) }
+func (pq *priorityQueue) len() int { return len(*pq) }
 
-func (pq *priorityQueue) Push(item item) {
+func (pq *priorityQueue) push(item item) {
 	*pq = append(*pq, item)
 	pq.sortQueue()
 }
 
 func (pq *priorityQueue) sortQueue() {
-	// We want Pop to give us the lowest, not highest, priority, so we use less than here.
+	// We want pop to give us the lowest, not highest, priority, so we use less than here.
 	sort.Slice(*pq, func(i, j int) bool {
 		return calcPriority((*pq)[i].HAndGScore) < calcPriority((*pq)[j].HAndGScore)
 	})
 }
 
-func (pq *priorityQueue) Pop() item {
+func (pq *priorityQueue) pop() item {
 	item := (*pq)[0]
 	*pq = append((*pq)[:0], (*pq)[1:]...)
 	return item
 }
 
-func CombineHAndGScore(gScore uint8, hScore uint8) uint8 {
+func combineHAndGScore(gScore uint8, hScore uint8) uint8 {
 	return (hScore << 5) | gScore
 }
 
 func calcPriority(hAndGScore byte) uint8 {
-	return GetHScore(hAndGScore) + GetGScore(hAndGScore)
+	return getHScore(hAndGScore) + getGScore(hAndGScore)
 }
 
-func GetHScore(hAndGScore byte) uint8 {
+func getHScore(hAndGScore byte) uint8 {
 	return (hAndGScore & (7 << 5)) >> 5
 }
 
-func GetGScore(hAndGScore byte) uint8 {
+func getGScore(hAndGScore byte) uint8 {
 	return hAndGScore & 31
 }
