@@ -66,7 +66,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 	fmt.Printf("Moves\t%d\n", len(path)-1)
 	fmt.Printf("Time\t%s\n", trackingData.Duration)
 	fmt.Printf("Path\t%+v\n", path)
-	fmt.Printf("Initialized states: %v | Evaluated states: %v | States per second: %v\n", trackingData.InitializedBoardStates, trackingData.EvaluatedBoardStates, 100000000*trackingData.EvaluatedBoardStates/uint(trackingData.Duration))
+	fmt.Printf("Initialized states: %v | Evaluated states: %v | States per second: %v\n", trackingData.InitializedBoardStates, trackingData.EvaluatedBoardStates, 1000000000*trackingData.EvaluatedBoardStates/uint(trackingData.Duration))
 	fmt.Println("")
 
 	var previousBoardState types.BoardState
