@@ -67,7 +67,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 	fmt.Printf("Time\t%s\n", trackingData.Duration)
 	fmt.Printf("Path\t%+v\n", path)
 	fmt.Printf("Initialized states: %v | Evaluated states: %v | States per second: %v\n", trackingData.InitializedBoardStates, trackingData.EvaluatedBoardStates, 1000000000*trackingData.EvaluatedBoardStates/uint(trackingData.Duration))
-	fmt.Println("")
+	fmt.Println("\n--------PATH--------\n")
 
 	var previousBoardState types.BoardState
 	var previousRobotOrder = robotOrder
@@ -78,36 +78,17 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 			return err
 		}
 
-		switch indexBoardState {
-		case 0:
-			fmt.Printf("Start\t| ")
-			for indexRobot, robotPosition := range robots {
-				robotColor, err := getRobotColorByIndex(robotOrder, uint8(indexRobot))
-				if err != nil {
-					return err
-				}
-				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(byte(robotPosition)))
-
-				switch robotColor {
-				case "yellow":
-					color.HiYellow(msg)
-				case "red":
-					color.HiRed(msg)
-				case "green":
-					color.HiGreen(msg)
-				case "blue":
-					color.HiBlue(msg)
-				}
-			}
+		if indexBoardState == 0 {
+			fmt.Printf("Start\n")
 
 			previousBoardState = boardState
-		case len(path) - 1:
+		} else {
 			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, cRobotOrder)
 			if err != nil {
 				return err
 			}
 
-			fmt.Println("")
+			fmt.Printf("Move: %v\t| ", indexBoardState)
 
 			switch robotColor {
 			case "yellow":
@@ -120,54 +101,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 				color.HiBlue(direction)
 			}
 
-			fmt.Println("")
-
 			previousBoardState = boardState
-
-			fmt.Printf("\nFinish\t| ")
-
-			for indexRobot, robotPosition := range robots {
-				robotColor, err := getRobotColorByIndex(cRobotOrder, uint8(indexRobot))
-				if err != nil {
-					return err
-				}
-				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(byte(robotPosition)))
-
-				switch robotColor {
-				case "yellow":
-					color.HiYellow(msg)
-				case "red":
-					color.HiRed(msg)
-				case "green":
-					color.HiGreen(msg)
-				case "blue":
-					color.HiBlue(msg)
-				}
-			}
-		default:
-			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, cRobotOrder)
-			if err != nil {
-				return err
-			}
-
-			fmt.Println("")
-
-			switch robotColor {
-			case "yellow":
-				color.HiYellow(direction)
-			case "red":
-				color.HiRed(direction)
-			case "green":
-				color.HiGreen(direction)
-			case "blue":
-				color.HiBlue(direction)
-			}
-
-			fmt.Println("")
-
-			previousBoardState = boardState
-
-			fmt.Printf("\nMove: %v\t| ", indexBoardState)
 
 			for indexRobot, robotPosition := range robots {
 				robotColor, err := getRobotColorByIndex(cRobotOrder, uint8(indexRobot))
@@ -189,11 +123,10 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 			}
 		}
 
-		if indexBoardState != 0 {
-
-		} else if indexBoardState == 0 {
-			previousBoardState = boardState
+		if indexBoardState == (len(path) - 1) {
+			fmt.Printf("\nFinish")
 		}
+
 		fmt.Println("")
 	}
 	fmt.Printf("====================\n")
