@@ -1,10 +1,12 @@
 package types
 
+// Position of Column and Row
 type Position struct {
 	Column byte `json:"column"`
 	Row    byte `json:"row"`
 }
 
+// Neighbors Defines in which direction neighbors are
 type Neighbors struct {
 	Up    bool `json:"top"`
 	Down  bool `json:"bottom"`
@@ -12,6 +14,7 @@ type Neighbors struct {
 	Right bool `json:"right"`
 }
 
+// Wall defines a wall between two positions
 type Wall struct {
 	Position1  Position `json:"position1"`
 	Position2  Position `json:"position2"`
@@ -19,6 +22,7 @@ type Wall struct {
 	Direction2 string   `json:"direction2"`
 }
 
+// RawRobot Used in data import to easily manage the attributes
 type RawRobot struct {
 	Color    string `json:"color"`
 	Position Position
@@ -31,18 +35,20 @@ type RobotColor byte
 type RobotOrder byte
 
 const (
-	RobotColorYellow RobotColor = iota
-	RobotColorRed    RobotColor = iota
-	RobotColorGreen  RobotColor = iota
-	RobotColorBlue   RobotColor = iota
+	RobotColorYellow RobotColor = iota // RobotColorYellow Transforms RobotColor into an integer enum - Yellow = 0
+	RobotColorRed    RobotColor = iota // RobotColorYellow Transforms RobotColor into an integer enum - Red = 1
+	RobotColorGreen  RobotColor = iota // RobotColorYellow Transforms RobotColor into an integer enum - Green = 2
+	RobotColorBlue   RobotColor = iota // RobotColorYellow Transforms RobotColor into an integer enum - Blue = 3
 )
 
+// RawTarget Used in data import to easily manage the attributes
 type RawTarget struct {
 	Color    string `json:"color"`
 	Symbol   string `json:"symbol"`
 	Position Position
 }
 
+// RawBoard Used in data import to easily manage the attributes
 type RawBoard struct {
 	Walls  []Wall     `json:"walls"`
 	Robots []RawRobot `json:"robots"`
@@ -72,4 +78,6 @@ type Board struct {
 	Target Target
 }
 
+// RobotStoppingPositions represents a matrix of robot stopping position. These positions are calculated by the assumption, that every robot could stop wherever it wants to.
+// The four calculated positions are packed into one uint32 in the following order: up, down, left, right (bit 31 -> 0). Each position consist of a column (bit: 7-4) and a row (bit: 3-0).
 type RobotStoppingPositions [16][16]uint32
