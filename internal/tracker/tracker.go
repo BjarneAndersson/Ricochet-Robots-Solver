@@ -6,24 +6,18 @@ import (
 	"time"
 )
 
-func Duration(f func()) time.Duration {
-	start := time.Now()
-
-	f()
-
-	return time.Since(start)
-}
-
+// TrackingDataSolver Collects the tracking data in a central structure
 type TrackingDataSolver struct {
 	InitializedBoardStates uint
-	EvaluatedBoardStates   uint8
+	EvaluatedBoardStates   uint
 	Duration               time.Duration
 }
 
-func TrackSolver(solver func(*types.Board, types.BoardState, config.Config) (TrackingDataSolver, []types.BoardState, error), board *types.Board, initBoardState types.BoardState, conf config.Config) (path []types.BoardState, trackingData TrackingDataSolver, err error) {
+// TrackSolver Tracks the solver during the execution and returns the measurements
+func TrackSolver(solver func(*types.Board, types.BoardState, *types.RobotStoppingPositions, config.Config) (TrackingDataSolver, []types.BoardState, error), board *types.Board, initBoardState types.BoardState, robotStoppingPositions *types.RobotStoppingPositions, conf config.Config) (path []types.BoardState, trackingData TrackingDataSolver, err error) {
 	start := time.Now()
 
-	trackingData, path, err = solver(board, initBoardState, conf)
+	trackingData, path, err = solver(board, initBoardState, robotStoppingPositions, conf)
 
 	trackingData.Duration = time.Since(start)
 
