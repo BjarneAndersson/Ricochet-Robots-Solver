@@ -1,5 +1,5 @@
 mode: 'debug'
-board_data_location: 'test\data\test.json'
+board_data_location: 'test/data/9c.json'
 
 modes:
   default:

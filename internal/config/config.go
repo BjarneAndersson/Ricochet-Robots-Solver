@@ -21,7 +21,7 @@ type Config struct {
 
 // GetConfig Transform the yaml configuration into a Config struct
 func GetConfig(filename string) (conf Config, err error) {
-	yamlFile, err := os.ReadFile("config\\" + filename + ".yaml")
+	yamlFile, err := os.ReadFile("config/" + filename + ".yaml")
 	if err != nil {
 		return Config{}, err
 	}
