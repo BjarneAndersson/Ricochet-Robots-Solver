@@ -2,38 +2,48 @@ package solver
 
 import (
 	"Ricochet-Robot-Solver/internal/types"
-	"sort"
 )
 
 // An item is an element of a priority queue.
 type item struct {
 	Value      types.BoardState
 	HAndGScore uint8
+	index      int
 }
 
-type priorityQueue []item
+type priorityQueue []*item
 
-// len Returns the item count of the priority queue
-func (pq *priorityQueue) len() int { return len(*pq) }
+// Len Returns the item count of the priority queue
+func (pq priorityQueue) Len() int { return len(pq) }
 
-// push Appends the item to the priorityQueue and runs sortQueue
-func (pq *priorityQueue) push(item item) {
+// Less compares the priority of two items
+func (pq priorityQueue) Less(i, j int) bool {
+	return calcPriority(pq[i].HAndGScore) < calcPriority(pq[j].HAndGScore)
+}
+
+// Swap switches the index of two items
+func (pq priorityQueue) Swap(i, j int) {
+	pq[i], pq[j] = pq[j], pq[i]
+	pq[i].index = i
+	pq[j].index = j
+}
+
+// Push Appends the item to the priorityQueue and runs sortQueue
+func (pq *priorityQueue) Push(x any) {
+	n := len(*pq)
+	item := x.(*item)
+	item.index = n
 	*pq = append(*pq, item)
-	pq.sortQueue()
 }
 
-// sortQueue Sorts the priorityQueue according to the sum of item.HAndGScore
-func (pq *priorityQueue) sortQueue() {
-	// We want pop to give us the lowest, not highest, priority, so we use less than here.
-	sort.Slice(*pq, func(i, j int) bool {
-		return calcPriority((*pq)[i].HAndGScore) < calcPriority((*pq)[j].HAndGScore)
-	})
-}
-
-// pop Returns the item with the least priority from the queue and removes it
-func (pq *priorityQueue) pop() item {
-	item := (*pq)[0]
-	*pq = append((*pq)[:0], (*pq)[1:]...)
+// Pop removes and return the item with the lowest priority
+func (pq *priorityQueue) Pop() any {
+	old := *pq
+	n := len(old)
+	item := old[n-1]
+	old[n-1] = nil  // avoid memory leak
+	item.index = -1 // for safety
+	*pq = old[0 : n-1]
 	return item
 }
 
