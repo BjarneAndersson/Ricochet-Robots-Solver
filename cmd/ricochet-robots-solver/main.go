@@ -7,11 +7,28 @@ import (
 	"Ricochet-Robot-Solver/internal/solver"
 	"Ricochet-Robot-Solver/internal/tracker"
 	"log"
+	_ "net/http/pprof"
+	"os"
+	"runtime"
+	"runtime/pprof"
 )
 
 func main() {
 	// get program config
 	conf, err := config.GetConfig("config")
+
+	// profiler
+	if conf.Mode == "profiler" {
+		cpu, err := os.Create("profiling/cpu.prof")
+		if err != nil {
+			log.Fatal(err)
+		}
+		err = pprof.StartCPUProfile(cpu)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer pprof.StopCPUProfile()
+	}
 
 	// transform json data to board object
 	board, initBoardState, initRobotOrder, robotStoppingPositions, err := input.GetData(conf.BoardDataLocation)
@@ -45,5 +62,23 @@ func main() {
 	err = output.Path(path, trackingData, initRobotOrder)
 	if err != nil {
 		return
+	}
+
+	// profiler
+	if conf.Mode == "profiler" {
+		runtime.GC()
+		mem, err := os.Create("profiling/memory.prof")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer func(mem *os.File) {
+			err := mem.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
+		}(mem)
+		if err := pprof.WriteHeapProfile(mem); err != nil {
+			log.Fatal(err)
+		}
 	}
 }

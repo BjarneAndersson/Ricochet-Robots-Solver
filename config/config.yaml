@@ -1,4 +1,4 @@
-mode: 'debug'
+mode: 'default'
 board_data_location: 'test/data/9c.json'
 
 modes:
@@ -13,3 +13,9 @@ modes:
       node_neighbors: true
       board_states: true
       robot_stopping_positions: true
+
+  profiler:
+    output:
+      node_neighbors: false
+      board_states: false
+      robot_stopping_positions: false
