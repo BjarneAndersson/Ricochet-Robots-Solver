@@ -1,4 +1,4 @@
-mode: 'default'
+mode: 'profiler'
 board_data_location: 'test/data/9c.json'
 
 modes:
