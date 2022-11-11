@@ -1,5 +1,5 @@
 mode: 'profiler'
-board_data_location: 'test/data/9c.json'
+board_data_location: 'test/data/22c.json'
 
 modes:
   default:
