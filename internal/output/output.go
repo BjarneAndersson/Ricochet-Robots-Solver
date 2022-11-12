@@ -65,7 +65,8 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 	fmt.Printf("\n\n====================\n")
 	fmt.Printf("Moves\t%d\n", len(path)-1)
 	fmt.Printf("Time\t%s\n", trackingData.Duration)
-	fmt.Printf("Path\t%+v\n", path)
+	robotOrderInBits, _ := convertNumberToBits(int(robotOrder), 8)
+	fmt.Printf("Path\t%+v\t%+v\n", path, robotOrderInBits)
 	fmt.Printf("Initialized states: %v | Evaluated states: %v | States per second: %v\n", trackingData.InitializedBoardStates, trackingData.EvaluatedBoardStates, 1000000000*trackingData.EvaluatedBoardStates/uint(trackingData.Duration))
 	fmt.Println("\n--------PATH--------\n")
 
@@ -82,13 +83,39 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 			fmt.Printf("Start\n")
 
 			previousBoardState = boardState
+
+			for indexRobot, robotPosition := range robots {
+				robotColor, err := getRobotColorByIndex(robotOrder, uint8(indexRobot))
+				if err != nil {
+					return err
+				}
+				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(byte(robotPosition)))
+
+				switch robotColor {
+				case "yellow":
+					color.HiYellow(msg)
+				case "red":
+					color.HiRed(msg)
+				case "green":
+					color.HiGreen(msg)
+				case "blue":
+					color.HiBlue(msg)
+				}
+			}
+
+			previousRobotOrder = robotOrder
 		} else {
 			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, cRobotOrder)
 			if err != nil {
 				return err
 			}
 
-			fmt.Printf("Move: %v\t| ", indexBoardState)
+			fmt.Printf("Move: %v", indexBoardState)
+			if indexBoardState < 10 {
+				fmt.Printf("\t | ")
+			} else {
+				fmt.Printf(" | ")
+			}
 
 			switch robotColor {
 			case "yellow":
@@ -102,6 +129,11 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 			}
 
 			previousBoardState = boardState
+			previousRobotOrder = cRobotOrder
+		}
+
+		if indexBoardState == (len(path) - 1) {
+			fmt.Printf("\nFinish\n")
 
 			for indexRobot, robotPosition := range robots {
 				robotColor, err := getRobotColorByIndex(cRobotOrder, uint8(indexRobot))
@@ -121,10 +153,6 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 					color.HiBlue(msg)
 				}
 			}
-		}
-
-		if indexBoardState == (len(path) - 1) {
-			fmt.Printf("\nFinish")
 		}
 
 		fmt.Println("")
@@ -178,31 +206,53 @@ func getRobotColorByIndex(robotOrder types.RobotOrder, index uint8) (string, err
 }
 
 // getMovedRobotColorAndDirection Returns the moved robot color name and the direction
-func getMovedRobotColorAndDirection(previousBoardState types.BoardState, currentBoardState types.BoardState, robotOrder types.RobotOrder) (robotColor string, direction string, err error) {
+func getMovedRobotColorAndDirection(previousBoardState types.BoardState, currentBoardState types.BoardState, currentRobotOrder types.RobotOrder) (robotColor string, direction string, err error) {
 	preRobots := helper.SeparateRobots(previousBoardState)
+	preRobotsNotContainedInCurRobots := preRobots[:]
 	curRobots := helper.SeparateRobots(currentBoardState)
 
 	var robotIndex uint8
+	robotContainedInBothBoardStates := false
 
-	for indexPreRobot, preRobot := range preRobots {
-		if preRobot == curRobots[indexPreRobot] {
-			continue
-		} else {
-			robotIndex = uint8(indexPreRobot)
+	for indexCurRobot, curRobot := range curRobots {
+		robotContainedInBothBoardStates = false
+		for _, preRobot := range preRobots {
+			if curRobot == preRobot {
+				robotContainedInBothBoardStates = true
+				err := removeElement(&preRobotsNotContainedInCurRobots, preRobot)
+				if err != nil {
+					return "", "", err
+				}
+				break
+			}
+		}
+		if robotContainedInBothBoardStates == false {
+			robotIndex = uint8(indexCurRobot)
+			break
 		}
 	}
 
-	robotColor, err = getRobotColorByIndex(robotOrder, robotIndex)
+	robotColor, err = getRobotColorByIndex(currentRobotOrder, robotIndex)
 	if err != nil {
 		return "", "", err
 	}
 
-	direction, err = evaluateDirectionChange(preRobots[robotIndex], curRobots[robotIndex])
+	direction, err = evaluateDirectionChange(preRobotsNotContainedInCurRobots[0], curRobots[robotIndex])
 	if err != nil {
 		return "", "", err
 	}
 
 	return robotColor, direction, nil
+}
+
+func removeElement(s *[]types.Robot, e types.Robot) error {
+	for iterIndex, iterElement := range *s {
+		if iterElement == e {
+			*s = append((*s)[:iterIndex], (*s)[iterIndex+1:]...)
+			return nil
+		}
+	}
+	return fmt.Errorf("element: %v not in slice", e)
 }
 
 // evaluateDirectionChange Returns the direction the robot moved
