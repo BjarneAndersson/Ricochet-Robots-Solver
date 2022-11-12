@@ -210,7 +210,6 @@ func calculateStoppingPosition(robotStoppingPositions *types.RobotStoppingPositi
 // moveRobot Moves the robot to the end position
 func moveRobot(robots [4]types.Robot, robotIndex uint8, endPosition types.Position) [4]types.Robot {
 	robots[robotIndex] = types.Robot(helper.ConvPositionToByte(endPosition))
-	return robots
 }
 
 // isBoardStateInOpenSet Checks if the board state is in the open set
