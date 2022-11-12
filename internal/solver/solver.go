@@ -6,6 +6,7 @@ import (
 	"Ricochet-Robot-Solver/internal/output"
 	"Ricochet-Robot-Solver/internal/tracker"
 	"Ricochet-Robot-Solver/internal/types"
+	"container/heap"
 	"fmt"
 	"math"
 	"sort"
@@ -48,20 +49,24 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 	trackingData := tracker.TrackingDataSolver{}
 
 	openSet := make(priorityQueue, 1)
-	closedSet := make([]types.BoardState, 0)
+	openSetMap := make(map[types.BoardState]struct{})
+	closedSetMap := make(map[types.BoardState]struct{})
 
 	cameFrom := make([]uint64, 0)
 
 	// add initial board state to open set
-	openSet[0] = item{
+	openSet[0] = &item{
 		Value:      initBoardState,
 		HAndGScore: 0,
+		index:      0,
 	}
+	heap.Init(&openSet)
 	trackingData.InitializedBoardStates += 1
+	openSetMap[initBoardState] = struct{}{}
 
-	for openSet.len() > 0 {
+	for openSet.Len() > 0 {
 		// get the item with the lowest f score
-		currentPriorityQueueItem := openSet.pop()
+		currentPriorityQueueItem := heap.Pop(&openSet).(*item)
 		currentBoardState := currentPriorityQueueItem.Value
 
 		// output current board state based on the configuration
@@ -88,7 +93,7 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 					newBoardState := CreateNewBoardState(newRobots)
 
 					// check if the new board state is already in the queue or completely evaluated
-					if isBoardStateInOpenSet(&openSet, newBoardState) || isBoardStateInClosedSet(&closedSet, newBoardState) {
+					if isBoardStateInOpenSet(&openSetMap, newBoardState) || isBoardStateInClosedSet(&closedSetMap, newBoardState) {
 						continue
 					}
 
@@ -112,17 +117,17 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 					}
 
 					// add the new board state to the queue
-					openSet.push(
-						item{
-							Value:      newBoardState,
-							HAndGScore: combineHAndGScore(gScoreNewBoardState, hScoreNewBoardState),
-						})
+					heap.Push(&openSet, &item{
+						Value:      newBoardState,
+						HAndGScore: combineHAndGScore(gScoreNewBoardState, hScoreNewBoardState),
+					})
+					openSetMap[newBoardState] = struct{}{}
 				}
 
 			}
 		}
 		trackingData.EvaluatedBoardStates += 1
-		closedSet = append(closedSet, currentBoardState)
+		closedSetMap[currentBoardState] = struct{}{}
 	}
 	return trackingData, []types.BoardState{}, fmt.Errorf("no route found")
 }
@@ -205,25 +210,16 @@ func calculateStoppingPosition(robotStoppingPositions *types.RobotStoppingPositi
 // moveRobot Moves the robot to the end position
 func moveRobot(robots [4]types.Robot, robotIndex uint8, endPosition types.Position) [4]types.Robot {
 	robots[robotIndex] = types.Robot(helper.ConvPositionToByte(endPosition))
-	return robots
 }
 
 // isBoardStateInOpenSet Checks if the board state is in the open set
-func isBoardStateInOpenSet(openSet *priorityQueue, boardState types.BoardState) bool {
-	for _, iterateBoardState := range *openSet {
-		if iterateBoardState.Value == boardState {
-			return true
-		}
-	}
-	return false
+func isBoardStateInOpenSet(openSet *map[types.BoardState]struct{}, boardState types.BoardState) bool {
+	_, ok := (*openSet)[boardState]
+	return ok
 }
 
 // isBoardStateInClosedSet Checks if the board state is in the closed set
-func isBoardStateInClosedSet(closedSet *[]types.BoardState, boardState types.BoardState) bool {
-	for _, iterateBoardState := range *closedSet {
-		if iterateBoardState == boardState {
-			return true
-		}
-	}
-	return false
+func isBoardStateInClosedSet(closedSet *map[types.BoardState]struct{}, boardState types.BoardState) bool {
+	_, ok := (*closedSet)[boardState]
+	return ok
 }

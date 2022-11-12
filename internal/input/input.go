@@ -68,19 +68,19 @@ func getInitBoardState(board *types.Board, initRobotPositions [4]byte) (initBoar
 			switch color {
 			case "yellow":
 				if robotSlice == initRobotPositions[0] {
-					helper.SetRobotColorByIndex(&initRobotOrder, "yellow", uint8(indexRobotSlice))
+					helper.SetRobotColorByIndex(&initRobotOrder, "yellow", uint8(indexRobotSlice)+1)
 				}
 			case "red":
 				if robotSlice == initRobotPositions[1] {
-					helper.SetRobotColorByIndex(&initRobotOrder, "red", uint8(indexRobotSlice))
+					helper.SetRobotColorByIndex(&initRobotOrder, "red", uint8(indexRobotSlice)+1)
 				}
 			case "green":
 				if robotSlice == initRobotPositions[2] {
-					helper.SetRobotColorByIndex(&initRobotOrder, "green", uint8(indexRobotSlice))
+					helper.SetRobotColorByIndex(&initRobotOrder, "green", uint8(indexRobotSlice)+1)
 				}
 			case "blue":
 				if robotSlice == initRobotPositions[3] {
-					helper.SetRobotColorByIndex(&initRobotOrder, "blue", uint8(indexRobotSlice))
+					helper.SetRobotColorByIndex(&initRobotOrder, "blue", uint8(indexRobotSlice)+1)
 				}
 			}
 		}
