@@ -1,35 +1,21 @@
 package config
 
 import (
-	"gopkg.in/yaml.v2"
-	"os"
+	// Standard library packages
+	"fmt"
+
+	// External packages
+	"github.com/ilyakaznacheev/cleanenv"
+	// Internal packages
 )
 
-// Mode Represents the different execution modes and corresponding output configurations
-type Mode struct {
-	NodeNeighbors          bool `yaml:"node_neighbors"`
-	BoardStates            bool `yaml:"board_states"`
-	RobotStoppingPositions bool `yaml:"robot_stopping_positions"`
-}
-
-// Config Represents the yaml configuration as struct
-type Config struct {
-	Mode              string                     `yaml:"mode"`
-	BoardDataLocation string                     `yaml:"board_data_location"`
-	Modes             map[string]map[string]Mode `yaml:"modes"`
-}
-
-// GetConfig Transform the yaml configuration into a Config struct
-func GetConfig(filename string) (conf Config, err error) {
-	yamlFile, err := os.ReadFile("config/" + filename + ".yaml")
+// ReadConfig reads the configuration from the file and environment variables
+func ReadConfig(config *Config) (err error) { // read configuration from the file and environment variables
+	err = cleanenv.ReadConfig("./config/config.yml", config)
 	if err != nil {
-		return Config{}, err
+		fmt.Println(err)
+		return err
 	}
 
-	err = yaml.Unmarshal(yamlFile, &conf)
-	if err != nil {
-		return Config{}, err
-	}
-
-	return conf, nil
+	return err
 }

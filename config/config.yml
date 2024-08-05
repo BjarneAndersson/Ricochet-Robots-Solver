@@ -1,0 +1,21 @@
+mode: 'deployment'
+boardDataLocation: 'test/data/9c.json'
+
+server:
+  host: ''
+  port: 80
+
+logging:
+  name: 'ricochet-robots-solver'
+
+  rotation: 'daily'
+
+  application:
+    file:
+      name: 'ricochet-robots-solver'
+      path: './logs'
+
+  solver:
+    file:
+      name: 'solve'
+      path: './logs/solver'

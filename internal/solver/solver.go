@@ -3,7 +3,6 @@ package solver
 import (
 	"Ricochet-Robot-Solver/internal/config"
 	"Ricochet-Robot-Solver/internal/helper"
-	"Ricochet-Robot-Solver/internal/output"
 	"Ricochet-Robot-Solver/internal/tracker"
 	"Ricochet-Robot-Solver/internal/types"
 	"container/heap"
@@ -68,14 +67,6 @@ func Solver(board *types.Board, initBoardState types.BoardState, robotStoppingPo
 		// get the item with the lowest f score
 		currentPriorityQueueItem := heap.Pop(&openSet).(*item)
 		currentBoardState := currentPriorityQueueItem.Value
-
-		// output current board state based on the configuration
-		if conf.Modes[conf.Mode]["output"].BoardStates == true {
-			err := output.BoardState(currentBoardState, trackingData)
-			if err != nil {
-				return trackingData, []types.BoardState{}, err
-			}
-		}
 
 		for indexRobot, robot := range helper.SeparateRobots(currentBoardState) {
 			robotPosition := helper.ConvBytePositionToPosition(byte(robot))
