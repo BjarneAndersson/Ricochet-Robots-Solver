@@ -112,7 +112,7 @@ func getNewSolverLogFileName(cfg config.Config) string {
 	maxCounter := 0
 	for _, file := range files {
 		var counter int
-		_, err := fmt.Sscanf(file.Name(), "%s-%d", cfg.Logging.Solver.File.Name, &counter)
+		_, err := fmt.Sscanf(file.Name(), fmt.Sprintf("%s-%%d.log", cfg.Logging.Solver.File.Name), &counter)
 		if err == nil && counter > maxCounter {
 			maxCounter = counter
 		}
