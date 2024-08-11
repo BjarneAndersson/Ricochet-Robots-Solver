@@ -7,7 +7,6 @@ import (
 	"Ricochet-Robot-Solver/internal/types"
 	"encoding/json"
 	"fmt"
-	"github.com/fatih/color"
 )
 
 // Neighbors Prints per node the direction of the neighbors
@@ -99,18 +98,22 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 				return err
 			}
 
-			recorder.Record(fmt.Sprintf("Move: %v", indexBoardState))
+			outputStringMove := fmt.Sprintf("Move: %v | ", indexBoardState)
 
 			switch robotColor {
 			case "yellow":
-				color.HiYellow(direction)
+				outputStringMove += "Yellow: "
 			case "red":
-				color.HiRed(direction)
+				outputStringMove += "Red: "
 			case "green":
-				color.HiGreen(direction)
+				outputStringMove += "Green: "
 			case "blue":
-				color.HiBlue(direction)
+				outputStringMove += "Blue: "
 			}
+
+			outputStringMove += fmt.Sprintf("%v", direction)
+
+			recorder.Record(outputStringMove)
 
 			previousBoardState = boardState
 			previousRobotOrder = cRobotOrder
@@ -119,23 +122,9 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 		if indexBoardState == (len(path) - 1) {
 			outputStringFinalPosition := "FINAL POSITION: "
 
-			for indexRobot, robotPosition := range robots {
-				robotColor, err := getRobotColorByIndex(cRobotOrder, uint8(indexRobot))
-				if err != nil {
-					return err
-				}
+			for _, robotPosition := range robots {
 				msg := fmt.Sprintf("%+v ", helper.ConvBytePositionToPosition(byte(robotPosition)))
 
-				switch robotColor {
-				case "yellow":
-					color.HiYellow(msg)
-				case "red":
-					color.HiRed(msg)
-				case "green":
-					color.HiGreen(msg)
-				case "blue":
-					color.HiBlue(msg)
-				}
 				outputStringFinalPosition += msg
 			}
 			recorder.Record(outputStringFinalPosition)
