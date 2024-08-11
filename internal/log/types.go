@@ -32,7 +32,7 @@ type ErrorAndMessage struct {
 // Error Transform the error and message into output
 func (e *ErrorAndMessage) Error() string {
 	// Convert interface to string
-	msg := ""
+	msg := "\t"
 	for _, v := range e.Message {
 		msg += fmt.Sprintf("%v", v)
 	}
