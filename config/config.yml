@@ -19,3 +19,32 @@ logging:
     file:
       name: 'solve'
       path: './logs/solver'
+
+board:
+  quarters:
+    yellow:
+      version: '1'   # 1, 2, 3, D
+      position: 'NW' # NW, NE, SW, SE
+    red:
+      version: '1'   # 1, 2, 3, D
+      position: 'NE'  # NW, NE, SW, SE
+    green:
+      version: '1'   # 1, 2, 3, D
+      position: 'SW'  # NW, NE, SW, SE
+    blue:
+      version: '1'   # 1, 2, 3, D
+      position: 'SE' # NW, NE, SW, SE
+    location: './data/quarter-boards'
+  robots: # define the initial positions
+    yellow:
+      position: {column: 13, row: 12}
+    red:
+      position: {column: 3, row: 11}
+    green:
+      position: {column: 1, row: 1}
+    blue:
+      position: {column: 10, row: 3}
+  target: # define the target position
+    position: {column: 1, row: 3}
+    color: 'yellow'
+    shape: 'triangle'

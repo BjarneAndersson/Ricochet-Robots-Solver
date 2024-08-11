@@ -2,30 +2,8 @@ package types
 
 // Position of Column and Row
 type Position struct {
-	Column byte `json:"column"`
-	Row    byte `json:"row"`
-}
-
-// Neighbors Defines in which direction neighbors are
-type Neighbors struct {
-	Up    bool `json:"top"`
-	Down  bool `json:"bottom"`
-	Left  bool `json:"left"`
-	Right bool `json:"right"`
-}
-
-// Wall defines a wall between two positions
-type Wall struct {
-	Position1  Position `json:"position1"`
-	Position2  Position `json:"position2"`
-	Direction1 string   `json:"direction1"`
-	Direction2 string   `json:"direction2"`
-}
-
-// RawRobot Used in data import to easily manage the attributes
-type RawRobot struct {
-	Color    string `json:"color"`
-	Position Position
+	Column byte `json:"column" yaml:"column"`
+	Row    byte `json:"row" yaml:"row"`
 }
 
 // RobotColor defines an Enum of the colors in the following order: yellow, red, green, blue
@@ -36,24 +14,10 @@ type RobotOrder byte
 
 const (
 	RobotColorYellow RobotColor = iota // RobotColorYellow Transforms RobotColor into an integer enum - Yellow = 0
-	RobotColorRed    RobotColor = iota // RobotColorYellow Transforms RobotColor into an integer enum - Red = 1
-	RobotColorGreen  RobotColor = iota // RobotColorYellow Transforms RobotColor into an integer enum - Green = 2
-	RobotColorBlue   RobotColor = iota // RobotColorYellow Transforms RobotColor into an integer enum - Blue = 3
+	RobotColorRed    RobotColor = iota // RobotColorRed Transforms RobotColor into an integer enum - Red = 1
+	RobotColorGreen  RobotColor = iota // RobotColorGreen Transforms RobotColor into an integer enum - Green = 2
+	RobotColorBlue   RobotColor = iota // RobotColorBlue Transforms RobotColor into an integer enum - Blue = 3
 )
-
-// RawTarget Used in data import to easily manage the attributes
-type RawTarget struct {
-	Color    string `json:"color"`
-	Symbol   string `json:"symbol"`
-	Position Position
-}
-
-// RawBoard Used in data import to easily manage the attributes
-type RawBoard struct {
-	Walls  []Wall     `json:"walls"`
-	Robots []RawRobot `json:"robots"`
-	Target RawTarget  `json:"target"`
-}
 
 // BoardState represents a state of the board in which only the robots have been moved.
 type BoardState uint32

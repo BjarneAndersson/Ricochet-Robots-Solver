@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Ricochet-Robot-Solver/internal/precomputation"
 	// Standard library packages
 	"fmt"
 
@@ -35,11 +36,18 @@ func main() {
 	logger.Info("Starting Application")
 
 	// transform json data to board object
-	board, initBoardState, initRobotOrder, robotStoppingPositions, err := input.GetData(cfg.BoardDataLocation)
+	board, initBoardState, initRobotOrder, err := input.GetData(cfg)
 	if err != nil {
 		logger.Fatal(err, "Loading board data")
 		return
 	}
+
+	// PRECOMPUTATION
+	// precompute the minimal moves that a robot has to make in order to get to the target node, if it could stop wherever it wants
+	err = precomputation.PrecomputeMinimalMoveCounts(&board)
+
+	// precompute the robot stopping positions
+	robotStoppingPositions, err := precomputation.PrecomputeRobotMoves(&board)
 
 	// output extra information based on config
 	err = output.Neighbors(&board, &solveRecorder)
