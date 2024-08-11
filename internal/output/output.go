@@ -5,6 +5,7 @@ import (
 	"Ricochet-Robot-Solver/internal/log"
 	"Ricochet-Robot-Solver/internal/tracker"
 	"Ricochet-Robot-Solver/internal/types"
+	"encoding/json"
 	"fmt"
 	"github.com/fatih/color"
 )
@@ -146,14 +147,34 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 // RobotStoppingPositions Prints per node the stopping positions of a theoretical moved robot per direction
 func RobotStoppingPositions(robotStoppingPositions *types.RobotStoppingPositions, recorder *log.SolveRecorder) (err error) {
 	recorder.Record("ROBOT STOPPING POSITIONS")
-	for nodePosition, stoppingPositions := range *robotStoppingPositions {
-		outputString := ""
-		outputString += fmt.Sprintf("Node: %v\t| ", nodePosition)
-		for direction, stoppingPosition := range stoppingPositions {
-			outputString += fmt.Sprintf("%v: %v\t", direction, stoppingPosition)
+
+	var outputRobotStoppingPositions OutRobotStoppingPositions
+
+	for iRow, robotStoppingPositionsRow := range *robotStoppingPositions {
+		for iColumn, stoppingPositions := range robotStoppingPositionsRow {
+			outputRobotStoppingPositions = append(outputRobotStoppingPositions, OutRobotStoppingPosition{
+				Node: types.Position{
+					Column: byte(iColumn),
+					Row:    byte(iRow),
+				},
+				Direction: OutDirectionAndPosition{
+					Up:    helper.ConvBytePositionToPosition(byte(stoppingPositions >> 24)),
+					Down:  helper.ConvBytePositionToPosition(byte(stoppingPositions >> 16)),
+					Left:  helper.ConvBytePositionToPosition(byte(stoppingPositions >> 8)),
+					Right: helper.ConvBytePositionToPosition(byte(stoppingPositions)),
+				},
+			})
 		}
-		recorder.Record(outputString)
 	}
+
+	robotStoppingPositionsJson, err := json.Marshal(outputRobotStoppingPositions)
+	if err != nil {
+		fmt.Println("Error marshalling board to JSON:", err)
+		return err
+	}
+
+	recorder.Record(fmt.Sprintf("%v ", string(robotStoppingPositionsJson)))
+
 	return nil
 }
 
