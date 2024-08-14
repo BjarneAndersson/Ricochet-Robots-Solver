@@ -2,6 +2,7 @@ package output
 
 import (
 	"Ricochet-Robot-Solver/internal/helper"
+	"Ricochet-Robot-Solver/internal/input"
 	"Ricochet-Robot-Solver/internal/log"
 	"Ricochet-Robot-Solver/internal/tracker"
 	"Ricochet-Robot-Solver/internal/types"
@@ -11,36 +12,42 @@ import (
 
 // Neighbors Prints per node the direction of the neighbors
 func Neighbors(board *types.Board, recorder *log.SolveRecorder) (err error) {
-	outputString := "NEIGHBORS: ["
+	var outputNodesAndNeighbors []OutNeighbors
 
 	// convert the board to a json representation
 	for rowIndex := range board.Grid {
 		for columnIndex, node := range board.Grid[rowIndex] {
-			cellNeighbors := fmt.Sprintf("")
+			outNode := OutNeighbors{}
+
+			outNode.Node = types.Position{
+				Column: byte(columnIndex),
+				Row:    byte(rowIndex),
+			}
+
 			if !helper.HasNeighbor(node, "top") {
-				cellNeighbors += "N"
+				outNode.Directions.Top = true
 			}
 			if !helper.HasNeighbor(node, "bottom") {
-				cellNeighbors += "S"
+				outNode.Directions.Bottom = true
 			}
 			if !helper.HasNeighbor(node, "left") {
-				cellNeighbors += "W"
+				outNode.Directions.Left = true
 			}
 			if !helper.HasNeighbor(node, "right") {
-				cellNeighbors += "E"
+				outNode.Directions.Right = true
 			}
-			if len(cellNeighbors) == 0 {
-				cellNeighbors = "A"
-			}
-			//pNode, err := convertNumberToBits(int(node&15), 4)
-			if err != nil {
-				return err
-			}
-			outputString += fmt.Sprintf("{\"Column\": %d, \"Row\": %d, \"Neighbors\": \"%s\"}, ", columnIndex, rowIndex, cellNeighbors)
+
+			outputNodesAndNeighbors = append(outputNodesAndNeighbors, outNode)
 		}
 	}
-	outputString += "]"
-	recorder.Record(fmt.Sprintf("%v ", outputString))
+
+	outputNodesAndNeighborsJson, err := json.Marshal(outputNodesAndNeighbors)
+	if err != nil {
+		fmt.Println("Error marshalling board to JSON:", err)
+		return err
+	}
+
+	recorder.Record(fmt.Sprintf("NEIGHBORS: %v", string(outputNodesAndNeighborsJson)))
 	return nil
 }
 
@@ -63,26 +70,37 @@ func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSo
 
 // Path Prints out the path from start state to end state
 func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robotOrder types.RobotOrder, recorder *log.SolveRecorder) (err error) {
-	recorder.Record(fmt.Sprintf("STATISTICS: Moves: %d | Time: %s\n", len(path)-1, trackingData.Duration))
-	//fmt.Printf("Initialized states: %v | Evaluated states: %v | States per second: %v\n", trackingData.InitializedBoardStates, trackingData.EvaluatedBoardStates, 1000000000*trackingData.EvaluatedBoardStates/uint(trackingData.Duration))
+	recorder.Record(fmt.Sprintf("STATISTICS: Moves: %d | Time: %s | Initialized states: %v | Evaluated states: %v | States per second: %v",
+		len(path)-1,
+		trackingData.Duration,
+		trackingData.InitializedBoardStates,
+		trackingData.EvaluatedBoardStates,
+		1000000000*trackingData.EvaluatedBoardStates/uint(trackingData.Duration)))
 	recorder.Record("PATH")
+
+	var outputPath []PathStep
 
 	var previousBoardState types.BoardState
 	var previousRobotOrder = robotOrder
 	for indexBoardState, boardState := range path {
 		robots := helper.SeparateRobots(boardState)
+		outputRobots, err := convRobotsFromSolverToOutputRepresentation(robots, robotOrder)
+		if err != nil {
+			return err
+		}
+
 		cRobotOrder, err := getNewRobotOrder(previousBoardState, previousRobotOrder, boardState)
 		if err != nil {
 			return err
 		}
 
-		if indexBoardState == 0 {
+		if indexBoardState == 0 { // initial position
 			outputStringInitialPosition := "INITIAL POSITION: "
 
 			previousBoardState = boardState
 
 			for indexRobot, robotPosition := range robots {
-				robotColor, err := getRobotColorByIndex(robotOrder, uint8(indexRobot))
+				robotColor, err := GetRobotColorByIndex(robotOrder, uint8(indexRobot))
 				if err != nil {
 					return err
 				}
@@ -92,7 +110,14 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 
 			previousRobotOrder = robotOrder
 			recorder.Record(outputStringInitialPosition)
-		} else {
+
+			// add data to json output
+			outputPath = append(outputPath, PathStep{
+				Robots:         outputRobots,
+				MovedRobot:     "",
+				MovedDirection: "",
+			})
+		} else { // moved position / step
 			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, cRobotOrder)
 			if err != nil {
 				return err
@@ -117,9 +142,16 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 
 			previousBoardState = boardState
 			previousRobotOrder = cRobotOrder
+
+			// add data to json output
+			outputPath = append(outputPath, PathStep{
+				Robots:         outputRobots,
+				MovedRobot:     robotColor,
+				MovedDirection: direction,
+			})
 		}
 
-		if indexBoardState == (len(path) - 1) {
+		if indexBoardState == (len(path) - 1) { // end position
 			outputStringFinalPosition := "FINAL POSITION: "
 
 			for _, robotPosition := range robots {
@@ -128,15 +160,29 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 				outputStringFinalPosition += msg
 			}
 			recorder.Record(outputStringFinalPosition)
+
+			// add data to json output
+			outputPath = append(outputPath, PathStep{
+				Robots:         outputRobots,
+				MovedRobot:     "",
+				MovedDirection: "",
+			})
 		}
 	}
+
+	outputPathJson, err := json.Marshal(outputPath)
+	if err != nil {
+		fmt.Println("Error marshalling board to JSON:", err)
+		return err
+	}
+
+	recorder.Record(fmt.Sprintf("PATH: %v", string(outputPathJson)))
+
 	return nil
 }
 
 // RobotStoppingPositions Prints per node the stopping positions of a theoretical moved robot per direction
 func RobotStoppingPositions(robotStoppingPositions *types.RobotStoppingPositions, recorder *log.SolveRecorder) (err error) {
-	recorder.Record("ROBOT STOPPING POSITIONS")
-
 	var outputRobotStoppingPositions OutRobotStoppingPositions
 
 	for iRow, robotStoppingPositionsRow := range *robotStoppingPositions {
@@ -162,7 +208,7 @@ func RobotStoppingPositions(robotStoppingPositions *types.RobotStoppingPositions
 		return err
 	}
 
-	recorder.Record(fmt.Sprintf("%v ", string(robotStoppingPositionsJson)))
+	recorder.Record(fmt.Sprintf("ROBOT STOPPING POSITIONS: %v", string(robotStoppingPositionsJson)))
 
 	return nil
 }
@@ -180,8 +226,8 @@ func convertNumberToBits(number int, fill int) (string, error) {
 	return "", fmt.Errorf("invalid operation")
 }
 
-// getRobotColorByIndex Returns the color name of the robot at the given index
-func getRobotColorByIndex(robotOrder types.RobotOrder, index uint8) (string, error) {
+// GetRobotColorByIndex Returns the color name of the robot at the given index
+func GetRobotColorByIndex(robotOrder types.RobotOrder, index uint8) (string, error) {
 	robotColorCode := helper.GetRobotColorCodeByIndex(robotOrder, index)
 
 	switch robotColorCode {
@@ -224,7 +270,7 @@ func getMovedRobotColorAndDirection(previousBoardState types.BoardState, current
 		}
 	}
 
-	robotColor, err = getRobotColorByIndex(currentRobotOrder, robotIndex)
+	robotColor, err = GetRobotColorByIndex(currentRobotOrder, robotIndex)
 	if err != nil {
 		return "", "", err
 	}
@@ -302,4 +348,20 @@ func robotInRobots(robot types.Robot, robots [4]types.Robot) (exist bool, index 
 		}
 	}
 	return false, -1
+}
+
+func convRobotsFromSolverToOutputRepresentation(robots [4]types.Robot, robotOrder types.RobotOrder) (outputRobots input.Robots, err error) {
+	for indexRobot, robotPosition := range robots {
+		robotColor, err := GetRobotColorByIndex(robotOrder, uint8(indexRobot))
+		if err != nil {
+			return outputRobots, err
+		}
+
+		outputRobots[indexRobot] = input.Robot{
+			Color:    robotColor,
+			Position: helper.ConvBytePositionToPosition(byte(robotPosition)),
+		}
+	}
+
+	return outputRobots, nil
 }
