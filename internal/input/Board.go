@@ -10,107 +10,97 @@ import (
 )
 
 func getBoard(cfg config.Config) (board Board, err error) {
-	// define the quarter boards
+	// Define the quarter boards
 	var quarterBoards struct {
-		yellow QuarterBoard
-		red    QuarterBoard
-		green  QuarterBoard
-		blue   QuarterBoard
+		yellow, red, green, blue QuarterBoard
 	}
 
-	// check: every position is present
-	set := make(map[string]struct{})
-	set[cfg.Board.Quarters.Yellow.Position] = struct{}{}
-	set[cfg.Board.Quarters.Red.Position] = struct{}{}
-	set[cfg.Board.Quarters.Green.Position] = struct{}{}
-	set[cfg.Board.Quarters.Blue.Position] = struct{}{}
-	if len(set) < 4 {
+	// Check if every position is present
+	positions := map[string]struct{}{
+		cfg.Board.Quarters.Yellow.Position: {},
+		cfg.Board.Quarters.Red.Position:    {},
+		cfg.Board.Quarters.Green.Position:  {},
+		cfg.Board.Quarters.Blue.Position:   {},
+	}
+	if len(positions) < 4 {
 		return Board{}, fmt.Errorf("not all quarter boards are present")
 	}
 
-	// load the quarter boards from the json files
-	err = quarterBoards.yellow.loadFileData(cfg.Board.Quarters.Location, "yellow", cfg.Board.Quarters.Yellow.Version)
-	if err != nil {
-		return Board{}, err
-	}
-	err = quarterBoards.red.loadFileData(cfg.Board.Quarters.Location, "red", cfg.Board.Quarters.Red.Version)
-	if err != nil {
-		return Board{}, err
-	}
-	err = quarterBoards.green.loadFileData(cfg.Board.Quarters.Location, "green", cfg.Board.Quarters.Green.Version)
-	if err != nil {
-		return Board{}, err
-	}
-	err = quarterBoards.blue.loadFileData(cfg.Board.Quarters.Location, "blue", cfg.Board.Quarters.Blue.Version)
-	if err != nil {
-		return Board{}, err
-	}
-
-	// define position of the quarter board on the board
-	quarterBoards.yellow.Position = cfg.Board.Quarters.Yellow.Position
-	quarterBoards.red.Position = cfg.Board.Quarters.Red.Position
-	quarterBoards.green.Position = cfg.Board.Quarters.Green.Position
-	quarterBoards.blue.Position = cfg.Board.Quarters.Blue.Position
-
-	// adjust the rotation of the quarter boards
-	quarterBoards.yellow.adjustRotation()
-	quarterBoards.red.adjustRotation()
-	quarterBoards.green.adjustRotation()
-	quarterBoards.blue.adjustRotation()
-
-	// stitch the quarter boards together
-	board, err = stitchBoard([4]QuarterBoard{quarterBoards.yellow, quarterBoards.red, quarterBoards.green, quarterBoards.blue})
-	if err != nil {
-		return Board{}, err
+	// Load the quarter boards from the JSON files
+	for color, qb := range map[string]*QuarterBoard{
+		"yellow": &quarterBoards.yellow,
+		"red":    &quarterBoards.red,
+		"green":  &quarterBoards.green,
+		"blue":   &quarterBoards.blue,
+	} {
+		var version string
+		switch color {
+		case "yellow":
+			version = cfg.Board.Quarters.Yellow.Version
+		case "red":
+			version = cfg.Board.Quarters.Red.Version
+		case "green":
+			version = cfg.Board.Quarters.Green.Version
+		case "blue":
+			version = cfg.Board.Quarters.Blue.Version
+		}
+		if err := qb.loadFileData(cfg.Board.Quarters.Location, color, version); err != nil {
+			return Board{}, err
+		}
 	}
 
-	return board, nil
+	// Define position and adjust rotation of the quarter boards
+	for color, qb := range map[string]*QuarterBoard{
+		"yellow": &quarterBoards.yellow,
+		"red":    &quarterBoards.red,
+		"green":  &quarterBoards.green,
+		"blue":   &quarterBoards.blue,
+	} {
+		switch color {
+		case "yellow":
+			qb.Position = cfg.Board.Quarters.Yellow.Position
+		case "red":
+			qb.Position = cfg.Board.Quarters.Red.Position
+		case "green":
+			qb.Position = cfg.Board.Quarters.Green.Position
+		case "blue":
+			qb.Position = cfg.Board.Quarters.Blue.Position
+		}
+		qb.adjustRotation()
+	}
+
+	// Stitch the quarter boards together
+	return stitchBoard([4]QuarterBoard{quarterBoards.yellow, quarterBoards.red, quarterBoards.green, quarterBoards.blue})
 }
 
 // stitchBoard Stitches the four quarter boards together to create the complete board
 func stitchBoard(quarterBoards [4]QuarterBoard) (board Board, err error) {
-	// create the board
-	for _, quarterBoard := range quarterBoards {
-		var columnOffset byte = 0
-		var rowOffset byte = 0
+	// Define the offsets for each quarter board position
+	offsets := map[string]types.Position{
+		"NW": {0, 0}, "NE": {8, 0}, "SW": {0, 8}, "SE": {8, 8},
+	}
 
-		switch quarterBoard.Position {
-		case "NW":
-			columnOffset = 0
-			rowOffset = 0
-		case "NE":
-			columnOffset = 8
-			rowOffset = 0
-		case "SW":
-			columnOffset = 0
-			rowOffset = 8
-		case "SE":
-			columnOffset = 8
-			rowOffset = 8
-		}
+	// Iterate over each quarter board
+	for _, qb := range quarterBoards {
+		offset := offsets[qb.Position]
 
-		// add walls with corresponding offset to board
-		for _, wall := range quarterBoard.Walls {
+		// Adjust the positions of walls and add them to the board
+		for _, wall := range qb.Walls {
 			board.Walls = append(board.Walls, Wall{
 				Position: types.Position{
-					Column: wall.Position.Column + columnOffset,
-					Row:    wall.Position.Row + rowOffset,
+					Column: wall.Position.Column + offset.Column,
+					Row:    wall.Position.Row + offset.Row,
 				},
-				Directions: Directions{
-					Top:    wall.Directions.Top,
-					Bottom: wall.Directions.Bottom,
-					Left:   wall.Directions.Left,
-					Right:  wall.Directions.Right,
-				},
+				Directions: wall.Directions,
 			})
 		}
 
-		// add targets with corresponding offset to board
-		for _, target := range quarterBoard.Targets {
+		// Adjust the positions of targets and add them to the board
+		for _, target := range qb.Targets {
 			board.Targets = append(board.Targets, Target{
 				Position: types.Position{
-					Column: target.Position.Column + columnOffset,
-					Row:    target.Position.Row + rowOffset,
+					Column: target.Position.Column + offset.Column,
+					Row:    target.Position.Row + offset.Row,
 				},
 				Color: target.Color,
 				Shape: target.Shape,
@@ -120,59 +110,26 @@ func stitchBoard(quarterBoards [4]QuarterBoard) (board Board, err error) {
 
 	// Handle the stitching of walls at the boundaries between quarter boards
 	for _, wall := range board.Walls {
-		if wall.Position.Column == 7 && wall.Directions.Right == true {
+		switch {
+		case wall.Position.Column == 7 && wall.Directions.Right:
 			board.Walls = append(board.Walls, Wall{
-				Position: types.Position{
-					Column: 8,
-					Row:    wall.Position.Row,
-				},
-				Directions: Directions{
-					Top:    false,
-					Bottom: false,
-					Left:   true,
-					Right:  false,
-				},
+				Position:   types.Position{Column: 8, Row: wall.Position.Row},
+				Directions: Directions{Left: true},
 			})
-		} else if wall.Position.Column == 8 && wall.Directions.Left == true {
+		case wall.Position.Column == 8 && wall.Directions.Left:
 			board.Walls = append(board.Walls, Wall{
-				Position: types.Position{
-					Column: 7,
-					Row:    wall.Position.Row,
-				},
-				Directions: Directions{
-					Top:    false,
-					Bottom: false,
-					Left:   false,
-					Right:  true,
-				},
+				Position:   types.Position{Column: 7, Row: wall.Position.Row},
+				Directions: Directions{Right: true},
 			})
-		}
-
-		if wall.Position.Row == 7 && wall.Directions.Bottom == true {
+		case wall.Position.Row == 7 && wall.Directions.Bottom:
 			board.Walls = append(board.Walls, Wall{
-				Position: types.Position{
-					Column: wall.Position.Column,
-					Row:    8,
-				},
-				Directions: Directions{
-					Top:    true,
-					Bottom: false,
-					Left:   false,
-					Right:  false,
-				},
+				Position:   types.Position{Column: wall.Position.Column, Row: 8},
+				Directions: Directions{Top: true},
 			})
-		} else if wall.Position.Row == 8 && wall.Directions.Top == true {
+		case wall.Position.Row == 8 && wall.Directions.Top:
 			board.Walls = append(board.Walls, Wall{
-				Position: types.Position{
-					Column: wall.Position.Column,
-					Row:    7,
-				},
-				Directions: Directions{
-					Top:    false,
-					Bottom: true,
-					Left:   false,
-					Right:  false,
-				},
+				Position:   types.Position{Column: wall.Position.Column, Row: 7},
+				Directions: Directions{Bottom: true},
 			})
 		}
 	}
@@ -185,23 +142,11 @@ func (board Board) encode() (encodedBoard types.Board, err error) {
 	// node conversion
 	for rowIndex := 0; rowIndex < 16; rowIndex++ {
 		for columnIndex := 0; columnIndex < 16; columnIndex++ {
-			var node types.Node
+			// bit 7-5: distance between node and target
+			// bit 4: is a robot present
+			// bit 3-0: neighbors of the node
+			encodedBoard.Grid[rowIndex][columnIndex] = types.Node(0xE0) // 0xE0 sets bits 7, 6, 5, 3, 2, 1, 0 to true
 
-			// distance between node and target
-			helper.SetBit((*byte)(&node), 7, true)
-			helper.SetBit((*byte)(&node), 6, true)
-			helper.SetBit((*byte)(&node), 5, true)
-
-			// is a robot present
-			helper.SetBit((*byte)(&node), 4, false)
-
-			// neighbors
-			helper.SetBit((*byte)(&node), 3, true)
-			helper.SetBit((*byte)(&node), 2, true)
-			helper.SetBit((*byte)(&node), 1, true)
-			helper.SetBit((*byte)(&node), 0, true)
-
-			encodedBoard.Grid[rowIndex][columnIndex] = node
 		}
 	}
 
