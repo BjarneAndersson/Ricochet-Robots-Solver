@@ -1,21 +1,20 @@
-mode: 'deployment'
-boardDataLocation: 'test/data/9c.json'
+mode: 'deployment' # deployment, development
 
-server:
-  host: ''
-  port: 80
+server: # server configuration
+  host: '' # specify the host of the server
+  port: 80 # specify the port of the server
 
 logging:
   name: 'ricochet-robots-solver'
 
-  rotation: 'daily'
+  rotation: 'daily' # specify the rotation type of the log file: daily, each start
 
-  application:
+  application: # application log file
     file:
       name: 'ricochet-robots-solver'
       path: './logs'
 
-  solver:
+  solver: # solver log file
     file:
       name: 'solve'
       path: './logs/solver'
@@ -23,18 +22,18 @@ logging:
 board:
   quarters:
     yellow:
-      version: '1'   # 1, 2, 3, D
+      version: '1'   # 1, 2, 3, D (Diagonal)
       position: 'NW' # NW, NE, SW, SE
     red:
-      version: '1'   # 1, 2, 3, D
+      version: '1'   # 1, 2, 3, D (Diagonal)
       position: 'NE'  # NW, NE, SW, SE
     green:
-      version: '1'   # 1, 2, 3, D
+      version: '1'   # 1, 2, 3, D (Diagonal)
       position: 'SW'  # NW, NE, SW, SE
     blue:
-      version: '1'   # 1, 2, 3, D
+      version: '1'   # 1, 2, 3, D (Diagonal)
       position: 'SE' # NW, NE, SW, SE
-    location: './data/quarter-boards'
+    location: './data/quarter-boards' # location of the quarter boards json files
   robots: # define the initial positions
     yellow:
       position: {column: 13, row: 12}
@@ -44,7 +43,7 @@ board:
       position: {column: 1, row: 1}
     blue:
       position: {column: 10, row: 3}
-  target: # define the target position
+  target: # define the target position, color and shape
     position: {column: 1, row: 3}
     color: 'yellow'
     shape: 'triangle'
