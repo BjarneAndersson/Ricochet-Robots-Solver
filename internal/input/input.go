@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-// getJsonData Loads the json date into a byte array
+// getJsonData Loads the local json data into a byte array
 func getJsonData(path string) (jsonData []byte, err error) {
 	jsonData, err = os.ReadFile(path)
 	if err != nil {
@@ -17,6 +17,7 @@ func getJsonData(path string) (jsonData []byte, err error) {
 
 // GetData Manages the complete data loading process and returns the formatted data
 func GetData(cfg config.Config) (encodedBoard types.Board, initBoardState types.BoardState, robotOrder types.RobotOrder, err error) {
+	// load the board, robots and target from corresponding json files and config
 	board, err := getBoard(cfg)
 	if err != nil {
 		return types.Board{}, 0, 0, err
@@ -42,7 +43,7 @@ func GetData(cfg config.Config) (encodedBoard types.Board, initBoardState types.
 	robotOrder = robots.getRobotOrder(target.Color)
 	robots.sort(robotOrder)
 
-	// encode game objects
+	// encode game objects to solver format
 	encodedBoard, err = board.encode()
 	if err != nil {
 		return types.Board{}, 0, 0, err

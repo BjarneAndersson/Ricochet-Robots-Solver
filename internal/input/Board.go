@@ -118,7 +118,7 @@ func stitchBoard(quarterBoards [4]QuarterBoard) (board Board, err error) {
 		}
 	}
 
-	// add the walls at the stitch lines to both sides
+	// Handle the stitching of walls at the boundaries between quarter boards
 	for _, wall := range board.Walls {
 		if wall.Position.Column == 7 && wall.Directions.Right == true {
 			board.Walls = append(board.Walls, Wall{
@@ -180,6 +180,7 @@ func stitchBoard(quarterBoards [4]QuarterBoard) (board Board, err error) {
 	return board, nil
 }
 
+// encode: Encodes the board to the solver format
 func (board Board) encode() (encodedBoard types.Board, err error) {
 	// node conversion
 	for rowIndex := 0; rowIndex < 16; rowIndex++ {
@@ -204,20 +205,20 @@ func (board Board) encode() (encodedBoard types.Board, err error) {
 		}
 	}
 
-	// add walls to the board -> set the designated  bits of the nodes
+	// add walls to the board -> set the designated neighbor bits of the nodes to false
 	for _, wall := range board.Walls {
 		node := &encodedBoard.Grid[wall.Position.Row][wall.Position.Column]
 
-		if wall.Directions.Top {
+		if wall.Directions.Top { // top | set bit 7 to false
 			helper.SetBit((*byte)(node), 3, false)
 		}
-		if wall.Directions.Bottom {
+		if wall.Directions.Bottom { // bottom | set bit 6 to false
 			helper.SetBit((*byte)(node), 2, false)
 		}
-		if wall.Directions.Left {
+		if wall.Directions.Left { // left | set bit 1 to false
 			helper.SetBit((*byte)(node), 1, false)
 		}
-		if wall.Directions.Right {
+		if wall.Directions.Right { // right | set bit 0 to false
 			helper.SetBit((*byte)(node), 0, false)
 		}
 	}
@@ -225,18 +226,18 @@ func (board Board) encode() (encodedBoard types.Board, err error) {
 	return encodedBoard, err
 }
 
+// outputJSON: Outputs the board as JSON to the specified file path
 func (board Board) outputJSON(filePath string) error {
 	// Convert the board struct to JSON
 	boardJSON, err := json.Marshal(board)
 	if err != nil {
-		fmt.Println("Error marshalling board to JSON:", err)
-		return err
+		return fmt.Errorf("error marshalling board to JSON: %w", err)
 	}
 
 	// Open a new log file, overwriting any existing file
 	fBoard, err := os.OpenFile(filePath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0666)
 	if err != nil {
-		panic(err)
+		return fmt.Errorf("error opening file: %w", err)
 	}
 	defer func(fBoard *os.File) {
 		err := fBoard.Close()
@@ -246,10 +247,8 @@ func (board Board) outputJSON(filePath string) error {
 	}(fBoard)
 
 	// Write the JSON content to the file
-	_, err = fBoard.Write(boardJSON)
-	if err != nil {
-		fmt.Println("Error writing JSON to file:", err)
-		return err
+	if _, err = fBoard.Write(boardJSON); err != nil {
+		return fmt.Errorf("error writing JSON to file: %w", err)
 	}
 
 	return nil
