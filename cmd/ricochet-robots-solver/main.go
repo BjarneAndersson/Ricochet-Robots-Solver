@@ -1,7 +1,9 @@
 package main
 
 import (
-	"Ricochet-Robot-Solver/internal/precomputation"
+	"Ricochet-Robot-Solver/internal/webserver"
+	"net/http"
+
 	// Standard library packages
 	"fmt"
 
@@ -9,11 +11,7 @@ import (
 
 	// Internal packages
 	config "Ricochet-Robot-Solver/internal/config"
-	"Ricochet-Robot-Solver/internal/input"
 	logging "Ricochet-Robot-Solver/internal/log"
-	"Ricochet-Robot-Solver/internal/output"
-	solver "Ricochet-Robot-Solver/internal/solver"
-	"Ricochet-Robot-Solver/internal/tracker"
 )
 
 func main() {
@@ -35,42 +33,16 @@ func main() {
 	// APPLICATION
 	logger.Info("Starting Application")
 
-	// transform json data to board object
-	board, initBoardState, initRobotOrder, err := input.GetData(cfg)
+	// WEB SERVER
+	server := webserver.NewServer(cfg.Server.Host, cfg.Server.Port, &logger, &solveRecorder, &cfg)
+
+	// start webserver
+	logger.Info(fmt.Sprintf("Starting webserver on: %v:%v", server.URL, server.Port))
+	err = http.ListenAndServe(
+		fmt.Sprintf("%v:%v", server.URL, server.Port),
+		server)
 	if err != nil {
-		logger.Fatal(err, "Loading board data")
-		return
+		logger.Fatal(nil, err, "Webserver stopped")
 	}
 
-	// PRECOMPUTATION
-	// precompute the minimal moves that a robot has to make in order to get to the target node, if it could stop wherever it wants
-	err = precomputation.PrecomputeMinimalMoveCounts(&board)
-
-	// precompute the robot stopping positions
-	robotStoppingPositions, err := precomputation.PrecomputeRobotMoves(&board)
-
-	// output extra information based on config
-	err = output.Neighbors(&board, &solveRecorder)
-	if err != nil {
-		logger.Warn(err, "Outputting neighbors")
-	}
-
-	err = output.RobotStoppingPositions(&robotStoppingPositions, &solveRecorder)
-	if err != nil {
-		logger.Warn(err, "Outputting robot stopping positions")
-	}
-
-	// solve the board (with tracking)
-	path, trackingData, err := tracker.TrackSolver(solver.Solver, &board, initBoardState, &robotStoppingPositions, cfg)
-	if err != nil {
-		logger.Error(err, "Solving")
-		return
-	}
-
-	// output the path
-	err = output.Path(path, trackingData, initRobotOrder, &solveRecorder)
-	if err != nil {
-		logger.Fatal(err, "Outputting path")
-		return
-	}
 }

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Visualization</title>
+    <link rel="stylesheet" href="assets/board.css"> <!-- Load the CSS file for the styling of the board area -->
+    <script type="application/javascript" src="assets/application.js"></script> <!-- Load the JS file for the board logic -->
+</head>
+<body>
+<!-- Board container -->
+<div class="board">
+    {{range $row := .Rows}}
+    {{range $col := $row}}
+    <!-- Cell container -->
+    <div class="cell">
+        <!-- Wall elements -->
+        {{if $col.Walls.Top}}<div class="wall-top"></div>{{end}}
+        {{if $col.Walls.Bottom}}<div class="wall-bottom"></div>{{end}}
+        {{if $col.Walls.Left}}<div class="wall-left"></div>{{end}}
+        {{if $col.Walls.Right}}<div class="wall-right"></div>{{end}}
+
+        <!-- Target element -->
+        {{if $col.Target}}
+        <div class="target {{.Target.Shape}} {{.Target.Color}}"></div>
+        {{end}}
+    </div>
+    {{end}}
+    {{end}}
+</div>
+<div class="controls">
+    <!-- Button to load the board configuration -->
+    <button id="load" onclick="sendPostRequest('/api/load')">Load board</button>
+    <!-- Button to start the precomputation process -->
+    <button id="precompute" onclick="sendPostRequest('/api/precompute')">Precomputation</button>
+    <!-- Button to solve the board -->
+    <button id="solve" onclick="sendPostRequest('/api/solve')">Solve</button>
+    <!-- Button to output the result to the console -->
+    <button id="output" onclick="sendPostRequest('/api/output/console')">Output</button>
+</div>
+</body>
+</html>

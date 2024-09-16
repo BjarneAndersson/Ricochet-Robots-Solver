@@ -1,0 +1,75 @@
+/* Dark mode for entire site */
+body {
+    background-color: #222222; /* Dark background */
+    color: #e0e0e0; /* Light text for readability */
+}
+
+/* BOARD */
+.board {
+    display: grid;
+    grid-template-columns: repeat(16, 50px); /* 16 columns */
+    grid-template-rows: repeat(16, 50px);    /* 16 rows */
+}
+
+/* CELL */
+.board .cell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #424242; /* Dark border */
+    position: relative;
+}
+
+/* WALLS */
+.board .cell .wall-top,
+.board .cell .wall-bottom,
+.board .cell .wall-left,
+.board .cell .wall-right {
+    background-color: #e0e0e0; /* Light walls */
+    position: absolute;        /* Position absolut to the cell */
+}
+
+.board .cell .wall-top,
+.board .cell .wall-bottom {
+    left: 0;
+    width: 100%;
+    height: 5px;  /* Wall thickness */
+}
+
+.board .cell .wall-left,
+.board .cell .wall-right {
+    top: 0;
+    width: 5px;   /* Wall thickness */
+    height: 100%;
+}
+
+.board .cell .wall-top { top: 0; }
+
+.board .cell .wall-bottom { bottom: 0; }
+
+.board .cell .wall-left { left: 0; }
+
+.board .cell .wall-right { right: 0; }
+
+/* TARGET */
+.board .target {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+}
+
+/* Shapes */
+.triangle { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+.circle { border-radius: 50%; }
+.square { width: 30px; height: 30px; }
+.hexagon { clip-path: polygon(50% 0%, 90% 25%, 90% 75%, 50% 100%, 10% 75%, 10% 25%); }
+.vertex { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+
+/* COLORS */
+.blue { background-color: #64b5f6; } /* Light Blue */
+.red { background-color: #ef5350; } /* Light Red */
+.green { background-color: #81c784; } /* Light Green */
+.yellow { background-color: #ffeb3b; } /* Bright Yellow */
+.multicolor { background-color: #b39ddb; } /* Light Purple */
