@@ -44,19 +44,19 @@ func (s *Server) loadBoard() http.HandlerFunc {
 	}
 }
 
-// precompute handles the precomputation of minimal move counts and robot stopping positions.
+// solve handles the solving of the board.
 //
-// This function precomputes the minimal moves that a robot has to make to get to the target node,
-// if it could stop wherever it wants. It also precomputes the robot stopping positions and updates
-// the application state with these precomputed values. It sends a success response if the precomputation
-// is successful, otherwise it sends an error response.
+// This function solves the board using the solver and tracker, and updates the application state
+// with the path and tracking data. It sends a success response if the solving is successful,
+// otherwise it logs the error.
 //
 // Returns:
 //   - http.HandlerFunc: A function that handles HTTP requests and writes responses.
-func (s *Server) precompute() http.HandlerFunc {
+func (s *Server) solve() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
+		// PRECOMPUTE
 		s.Logger.Info("Precomputing minimal move counts")
 
 		// precompute the minimal moves that a robot has to make in order to get to the target node, if it could stop wherever it wants
@@ -73,23 +73,7 @@ func (s *Server) precompute() http.HandlerFunc {
 		// Set the robot stopping positions in the application state
 		s.AppState.RobotStoppingPositions = robotStoppingPositions
 
-		// Send a success response
-		w.WriteHeader(http.StatusOK)
-	}
-}
-
-// solve handles the solving of the board.
-//
-// This function solves the board using the solver and tracker, and updates the application state
-// with the path and tracking data. It sends a success response if the solving is successful,
-// otherwise it logs the error.
-//
-// Returns:
-//   - http.HandlerFunc: A function that handles HTTP requests and writes responses.
-func (s *Server) solve() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
+		// SOLVE
 		s.Logger.Info("Solving board")
 
 		// solve the board (with tracking)

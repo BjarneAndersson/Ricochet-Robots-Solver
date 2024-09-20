@@ -78,7 +78,6 @@ func (s *Server) setupRoutes() {
 
 	// apis
 	s.HandleFunc("/api/load", s.loadBoard()).Methods("POST")
-	s.HandleFunc("/api/precompute", s.precompute()).Methods("POST")
 	s.HandleFunc("/api/solve", s.solve()).Methods("POST")
 	s.HandleFunc("/api/output/console", s.outputConsole()).Methods("POST")
 
