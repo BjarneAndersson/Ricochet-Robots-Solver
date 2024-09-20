@@ -60,9 +60,8 @@ type Config struct {
 			} `yaml:"blue"`
 		} `yaml:"robots"`
 		Target struct {
-			Position types.Position `yaml:"position" env:"TARGET_POSITION" env-description:"Target position" env-default:"{\"column\": 0, \"row\": 0}"`
-			Color    string         `yaml:"color" env:"TARGET_COLOR" env-description:"Target color" env-default:"yellow"`
-			Symbol   string         `yaml:"symbol" env:"TARGET_SYMBOL" env-description:"Target symbol" env-default:"circle"`
+			Color  string `yaml:"color" env:"TARGET_COLOR" env-description:"Target color" env-default:"yellow"`
+			Symbol string `yaml:"symbol" env:"TARGET_SYMBOL" env-description:"Target symbol" env-default:"circle"`
 		} `yaml:"target"`
 	} `yaml:"board"`
 }

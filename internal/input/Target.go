@@ -7,16 +7,24 @@ import (
 )
 
 // getTarget Loads the target from the configuration file
-func getTarget(cfg config.Config) (target Target, err error) {
+func getTarget(cfg config.Config, board Board) (target Target, err error) {
 	target = Target{
-		Position: types.Position{
-			Column: cfg.Board.Target.Position.Column,
-			Row:    cfg.Board.Target.Position.Row,
-		},
-		Color: cfg.Board.Target.Color,
-		Shape: cfg.Board.Target.Symbol,
+		Position: getTargetPositionFromBoard(cfg, board),
+		Color:    cfg.Board.Target.Color,
+		Shape:    cfg.Board.Target.Symbol,
 	}
 	return target, nil
+}
+
+// getTargetPositionFromBoard
+func getTargetPositionFromBoard(cfg config.Config, board Board) types.Position {
+	for _, target := range board.Targets {
+		if target.Color == cfg.Board.Target.Color && target.Shape == cfg.Board.Target.Symbol {
+			return target.Position
+		}
+	}
+
+	panic("Target not found in board")
 }
 
 func (target Target) encode() (encodedTarget types.Target, err error) {

@@ -28,7 +28,7 @@ func GetData(cfg config.Config) (encodedBoard types.Board, initBoardState types.
 		return types.Board{}, 0, 0, err
 	}
 
-	target, err := getTarget(cfg)
+	target, err := getTarget(cfg, board)
 	if err != nil {
 		return types.Board{}, 0, 0, err
 	}

@@ -43,7 +43,6 @@ board:
       position: {column: 1, row: 1}
     blue:
       position: {column: 10, row: 3}
-  target: # define the target position, color and shape
-    position: {column: 1, row: 3}
-    color: 'yellow'
-    shape: 'triangle'
+  target: # define the target color and shape
+    color: 'green'
+    shape: 'circle'
