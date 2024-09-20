@@ -145,7 +145,7 @@ func (board Board) encode() (encodedBoard types.Board, err error) {
 			// bit 7-5: distance between node and target
 			// bit 4: is a robot present
 			// bit 3-0: neighbors of the node
-			encodedBoard.Grid[rowIndex][columnIndex] = types.Node(0xE0) // 0xE0 sets bits 7, 6, 5, 3, 2, 1, 0 to true
+			encodedBoard.Grid[rowIndex][columnIndex] = types.Node(0xEF) // 0xEF sets bits 7, 6, 5, 3, 2, 1, 0 to true
 
 		}
 	}
