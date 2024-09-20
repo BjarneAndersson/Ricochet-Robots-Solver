@@ -154,10 +154,10 @@ func (board Board) encode() (encodedBoard types.Board, err error) {
 	for _, wall := range board.Walls {
 		node := &encodedBoard.Grid[wall.Position.Row][wall.Position.Column]
 
-		if wall.Directions.Top { // top | set bit 7 to false
+		if wall.Directions.Top { // top | set bit 3 to false
 			helper.SetBit((*byte)(node), 3, false)
 		}
-		if wall.Directions.Bottom { // bottom | set bit 6 to false
+		if wall.Directions.Bottom { // bottom | set bit 2 to false
 			helper.SetBit((*byte)(node), 2, false)
 		}
 		if wall.Directions.Left { // left | set bit 1 to false

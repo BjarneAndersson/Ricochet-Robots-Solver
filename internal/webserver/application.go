@@ -6,6 +6,7 @@ import (
 	"Ricochet-Robot-Solver/internal/precomputation"
 	"Ricochet-Robot-Solver/internal/solver"
 	"Ricochet-Robot-Solver/internal/tracker"
+	"encoding/json"
 	"net/http"
 )
 
@@ -83,6 +84,8 @@ func (s *Server) solve() http.HandlerFunc {
 			return
 		}
 
+		s.Logger.Info("Solved board")
+
 		// Set the path and tracking data in the application state
 		s.AppState.Path = path
 		s.AppState.TrackingData = trackingData
@@ -121,14 +124,25 @@ func (s *Server) outputConsole() http.HandlerFunc {
 		}
 
 		// output the path
-		err = output.Path(s.AppState.Path, s.AppState.TrackingData, s.AppState.InitRobotOrder, s.Recorder)
+		s.AppState.Output.Path, err = output.Path(s.AppState.Path, s.AppState.TrackingData, s.AppState.InitRobotOrder, s.Recorder)
 		if err != nil {
 			s.Logger.Fatal(err, "Outputting path")
 			http.Error(w, "Failed to output path", http.StatusInternalServerError)
 			return
 		}
 
+		s.AppState.Output.TrackingData = s.AppState.TrackingData
+		s.Logger.Warn(nil, s.AppState.Output.TrackingData.Duration)
+
+		outputJson, err := json.Marshal(s.AppState.Output)
+		if err != nil {
+			s.Logger.Error(err, "Marshalling output JSON")
+			http.Error(w, "Failed to marshal output JSON", http.StatusInternalServerError)
+			return
+		}
+
 		// Send a success response
 		w.WriteHeader(http.StatusOK)
+		w.Write(outputJson)
 	}
 }

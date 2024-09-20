@@ -24,18 +24,10 @@ func Neighbors(board *types.Board, recorder *log.SolveRecorder) (err error) {
 				Row:    byte(rowIndex),
 			}
 
-			if !helper.HasNeighbor(node, "top") {
-				outNode.Directions.Top = true
-			}
-			if !helper.HasNeighbor(node, "bottom") {
-				outNode.Directions.Bottom = true
-			}
-			if !helper.HasNeighbor(node, "left") {
-				outNode.Directions.Left = true
-			}
-			if !helper.HasNeighbor(node, "right") {
-				outNode.Directions.Right = true
-			}
+			outNode.Directions.Top = helper.HasNeighbor(node, "top")
+			outNode.Directions.Bottom = helper.HasNeighbor(node, "bottom")
+			outNode.Directions.Left = helper.HasNeighbor(node, "left")
+			outNode.Directions.Right = helper.HasNeighbor(node, "right")
 
 			outputNodesAndNeighbors = append(outputNodesAndNeighbors, outNode)
 		}
@@ -69,7 +61,7 @@ func BoardState(boardState types.BoardState, trackingData tracker.TrackingDataSo
 }
 
 // Path Prints out the path from start state to end state
-func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robotOrder types.RobotOrder, recorder *log.SolveRecorder) (err error) {
+func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robotOrder types.RobotOrder, recorder *log.SolveRecorder) (outputPath []PathStep, err error) {
 	recorder.Record(fmt.Sprintf("STATISTICS: Moves: %d | Time: %s | Initialized states: %v | Evaluated states: %v | States per second: %v",
 		len(path)-1,
 		trackingData.Duration,
@@ -78,20 +70,18 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 		1000000000*trackingData.EvaluatedBoardStates/uint(trackingData.Duration)))
 	recorder.Record("PATH")
 
-	var outputPath []PathStep
-
 	var previousBoardState types.BoardState
 	var previousRobotOrder = robotOrder
 	for indexBoardState, boardState := range path {
 		robots := helper.SeparateRobots(boardState)
 		outputRobots, err := convRobotsFromSolverToOutputRepresentation(robots, robotOrder)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		cRobotOrder, err := getNewRobotOrder(previousBoardState, previousRobotOrder, boardState)
 		if err != nil {
-			return err
+			return nil, err
 		}
 
 		if indexBoardState == 0 { // initial position
@@ -102,7 +92,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 			for indexRobot, robotPosition := range robots {
 				robotColor, err := GetRobotColorByIndex(robotOrder, uint8(indexRobot))
 				if err != nil {
-					return err
+					return nil, err
 				}
 				msg := fmt.Sprintf("%s: %+v ", robotColor, helper.ConvBytePositionToPosition(byte(robotPosition)))
 				outputStringInitialPosition += msg
@@ -120,7 +110,7 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 		} else { // moved position / step
 			robotColor, direction, err := getMovedRobotColorAndDirection(previousBoardState, boardState, cRobotOrder)
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			outputStringMove := fmt.Sprintf("Move: %v | ", indexBoardState)
@@ -173,12 +163,12 @@ func Path(path []types.BoardState, trackingData tracker.TrackingDataSolver, robo
 	outputPathJson, err := json.Marshal(outputPath)
 	if err != nil {
 		fmt.Println("Error marshalling board to JSON:", err)
-		return err
+		return nil, err
 	}
 
 	recorder.Record(fmt.Sprintf("PATH: %v", string(outputPathJson)))
 
-	return nil
+	return
 }
 
 // RobotStoppingPositions Prints per node the stopping positions of a theoretical moved robot per direction

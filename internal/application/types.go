@@ -1,6 +1,7 @@
 package application
 
 import (
+	"Ricochet-Robot-Solver/internal/output"
 	"Ricochet-Robot-Solver/internal/tracker"
 	"Ricochet-Robot-Solver/internal/types"
 )
@@ -21,4 +22,10 @@ type AppState struct {
 	RobotStoppingPositions types.RobotStoppingPositions
 	Path                   []types.BoardState
 	TrackingData           tracker.TrackingDataSolver
+	Output                 OutputData `json:"Output"`
+}
+
+type OutputData struct { // as json data
+	TrackingData tracker.TrackingDataSolver `json:"TrackingData"`
+	Path         []output.PathStep          `json:"Path"`
 }

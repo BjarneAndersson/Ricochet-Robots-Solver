@@ -8,9 +8,9 @@ import (
 
 // TrackingDataSolver Collects the tracking data in a central structure
 type TrackingDataSolver struct {
-	InitializedBoardStates uint
-	EvaluatedBoardStates   uint
-	Duration               time.Duration
+	InitializedBoardStates uint          `json:"InitializedBoardStates"`
+	EvaluatedBoardStates   uint          `json:"EvaluatedBoardStates"`
+	Duration               time.Duration `json:"Duration"`
 }
 
 // TrackSolver Tracks the solver during the execution and returns the measurements
