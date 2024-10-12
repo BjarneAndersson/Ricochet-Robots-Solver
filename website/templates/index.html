@@ -6,6 +6,7 @@
     <title>Board Visualization</title>
     <link rel="stylesheet" href="assets/board.css"> <!-- Load the CSS file for the styling of the board area -->
     <script type="application/javascript" src="assets/application.js"></script> <!-- Load the JS file for the board logic -->
+    <script type="application/javascript" src="assets/resizeBoard.js"></script> <!-- Load the JS file for the board rendering -->
 </head>
 <body>
 <div class="title">Ricochet Robots</div>
@@ -20,24 +21,26 @@
 <div class="tracking-data">tracking data</div>
 <div class="middle-top">Quarter board selectors</div>
 <!-- Board container -->
-<div class="board">
-    {{range $row := .Rows}}
-    {{range $col := $row}}
-    <!-- Cell container -->
-    <div class="cell">
-        <!-- Wall elements -->
-        {{if $col.Walls.Top}}<div class="wall-top"></div>{{end}}
-        {{if $col.Walls.Bottom}}<div class="wall-bottom"></div>{{end}}
-        {{if $col.Walls.Left}}<div class="wall-left"></div>{{end}}
-        {{if $col.Walls.Right}}<div class="wall-right"></div>{{end}}
+<div class="middle-center">
+    <div class="board">
+        {{range $row := .Rows}}
+        {{range $col := $row}}
+        <!-- Cell container -->
+        <div class="cell">
+            <!-- Wall elements -->
+            {{if $col.Walls.Top}}<div class="wall-top"></div>{{end}}
+            {{if $col.Walls.Bottom}}<div class="wall-bottom"></div>{{end}}
+            {{if $col.Walls.Left}}<div class="wall-left"></div>{{end}}
+            {{if $col.Walls.Right}}<div class="wall-right"></div>{{end}}
 
-        <!-- Target element -->
-        {{if $col.Target}}
-        <div class="target {{.Target.Shape}} {{.Target.Color}}"></div>
+            <!-- Target element -->
+            {{if $col.Target}}
+            <div class="target {{.Target.Shape}} {{.Target.Color}}"></div>
+            {{end}}
+        </div>
+        {{end}}
         {{end}}
     </div>
-    {{end}}
-    {{end}}
 </div>
 <div class="middle-bottom">Quarter board selectors</div>
 <div class="path">

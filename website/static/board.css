@@ -24,7 +24,7 @@ body {
 .tracking-data {
     grid-column: 1 / 2;
     grid-row: 4 / 6;
-    background-color: #555555; /* Different background for contrast */
+    background-color: #333333; /* Different background for contrast */
 }
 
 /* Right flank */
@@ -41,10 +41,14 @@ body {
     background-color: #444444; /* Different background for contrast */
 }
 
-.board {
+.middle-center {
     grid-column: 2 / 3;
     grid-row: 2 / 5;
     background-color: #555555; /* Different background for contrast */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box; /* Include padding in the size calculation */
 }
 
 .middle-bottom {
@@ -55,9 +59,6 @@ body {
 
 /* BOARD */
 .board {
-    --board-size: min(80vh, 80vw); /* 80% of the smaller dimension (viewport height or width) */
-    width: var(--board-size);
-    height: var(--board-size);
     display: grid;
     grid-template-columns: repeat(16, 1fr); /* 16 columns */
     grid-template-rows: repeat(16, 1fr);    /* 16 rows */
