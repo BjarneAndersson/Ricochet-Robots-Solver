@@ -18,8 +18,15 @@ func TrackSolver(solver func(*types.Board, types.BoardState, *types.RobotStoppin
 	start := time.Now()
 
 	trackingData, path, err = solver(board, initBoardState, robotStoppingPositions, conf)
+	if err != nil {
+		return path, trackingData, err
+	}
 
 	trackingData.Duration = time.Since(start)
+
+	if trackingData.Duration == 0 { // Prevent division by zero
+		trackingData.Duration = 1
+	}
 
 	return path, trackingData, err
 }
