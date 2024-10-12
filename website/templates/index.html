@@ -8,6 +8,17 @@
     <script type="application/javascript" src="assets/application.js"></script> <!-- Load the JS file for the board logic -->
 </head>
 <body>
+<div class="title">Ricochet Robots</div>
+<div class="controls">
+    <!-- Button to load the board configuration -->
+    <button id="load" onclick="sendPostRequest('/api/load')">Load board</button>
+    <!-- Button to solve the board -->
+    <button id="solve" onclick="sendPostRequest('/api/solve')">Solve</button>
+    <!-- Button to output the result to the console -->
+    <button id="output" onclick="sendPostRequest('/api/output/console')">Output</button>
+</div>
+<div class="tracking-data">tracking data</div>
+<div class="middle-top">Quarter board selectors</div>
 <!-- Board container -->
 <div class="board">
     {{range $row := .Rows}}
@@ -28,13 +39,10 @@
     {{end}}
     {{end}}
 </div>
-<div class="controls">
-    <!-- Button to load the board configuration -->
-    <button id="load" onclick="sendPostRequest('/api/load')">Load board</button>
-    <!-- Button to solve the board -->
-    <button id="solve" onclick="sendPostRequest('/api/solve')">Solve</button>
-    <!-- Button to output the result to the console -->
-    <button id="output" onclick="sendPostRequest('/api/output/console')">Output</button>
+<div class="middle-bottom">Quarter board selectors</div>
+<div class="path">
+    Path display
+    <!-- <input type="range" id="slider" min="0" max="4" value="0" orient="vertical" style="writing-mode: bt-lr; transform: rotate(-90deg);"> -->
 </div>
 </body>
 </html>
