@@ -2,19 +2,25 @@
 body {
     background-color: #222222; /* Dark background */
     color: #e0e0e0; /* Light text for readability */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
 /* BOARD */
 .board {
+    --board-size: min(80vh, 80vw); /* 80% of the smaller dimension (viewport height or width) */
+    width: var(--board-size);
+    height: var(--board-size);
     display: grid;
-    grid-template-columns: repeat(16, 50px); /* 16 columns */
-    grid-template-rows: repeat(16, 50px);    /* 16 rows */
+    grid-template-columns: repeat(16, 1fr); /* 16 columns */
+    grid-template-rows: repeat(16, 1fr);    /* 16 rows */
 }
 
 /* CELL */
 .board .cell {
-    width: 50px;
-    height: 50px;
     border: 1px solid #424242; /* Dark border */
     position: relative;
 }
@@ -25,20 +31,20 @@ body {
 .board .cell .wall-left,
 .board .cell .wall-right {
     background-color: #e0e0e0; /* Light walls */
-    position: absolute;        /* Position absolut to the cell */
+    position: absolute;        /* Position absolute to the cell */
 }
 
 .board .cell .wall-top,
 .board .cell .wall-bottom {
     left: 0;
     width: 100%;
-    height: 5px;  /* Wall thickness */
+    height: 10%;  /* Wall thickness */
 }
 
 .board .cell .wall-left,
 .board .cell .wall-right {
     top: 0;
-    width: 5px;   /* Wall thickness */
+    width: 10%;   /* Wall thickness */
     height: 100%;
 }
 
@@ -56,14 +62,14 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 30px;
-    height: 30px;
+    width: 60%;
+    height: 60%;
 }
 
 /* Shapes */
 .triangle { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
 .circle { border-radius: 50%; }
-.square { width: 30px; height: 30px; }
+.square { width: 60%; height: 60%; }
 .hexagon { clip-path: polygon(50% 0%, 90% 25%, 90% 75%, 50% 100%, 10% 75%, 10% 25%); }
 .vertex { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
 
