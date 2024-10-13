@@ -90,6 +90,47 @@ func (s *Server) solve() http.HandlerFunc {
 		s.AppState.Path = path
 		s.AppState.TrackingData = trackingData
 
+		// OUTPUT
+		s.Logger.Info("Outputting to console")
+
+		// output extra information based on config
+		err = output.Neighbors(&s.AppState.Board, s.Recorder)
+		if err != nil {
+			s.Logger.Warn(err, "Outputting neighbors")
+			http.Error(w, "Failed to output neighbors", http.StatusInternalServerError)
+		}
+
+		err = output.RobotStoppingPositions(&s.AppState.RobotStoppingPositions, s.Recorder)
+		if err != nil {
+			s.Logger.Warn(err, "Outputting robot stopping positions")
+			http.Error(w, "Failed to output robot stopping positions", http.StatusInternalServerError)
+		}
+
+		// output the path
+		s.AppState.Output.Path, err = output.Path(s.AppState.Path, s.AppState.TrackingData, s.AppState.InitRobotOrder, s.Recorder)
+		if err != nil {
+			s.Logger.Fatal(err, "Outputting path")
+			http.Error(w, "Failed to output path", http.StatusInternalServerError)
+			return
+		}
+
+		s.AppState.Output.TrackingData = s.AppState.TrackingData
+		s.Logger.Warn(nil, s.AppState.Output.TrackingData.Duration)
+
+		outputJson, err := json.Marshal(s.AppState.Output)
+		if err != nil {
+			s.Logger.Error(err, "Marshalling output JSON")
+			http.Error(w, "Failed to marshal output JSON", http.StatusInternalServerError)
+			return
+		}
+
+		_, err = w.Write(outputJson)
+		if err != nil {
+			s.Logger.Error(err, "Writing output JSON")
+			http.Error(w, "Failed to write output JSON", http.StatusInternalServerError)
+			return
+		}
+
 		// Send a success response
 		w.WriteHeader(http.StatusOK)
 	}

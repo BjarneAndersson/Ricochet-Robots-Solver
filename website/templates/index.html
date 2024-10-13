@@ -14,12 +14,20 @@
     <!-- Button to load the board configuration -->
     <button id="load" onclick="sendPostRequest('/api/load')">Load board</button>
     <!-- Button to solve the board -->
-    <button id="solve" onclick="sendPostRequest('/api/solve')">Solve</button>
-    <!-- Button to output the result to the console -->
-    <button id="output" onclick="sendPostRequest('/api/output/console')">Output</button>
+    <button id="solve" onclick="solve()">Solve</button>
 </div>
-<div class="tracking-data">tracking data</div>
+<div class="tracking-data">
+    <h2>Tracking Data</h2>
+    <div id="tracking-data-content">
+        <!-- Tracking data will be displayed here -->
+        <p>Initialized Board States: <span id="init-board-states">0</span></p>
+        <p>Evaluated Board States: <span id="evaluated-board-states">0</span></p>
+        <p>Duration: <span id="duration">0</span> ns</p>
+    </div>
+</div>
+</div>
 <div class="middle-top">Quarter board selectors</div>
+<div class="middle-top">
 <!-- Board container -->
 <div class="middle-center">
     <div class="board">
