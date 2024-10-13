@@ -25,9 +25,17 @@
         <p>Duration: <span id="duration">0</span> ns</p>
     </div>
 </div>
+<div class="instructions">
+    <h2>Instructions</h2>
+    <p>Click on the "Solve" button to solve the board.</p>
+    <p>Click on the "Load board" button to load the board configuration.</p>
+    <p>Click on the "Output" button to output the result to the console.</p>
+    <p>Click on the "Reset" button to reset the board configuration.</p>
 </div>
-<div class="middle-top">Quarter board selectors</div>
 <div class="middle-top">
+    <button class="change-quarter-board" id="change-qb-top-left" onclick="sendPostRequest('/api/load')">Change Quarter Board</button>
+    <button class="change-quarter-board" id="change-qb-top-right" onclick="sendPostRequest('/api/load')">Change Quarter Board</button>
+</div>
 <!-- Board container -->
 <div class="middle-center">
     <div class="board">
