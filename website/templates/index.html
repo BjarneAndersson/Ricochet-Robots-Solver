@@ -11,8 +11,6 @@
 <body>
 <div class="title">Ricochet Robots</div>
 <div class="controls">
-    <!-- Button to load the board configuration -->
-    <button id="load" onclick="sendPostRequest('/api/load')">Load board</button>
     <!-- Button to solve the board -->
     <button id="solve" onclick="solve()">Solve</button>
 </div>
@@ -58,7 +56,10 @@
         {{end}}
     </div>
 </div>
-<div class="middle-bottom">Quarter board selectors</div>
+<div class="middle-bottom">
+    <button class="change-quarter-board" id="change-qb-bottom-left" onclick="sendPostRequest('/api/load')">Change Quarter Board</button>
+    <button class="change-quarter-board" id="change-qb-bottom-right" onclick="sendPostRequest('/api/load')">Change Quarter Board</button>
+</div>
 <div class="path">
     Path display
     <!-- <input type="range" id="slider" min="0" max="4" value="0" orient="vertical" style="writing-mode: bt-lr; transform: rotate(-90deg);"> -->
