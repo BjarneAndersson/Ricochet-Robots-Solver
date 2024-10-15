@@ -77,7 +77,7 @@ func (s *Server) setupRoutes() {
 	s.Logger.Info("Root route set up")
 
 	// apis
-	s.HandleFunc("/api/load", s.loadBoard()).Methods("POST")
+	s.HandleFunc("/api/change-quarter-boards", s.changeAllQuarterBoards()).Methods("POST")
 	s.HandleFunc("/api/solve", s.solve()).Methods("POST")
 	s.HandleFunc("/api/output/console", s.outputConsole()).Methods("POST")
 
@@ -98,6 +98,14 @@ func (s *Server) root() http.HandlerFunc {
 		s.Logger.Info("Root route accessed")
 
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+
+		// load the board
+		err = s.loadBoard()
+		if err != nil {
+			s.Logger.Error(err, "Loading board data")
+			http.Error(w, "Failed to load board data", http.StatusInternalServerError)
+			return
+		}
 
 		// parse the template
 		html, err := template.ParseFiles("./website/templates/index.html")

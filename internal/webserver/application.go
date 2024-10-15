@@ -1,48 +1,103 @@
 package webserver
 
 import (
+	"Ricochet-Robot-Solver/internal/helper"
 	"Ricochet-Robot-Solver/internal/input"
 	"Ricochet-Robot-Solver/internal/output"
 	"Ricochet-Robot-Solver/internal/precomputation"
 	"Ricochet-Robot-Solver/internal/solver"
 	"Ricochet-Robot-Solver/internal/tracker"
 	"encoding/json"
+	"io"
 	"net/http"
 )
 
-// loadBoard handles the loading of the board data.
-//
-// This function resets the application state, loads the board data from a JSON input,
-// and updates the application state with the new board data. It sends a success response
-// if the board data is loaded successfully, otherwise it sends an error response.
-//
-// Returns:
-//   - http.HandlerFunc: A function that handles HTTP requests and writes responses.
-func (s *Server) loadBoard() http.HandlerFunc {
+func (s *Server) changeAllQuarterBoards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-		s.Logger.Info("Resetting application state")
-		s.initAppState()
+		type Quarter struct {
+			Position string `json:"position"`
+			Version  string `json:"version"`
+		}
 
-		s.Logger.Info("Loading board data")
+		type Quarters struct {
+			Yellow Quarter `json:"yellow"`
+			Red    Quarter `json:"red"`
+			Green  Quarter `json:"green"`
+			Blue   Quarter `json:"blue"`
+		}
 
-		// transform json data to board object
-		board, initBoardState, initRobotOrder, err := input.GetData(*(s.Config))
+		quarters := Quarters{}
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			s.Logger.Error(err, "Reading request body")
+			http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+			return
+		}
+
+		err = json.Unmarshal(body, &quarters)
+		if err != nil {
+			s.Logger.Error(err, "Unmarshalling JSON")
+			http.Error(w, "Failed to unmarshal JSON", http.StatusBadRequest)
+			return
+		}
+
+		// Convert positions and validate versions
+		quartersList := []*Quarter{&quarters.Yellow, &quarters.Red, &quarters.Green, &quarters.Blue}
+		for _, quarter := range quartersList {
+			quarter.Position, err = helper.ConvertPosition(quarter.Position)
+			if err != nil {
+				s.Logger.Error(err, "Invalid position")
+				http.Error(w, "Invalid position", http.StatusBadRequest)
+				return
+			}
+
+			err = helper.ValidateVersion(quarter.Version)
+			if err != nil {
+				s.Logger.Error(err, "Invalid version")
+				http.Error(w, "Invalid version", http.StatusBadRequest)
+				return
+			}
+		}
+
+		// Update the configuration
+		s.Config.Board.Quarters.Yellow.Position = quarters.Yellow.Position
+		s.Config.Board.Quarters.Yellow.Version = quarters.Yellow.Version
+		s.Config.Board.Quarters.Red.Position = quarters.Red.Position
+		s.Config.Board.Quarters.Red.Version = quarters.Red.Version
+		s.Config.Board.Quarters.Green.Position = quarters.Green.Position
+		s.Config.Board.Quarters.Green.Version = quarters.Green.Version
+		s.Config.Board.Quarters.Blue.Position = quarters.Blue.Position
+		s.Config.Board.Quarters.Blue.Version = quarters.Blue.Version
+
+		err = s.loadBoard()
 		if err != nil {
 			s.Logger.Error(err, "Loading board data")
 			http.Error(w, "Failed to load board data", http.StatusInternalServerError)
 			return
 		}
 
-		// Set the board in the application state
-		s.AppState.Board = board
-		s.AppState.InitBoardState = initBoardState
-		s.AppState.InitRobotOrder = initRobotOrder
-
-		// Send a success response
 		w.WriteHeader(http.StatusOK)
 	}
+}
+
+// loadBoard handles the loading of the board data.
+func (s *Server) loadBoard() error {
+	s.Logger.Info("Loading board data")
+
+	// Load board data
+	board, initBoardState, initRobotOrder, err := input.GetData(*(s.Config))
+	if err != nil {
+		return err
+	}
+
+	// Set the board data in the application state
+	s.AppState.Board = board
+	s.AppState.InitBoardState = initBoardState
+	s.AppState.InitRobotOrder = initRobotOrder
+
+	return nil
 }
 
 // solve handles the solving of the board.
