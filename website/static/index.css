@@ -87,13 +87,9 @@ body {
     padding: 0.5%;
 }
 
-.change-quarter-board {
+.change-quarter-boards {
     height: 100%; /* Full area height */
     width: auto;  /* Adjust width to fit the text */
     box-sizing: border-box; /* Include padding and border in the element's total width and height */
-}
-
-#change-qb-top-right,
-#change-qb-bottom-right {
     float: right; /* Align to the right side */
 }
