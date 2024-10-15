@@ -2,15 +2,16 @@
  * Sends a POST request to the specified URL.
  *
  * @param {string} url - The URL to send the POST request to.
+ * @param body - The body of the request.
  * @returns {Promise<Object>} - A promise that resolves with the response data.
  */
-function sendPostRequest(url) {
+function sendPostRequest(url, body = {}) {
     return fetch(url, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({})
+        body: JSON.stringify(body)
     })
         .then(response => {
             if (response.status === 204 || response.headers.get('content-length') === '0') {
