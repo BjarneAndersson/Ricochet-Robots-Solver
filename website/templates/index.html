@@ -6,8 +6,10 @@
     <title>Board Visualization</title>
     <link rel="stylesheet" href="assets/index.css"> <!-- Load the CSS file for the page styling -->
     <link rel="stylesheet" href="assets/board.css"> <!-- Load the CSS file for the styling of the board area -->
+    <link rel="stylesheet" href="assets/path.css">  <!-- Load the CSS file for the styling of the path area -->
     <script type="application/javascript" src="assets/application.js"></script> <!-- Load the JS file for the board logic -->
     <script type="application/javascript" src="assets/resizeBoard.js"></script> <!-- Load the JS file for the board rendering -->
+    <script type="application/javascript" src="assets/path.js"></script> <!-- Load the JS file for the board rendering -->
 </head>
 <body>
 <div class="title">Ricochet Robots Solver</div>
@@ -59,9 +61,13 @@
 <div class="middle-bottom">
     Targets
 </div>
-<div class="path">
-    Path display
-    <!-- <input type="range" id="slider" min="0" max="4" value="0" orient="vertical" style="writing-mode: bt-lr; transform: rotate(-90deg);"> -->
+<div class="path" id="path-container">
+    <h2>Path display</h2>
+    <div id="path-content">
+        <!-- Path will be displayed here -->
+        <input type="range" id="slider" min="0" max="16" value="0" orient="vertical" hidden>
+        <div id="slider-values"></div>
+    </div>
 </div>
 </body>
 </html>

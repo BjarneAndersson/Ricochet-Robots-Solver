@@ -29,10 +29,11 @@ function solve() {
     sendPostRequest('/api/solve')
         .then(data => {
             console.log(data);
-            const trackingData = data.TrackingData;
-            document.getElementById('init-board-states').textContent = trackingData.InitializedBoardStates;
-            document.getElementById('evaluated-board-states').textContent = trackingData.EvaluatedBoardStates;
-            document.getElementById('duration').textContent = trackingData.Duration;
+            // update tracking data
+            updateTrackingData(data.TrackingData);
+
+            // update the path
+            updatePath(data.Path);
         })
         .catch(error => console.error('Error:', error));
 }
@@ -72,4 +73,10 @@ function changeQuarterBoard(body = {}) {
     // Load the new board into the solver
     sendPostRequest('api/load')
         .catch(error => console.error('Error:', error));
+}
+
+function updateTrackingData(trackingData) {
+    document.getElementById('init-board-states').textContent = trackingData.InitializedBoardStates;
+    document.getElementById('evaluated-board-states').textContent = trackingData.EvaluatedBoardStates;
+    document.getElementById('duration').textContent = trackingData.Duration;
 }
