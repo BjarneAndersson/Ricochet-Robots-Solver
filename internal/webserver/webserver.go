@@ -78,6 +78,7 @@ func (s *Server) setupRoutes() {
 
 	// apis
 	s.HandleFunc("/api/change-quarter-boards", s.changeAllQuarterBoards()).Methods("POST")
+	s.HandleFunc("/api/change-target", s.changeTarget()).Methods("POST")
 	s.HandleFunc("/api/solve", s.solve()).Methods("POST")
 	s.HandleFunc("/api/output/console", s.outputConsole()).Methods("POST")
 

@@ -82,6 +82,44 @@ func (s *Server) changeAllQuarterBoards() http.HandlerFunc {
 	}
 }
 
+func (s *Server) changeTarget() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+		type Target struct {
+			Color  string `json:"color"`
+			Symbol string `json:"symbol"`
+		}
+
+		target := Target{}
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			s.Logger.Error(err, "Reading request body")
+			http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+			return
+		}
+
+		err = json.Unmarshal(body, &target)
+		if err != nil {
+			s.Logger.Error(err, "Unmarshalling JSON")
+			http.Error(w, "Failed to unmarshal JSON", http.StatusBadRequest)
+			return
+		}
+
+		s.Config.Board.Target.Color = target.Color
+		s.Config.Board.Target.Symbol = target.Symbol
+
+		err = s.loadBoard()
+		if err != nil {
+			s.Logger.Error(err, "Loading board data")
+			http.Error(w, "Failed to load board data", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
 // loadBoard handles the loading of the board data.
 func (s *Server) loadBoard() error {
 	s.Logger.Info("Loading board data")
