@@ -77,6 +77,8 @@ func (s *Server) setupRoutes() {
 	s.Logger.Info("Root route set up")
 
 	// apis
+	s.HandleFunc("/api/get-robots", s.getRobots()).Methods("GET")
+	s.HandleFunc("/api/get-target", s.getTarget()).Methods("GET")
 	s.HandleFunc("/api/change-quarter-boards", s.changeAllQuarterBoards()).Methods("POST")
 	s.HandleFunc("/api/change-target", s.changeTarget()).Methods("POST")
 	s.HandleFunc("/api/solve", s.solve()).Methods("POST")

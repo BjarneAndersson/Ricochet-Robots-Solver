@@ -12,6 +12,54 @@ import (
 	"net/http"
 )
 
+func (s *Server) getRobots() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+		robots := s.Config.Board.Robots
+
+		robotsJson, err := json.Marshal(robots)
+		if err != nil {
+			s.Logger.Error(err, "Marshalling robots JSON")
+			http.Error(w, "Failed to marshal robots JSON", http.StatusInternalServerError)
+			return
+		}
+
+		_, err = w.Write(robotsJson)
+		if err != nil {
+			s.Logger.Error(err, "Writing robots JSON")
+			http.Error(w, "Failed to write robots JSON", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func (s *Server) getTarget() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+		target := s.Config.Board.Target
+
+		targetJson, err := json.Marshal(target)
+		if err != nil {
+			s.Logger.Error(err, "Marshalling target JSON")
+			http.Error(w, "Failed to marshal target JSON", http.StatusInternalServerError)
+			return
+		}
+
+		_, err = w.Write(targetJson)
+		if err != nil {
+			s.Logger.Error(err, "Writing target JSON")
+			http.Error(w, "Failed to write target JSON", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
 func (s *Server) changeAllQuarterBoards() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
