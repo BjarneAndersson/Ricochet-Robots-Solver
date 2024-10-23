@@ -77,6 +77,16 @@ func createBoard(boardData input.Board) Board {
 //   - http.HandlerFunc: A function that handles HTTP requests and writes responses.
 func (s *Server) renderBoard() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var err error
+
+		// load the board
+		err = s.loadBoard()
+		if err != nil {
+			s.Logger.Error(err, "Loading board data")
+			http.Error(w, "Failed to load board data", http.StatusInternalServerError)
+			return
+		}
+
 		// Load the board data from JSON
 		boardData, err := loadBoardData("logs/boards/board.json")
 		if err != nil {
