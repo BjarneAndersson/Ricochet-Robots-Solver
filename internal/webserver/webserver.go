@@ -3,7 +3,6 @@ package webserver
 import (
 	"Ricochet-Robot-Solver/internal/application"
 	"Ricochet-Robot-Solver/internal/config"
-	"html/template"
 	"net/http"
 	_ "os"
 
@@ -86,46 +85,4 @@ func (s *Server) setupRoutes() {
 
 	// static assets
 	s.PathPrefix("/").Handler(http.StripPrefix("/assets", http.FileServer(http.Dir("./website/static"))))
-}
-
-// root is the root route handler for the web server.
-// It handles HTTP GET requests to the root URL ("/").
-//
-// Returns:
-//   - http.HandlerFunc: A function that handles HTTP requests and writes responses.
-func (s *Server) root() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// logging
-		var err error
-
-		s.Logger.Info("Root route accessed")
-
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
-		// load the board
-		err = s.loadBoard()
-		if err != nil {
-			s.Logger.Error(err, "Loading board data")
-			http.Error(w, "Failed to load board data", http.StatusInternalServerError)
-			return
-		}
-
-		// parse the template
-		html, err := template.ParseFiles("./website/templates/index.html")
-		if err != nil {
-			s.Logger.Error(err, "Error parsing template")
-			http.Error(w, "Failed to render template", http.StatusInternalServerError)
-			return
-		}
-
-		// render the template
-		err = html.Execute(w, nil)
-		if err != nil {
-			s.Logger.Error(err, "Error formatting template")
-			http.Error(w, "Failed to render template", http.StatusInternalServerError)
-			return
-		}
-
-		w.WriteHeader(http.StatusOK)
-	}
 }
