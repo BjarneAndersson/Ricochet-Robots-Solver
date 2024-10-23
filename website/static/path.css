@@ -17,11 +17,6 @@ input[type=range][orient=vertical] {
     cursor: pointer;
 }
 
-.arrow {
-    font-size: 20px; /* Adjust the font size as needed */
-    margin-bottom: 5px; /* Space between arrow and step count */
-}
-
 #slider-values {
     position: absolute;
     top: 0;
@@ -33,12 +28,19 @@ input[type=range][orient=vertical] {
 }
 
 #slider-values span {
-    font-size: 16px; /* Adjust the font size as needed */
+    font-size: 2vw; /* Use viewport width for font size */
     color: #e0e0e0; /* Light text for readability */
     opacity: 0.5; /* Less opaque for inactive spans */
+    margin-left: 1.5vw; /* Adjust the margin as needed */
+
 }
 
 #slider-values span.active {
     font-weight: bold; /* Make the active span bold */
     opacity: 1; /* Fully opaque for the active span */
+}
+
+#slider-values i {
+    font-size: 4vw; /* Use viewport width for font size */
+    margin-left: 0.5vw; /* Adjust the margin as needed */
 }

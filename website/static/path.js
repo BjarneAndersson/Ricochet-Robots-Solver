@@ -8,13 +8,13 @@ function updatePath(solveResponse) {
     const pathSteps = solveResponse.length - 1; // Drop the last path element
     slider.max = pathSteps - 1;
 
-    // Function to get the arrow character based on the direction
-    function getArrow(direction) {
+    // Function to get the arrow icon based on the direction
+    function getArrowIcon(direction) {
         switch (direction) {
-            case 'up': return '↑';
-            case 'down': return '↓';
-            case 'left': return '←';
-            case 'right': return '→';
+            case 'up': return 'fas fa-arrow-up';
+            case 'down': return 'fas fa-arrow-down';
+            case 'left': return 'fas fa-arrow-left';
+            case 'right': return 'fas fa-arrow-right';
             default: return '';
         }
     }
@@ -29,13 +29,9 @@ function updatePath(solveResponse) {
             const step = solveResponse[i];
 
             if (i > 0) { // Leave out the arrow for slider-value=0
-                const arrow = document.createElement('span');
-                arrow.textContent = getArrow(step.moved_direction);
-                if (step.moved_robot) {
-                    arrow.classList.add('arrow', step.moved_robot);
-                } else {
-                    arrow.classList.add('arrow');
-                }
+                const arrow = document.createElement('i');
+                arrow.className = `${getArrowIcon(step.moved_direction)} fa-lg`;
+                arrow.style.color = step.moved_robot;
                 sliderValues.appendChild(arrow);
             }
 
