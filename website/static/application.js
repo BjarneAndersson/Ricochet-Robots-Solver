@@ -1,3 +1,22 @@
+function sendGetRequest(url) {
+    return fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.status === 204 || response.headers.get('content-length') === '0') {
+            return {};
+        }
+        return response.json();
+    })
+    .catch(error => {
+        console.error('Error in GET request:', error);
+        throw error; // Ensure the error is propagated
+    });
+}
+
 /**
  * Sends a POST request to the specified URL.
  *
@@ -13,12 +32,16 @@ function sendPostRequest(url, body = {}) {
         },
         body: JSON.stringify(body)
     })
-        .then(response => {
-            if (response.status === 204 || response.headers.get('content-length') === '0') {
-                return {};
-            }
-            return response.json();
-        });
+    .then(response => {
+        if (response.status === 204 || response.headers.get('content-length') === '0') {
+            return {};
+        }
+        return response.json();
+    })
+    .catch(error => {
+        console.error('Error in POST request:', error);
+        throw error; // Ensure the error is propagated
+    });
 }
 
 /**
