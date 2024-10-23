@@ -98,8 +98,45 @@ function changeQuarterBoard(body = {}) {
         .catch(error => console.error('Error:', error));
 }
 
+function changeTarget(body) {
+    if (Object.keys(body).length === 0) {
+        body = {
+            "color": 'multicolor',
+            "symbol": 'vertex'
+        }
+    }
+    sendPostRequest('/api/change-target', body)
+        .then(data => { console.log(data); })
+        .then(() => location.reload())
+        .catch(error => console.error('Error:', error));
+    // The location.reload() method is used to reload the current page.
+
+    getTarget()
+
+    // Load the new board into the solver
+    sendPostRequest('api/load')
+        .catch(error => console.error('Error:', error));
+}
+
 function updateTrackingData(trackingData) {
     document.getElementById('init-board-states').textContent = trackingData.InitializedBoardStates;
     document.getElementById('evaluated-board-states').textContent = trackingData.EvaluatedBoardStates;
     document.getElementById('duration').textContent = trackingData.Duration;
+}
+
+function getTarget() {
+    sendGetRequest('/api/get-target')
+        .then(data => {
+            console.log(data);
+
+            // Remove active class from all targets
+            document.querySelectorAll('.target').forEach(el => el.classList.remove('active'));
+
+            // Add active class to the clicked target
+            const targetElements = document.querySelectorAll(`.target.${data.Symbol}.${data.Color}`);
+            targetElements.forEach(targetElement => {
+                targetElement.classList.add('active');
+            });
+        })
+        .catch(error => console.error('Error:', error));
 }
