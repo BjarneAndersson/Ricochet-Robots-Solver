@@ -16,6 +16,9 @@
 
 </head>
 <body>
+{{ $Board := .Board}}
+{{ $Targets := .Targets}}
+{{ $ActiveTarget := .ActiveTarget}}
 <div class="title">Ricochet Robots Solver</div>
 <div class="controls">
     <!-- Button to solve the board -->
@@ -43,7 +46,7 @@
 <!-- Board container -->
 <div class="middle-center">
     <div class="board">
-        {{range $row := .Rows}}
+        {{range $row := $Board.Rows}}
         {{range $col := $row}}
         <!-- Cell container -->
         <div class="cell">
@@ -55,7 +58,7 @@
 
             <!-- Target element -->
             {{if $col.Target}}
-            <div class="target {{.Target.Shape}} {{.Target.Color}}"></div>
+            <div class="target {{.Target.Shape}} {{.Target.Color}} {{if eq .Target.Shape $ActiveTarget.Shape}}{{if eq .Target.Color $ActiveTarget.Color}}active{{end}}{{end}}"></div>
             {{end}}
         </div>
         {{end}}
@@ -63,7 +66,16 @@
     </div>
 </div>
 <div class="middle-bottom">
-    <div class="targets-container" id="targets-container"></div>
+    <div class="targets-container" id="targets-container">
+        {{range $target := $Targets}}
+        <div class="target
+            {{.Shape}}
+            {{.Color}}
+            {{if eq .Shape $ActiveTarget.Shape}}{{if eq .Color $ActiveTarget.Color}}active{{end}}{{end}}"
+             onclick='changeTarget({"Symbol": "{{.Shape}}", "Color": "{{.Color}}"})'
+        ></div>
+        {{end}}
+    </div>
 </div>
 <div class="path" id="path-container">
     <h2>Path display</h2>

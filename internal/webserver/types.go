@@ -19,3 +19,9 @@ type Cell struct {
 type Board struct {
 	Rows [][]Cell
 }
+
+type WebsiteData struct {
+	Board        Board
+	Targets      []input.Target
+	ActiveTarget input.Target
+}

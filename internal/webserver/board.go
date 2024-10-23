@@ -71,6 +71,43 @@ func createBoard(boardData input.Board) Board {
 	return board
 }
 
+func createTargets() (targets []input.Target) {
+	// Define the target data
+	targetsData := []struct {
+		Symbol string
+		Color  string
+	}{
+		{Symbol: "circle", Color: "yellow"},
+		{Symbol: "triangle", Color: "yellow"},
+		{Symbol: "square", Color: "yellow"},
+		{Symbol: "hexagon", Color: "yellow"},
+		{Symbol: "circle", Color: "red"},
+		{Symbol: "triangle", Color: "red"},
+		{Symbol: "square", Color: "red"},
+		{Symbol: "hexagon", Color: "red"},
+		{Symbol: "circle", Color: "green"},
+		{Symbol: "triangle", Color: "green"},
+		{Symbol: "square", Color: "green"},
+		{Symbol: "hexagon", Color: "green"},
+		{Symbol: "circle", Color: "blue"},
+		{Symbol: "triangle", Color: "blue"},
+		{Symbol: "square", Color: "blue"},
+		{Symbol: "hexagon", Color: "blue"},
+		{Symbol: "vertex", Color: "multicolor"},
+	}
+
+	// Create the targets
+	targets = make([]input.Target, len(targetsData))
+	for i, target := range targetsData {
+		targets[i] = input.Target{
+			Color: target.Color,
+			Shape: target.Symbol,
+		}
+	}
+
+	return targets
+}
+
 // renderBoard handles the rendering of the board using a template.
 //
 // Returns:
@@ -96,6 +133,18 @@ func (s *Server) renderBoard() http.HandlerFunc {
 
 		// Create the board with walls and targets
 		board := createBoard(boardData)
+		targets := createTargets()
+		activeTarget := input.Target{
+			Color: s.Config.Board.Target.Color,
+			Shape: s.Config.Board.Target.Symbol,
+		}
+
+		// Create the website data
+		websiteData := WebsiteData{
+			Board:        board,
+			Targets:      targets,
+			ActiveTarget: activeTarget,
+		}
 
 		s.Logger.Info("Root route accessed")
 
@@ -110,7 +159,7 @@ func (s *Server) renderBoard() http.HandlerFunc {
 		}
 
 		// Render the template
-		err = html.Execute(w, board)
+		err = html.Execute(w, websiteData)
 		if err != nil {
 			s.Logger.Error(err, "Error formatting template")
 			w.WriteHeader(http.StatusInternalServerError)
