@@ -10,28 +10,11 @@
 /* TARGET */
 .targets-container .target {
     position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     opacity: 0.25;
 }
 
 .targets-container .target.active {
     opacity: 1;
-}
-
-.current-target-display {
-    position: relative;
-    width: 60%;
-    height: 100%; /* Adjust height as needed */
-    display: flex;
-}
-
-.current-target-display .target{
-    position: relative;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
 }
 
 /* CSS for targets on the board */

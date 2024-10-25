@@ -10,6 +10,7 @@ import "Ricochet-Robot-Solver/internal/input"
 type Cell struct {
 	Walls  input.Directions
 	Target input.Target
+	Robot  input.Robot
 }
 
 // Board structure for organizing cells

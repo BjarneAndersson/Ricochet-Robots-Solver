@@ -57,8 +57,10 @@
             {{if $col.Walls.Right}}<div class="wall-right"></div>{{end}}
 
             <!-- Target element -->
-            {{if $col.Target}}
-            <div class="target {{.Target.Shape}} {{.Target.Color}} {{if eq .Target.Shape $ActiveTarget.Shape}}{{if eq .Target.Color $ActiveTarget.Color}}active{{end}}{{end}}"></div>
+           {{if ne $col.Target.Shape ""}}
+            <div class="target {{.Target.Shape}} {{.Target.Color}} {{if eq .Target.Shape $ActiveTarget.Shape}}{{if eq .Target.Color $ActiveTarget.Color}}active{{end}}{{end}}"
+                 onclick='changeTarget({"Symbol": "{{.Target.Shape}}", "Color": "{{.Target.Color}}"})'>
+            </div>
             {{end}}
         </div>
         {{end}}
@@ -68,12 +70,9 @@
 <div class="middle-bottom">
     <div class="targets-container" id="targets-container">
         {{range $target := $Targets}}
-        <div class="target
-            {{.Shape}}
-            {{.Color}}
-            {{if eq .Shape $ActiveTarget.Shape}}{{if eq .Color $ActiveTarget.Color}}active{{end}}{{end}}"
-             onclick='changeTarget({"Symbol": "{{.Shape}}", "Color": "{{.Color}}"})'
-        ></div>
+        <div class="target {{.Shape}} {{.Color}} {{if eq .Shape $ActiveTarget.Shape}}{{if eq .Color $ActiveTarget.Color}}active{{end}}{{end}}"
+             onclick='changeTarget({"Symbol": "{{.Shape}}", "Color": "{{.Color}}"})'>
+        </div>
         {{end}}
     </div>
 </div>

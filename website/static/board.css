@@ -53,15 +53,41 @@
 }
 
 /* Shapes */
-.triangle { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
-.circle { border-radius: 50%; }
-.square { width: 60%; height: 60%; }
-.hexagon { clip-path: polygon(50% 0%, 90% 25%, 90% 75%, 50% 100%, 10% 75%, 10% 25%); }
-.vertex { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+.circle {
+    mask: url(/assets/images/circle.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/circle.svg) no-repeat center / contain;
+}
+.triangle {
+    mask: url(/assets/images/triangle.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/triangle.svg) no-repeat center / contain;
+}
+.square {
+    mask: url(/assets/images/square.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/square.svg) no-repeat center / contain;
+}
+.hexagon {
+    mask: url(/assets/images/hexagon.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/hexagon.svg) no-repeat center / contain;
+}
+.vertex {
+    mask: url(/assets/images/vortex.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/vortex.svg) no-repeat center / contain;
+}
+
 
 /* COLORS */
-.blue { background-color: #64b5f6; } /* Light Blue */
-.red { background-color: #ef5350; } /* Light Red */
-.green { background-color: #81c784; } /* Light Green */
-.yellow { background-color: #ffeb3b; } /* Bright Yellow */
-.multicolor { background-color: #b39ddb; } /* Light Purple */
+.blue {
+    background-color: #64b5f6; /* defines the background color of the image */
+} /* Light Blue */
+.red {
+    background-color: #ef5350;
+} /* Light Red */
+.green {
+    background-color: #81c784;
+} /* Light Green */
+.yellow {
+    background-color: #ffeb3b;
+} /* Bright Yellow */
+.multicolor {
+    background: linear-gradient(45deg, #ffeb3b, #64b5f6, #ef5350, #81c784);
+}
