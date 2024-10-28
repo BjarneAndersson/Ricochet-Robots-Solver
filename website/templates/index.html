@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+{{ $CSSFiles := .CSSandJS.CSSFiles}}
+{{ $JSFiles := .CSSandJS.JSFiles}}
+{{ $Board := .Board}}
+{{ $Targets := .Targets}}
+{{ $ActiveTarget := .ActiveTarget}}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Board Visualization</title>
-    <link rel="stylesheet" href="assets/index.css"> <!-- Load the CSS file for the page styling -->
-    <link rel="stylesheet" href="assets/board.css"> <!-- Load the CSS file for the styling of the board area -->
-    <link rel="stylesheet" href="assets/path.css">  <!-- Load the CSS file for the styling of the path area -->
-    <link rel="stylesheet" href="assets/targets.css">  <!-- Load the CSS file for the styling of the path area -->
-    <script type="application/javascript" src="assets/application.js"></script> <!-- Load the JS file for the board logic -->
-    <script type="application/javascript" src="assets/resizeBoard.js"></script> <!-- Load the JS file for the board rendering -->
-    <script type="application/javascript" src="assets/path.js"></script> <!-- Load the JS file for the board rendering -->
-    <script type="application/javascript" src="assets/targets.js"></script> <!-- Load the JS file for the board rendering -->
+    {{range $CSSFiles}}
+        <link rel="stylesheet" href="assets/css/{{.}}">
+    {{end}}
+    {{range $JSFiles}}
+        <script type="application/javascript" src="assets/js/{{.}}"></script>
+    {{end}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 </head>
 <body>
-{{ $Board := .Board}}
-{{ $Targets := .Targets}}
-{{ $ActiveTarget := .ActiveTarget}}
 <div class="title">Ricochet Robots Solver</div>
 <div class="controls">
     <!-- Button to solve the board -->

@@ -21,7 +21,13 @@ type Board struct {
 	Rows [][]Cell
 }
 
+type ReferencesStylingAndJavascript struct {
+	CSSFiles []string
+	JSFiles  []string
+}
+
 type WebsiteData struct {
+	CSSandJS     ReferencesStylingAndJavascript
 	Board        Board
 	Targets      []input.Target
 	ActiveTarget input.Target

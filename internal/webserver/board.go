@@ -116,6 +116,23 @@ func (s *Server) renderBoard() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error
 
+		cssFiles, err := getFilesFromDir("website/static/css")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		jsFiles, err := getFilesFromDir("website/static/js")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		referencesCSSandJS := ReferencesStylingAndJavascript{
+			CSSFiles: cssFiles,
+			JSFiles:  jsFiles,
+		}
+
 		// load the board
 		err = s.loadBoard()
 		if err != nil {
@@ -141,6 +158,7 @@ func (s *Server) renderBoard() http.HandlerFunc {
 
 		// Create the website data
 		websiteData := WebsiteData{
+			CSSandJS:     referencesCSSandJS,
 			Board:        board,
 			Targets:      targets,
 			ActiveTarget: activeTarget,

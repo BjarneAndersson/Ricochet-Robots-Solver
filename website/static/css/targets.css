@@ -48,6 +48,10 @@
     grid-template-rows: 1fr;
 }
 
+.targets-container .target {
+    cursor: pointer;
+}
+
 /* ACTIVE TARGET */
 .target {
     opacity: 0.5; /* Set opacity for non-active targets */
