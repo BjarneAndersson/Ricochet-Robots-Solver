@@ -1,3 +1,44 @@
+/* Shapes */
+.circle {
+    mask: url(/assets/images/circle.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/circle.svg) no-repeat center / contain;
+}
+.triangle {
+    mask: url(/assets/images/triangle.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/triangle.svg) no-repeat center / contain;
+}
+.square {
+    mask: url(/assets/images/square.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/square.svg) no-repeat center / contain;
+}
+.hexagon {
+    mask: url(/assets/images/hexagon.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/hexagon.svg) no-repeat center / contain;
+}
+.vertex {
+    mask: url(/assets/images/vortex.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/vortex.svg) no-repeat center / contain;
+}
+
+
+/* COLORS */
+.blue {
+    background-color: #64b5f6; /* defines the background color of the image */
+} /* Light Blue */
+.red {
+    background-color: #ef5350;
+} /* Light Red */
+.green {
+    background-color: #81c784;
+} /* Light Green */
+.yellow {
+    background-color: #ffeb3b;
+} /* Bright Yellow */
+.multicolor {
+    background: linear-gradient(45deg, #ffeb3b, #64b5f6, #ef5350, #81c784);
+}
+
+/* TARGET SELECTION SECTION */
 .targets-container {
     position: relative;
     width: 100%;
@@ -7,21 +48,11 @@
     grid-template-rows: 1fr;
 }
 
-/* TARGET */
-.targets-container .target {
-    position: relative;
-    opacity: 0.25;
-}
-
-.targets-container .target.active {
-    opacity: 1;
-}
-
-/* CSS for targets on the board */
-.board .target {
+/* ACTIVE TARGET */
+.target {
     opacity: 0.5; /* Set opacity for non-active targets */
 }
 
-.board .target.active {
+.target.active {
     opacity: 1; /* Set opacity for active targets */
 }
