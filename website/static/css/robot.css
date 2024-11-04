@@ -1,0 +1,8 @@
+.robot {
+    mask: url(/assets/images/robot.svg) no-repeat center / contain;
+    -webkit-mask: url(/assets/images/robot.svg) no-repeat center / contain;
+
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}

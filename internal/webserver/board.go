@@ -2,6 +2,7 @@ package webserver
 
 import (
 	"Ricochet-Robot-Solver/internal/input"
+	"Ricochet-Robot-Solver/internal/types"
 	"encoding/json"
 	"html/template"
 	"net/http"
@@ -52,6 +53,9 @@ func createBoard(boardData input.Board) Board {
 	board := Board{Rows: make([][]Cell, 16)}
 	for i := range board.Rows {
 		board.Rows[i] = make([]Cell, 16)
+		for j := range board.Rows[i] {
+			board.Rows[i][j].Position = types.Position{Row: byte(i), Column: byte(j)}
+		}
 	}
 
 	// Place walls in the board
@@ -155,6 +159,24 @@ func (s *Server) renderBoard() http.HandlerFunc {
 			Color: s.Config.Board.Target.Color,
 			Shape: s.Config.Board.Target.Symbol,
 		}
+		robots := input.Robots{
+			{
+				Color:    "yellow",
+				Position: s.Config.Board.Robots.Yellow.Position,
+			},
+			{
+				Color:    "red",
+				Position: s.Config.Board.Robots.Red.Position,
+			},
+			{
+				Color:    "green",
+				Position: s.Config.Board.Robots.Green.Position,
+			},
+			{
+				Color:    "blue",
+				Position: s.Config.Board.Robots.Blue.Position,
+			},
+		}
 
 		// Create the website data
 		websiteData := WebsiteData{
@@ -162,6 +184,7 @@ func (s *Server) renderBoard() http.HandlerFunc {
 			Board:        board,
 			Targets:      targets,
 			ActiveTarget: activeTarget,
+			Robots:       robots,
 		}
 
 		s.Logger.Info("Root route accessed")

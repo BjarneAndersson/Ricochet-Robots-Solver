@@ -5,6 +5,7 @@
 {{ $Board := .Board}}
 {{ $Targets := .Targets}}
 {{ $ActiveTarget := .ActiveTarget}}
+{{ $Robots := .Robots }}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -61,6 +62,15 @@
                  onclick='changeTarget({"Symbol": "{{.Target.Shape}}", "Color": "{{.Target.Color}}"})'>
             </div>
             {{end}}
+
+            <!-- Robot elements -->
+            {{ range $robot := $Robots }}
+                {{if eq $robot.Position.Row $col.Position.Row}}
+                {{if eq $robot.Position.Column $col.Position.Column}}
+                    <div id="robot_{{.Color}}" class="robot {{.Color}}"></div>
+                {{ end }}
+                {{ end }}
+            {{ end }}
         </div>
         {{end}}
         {{end}}

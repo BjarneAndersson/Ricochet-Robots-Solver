@@ -1,6 +1,9 @@
 package webserver
 
-import "Ricochet-Robot-Solver/internal/input"
+import (
+	"Ricochet-Robot-Solver/internal/input"
+	"Ricochet-Robot-Solver/internal/types"
+)
 
 // Cell structure for rendering the board
 //
@@ -8,9 +11,10 @@ import "Ricochet-Robot-Solver/internal/input"
 //   - Walls: Directions of the walls in the cell.
 //   - Target: Target information in the cell.
 type Cell struct {
-	Walls  input.Directions
-	Target input.Target
-	Robot  input.Robot
+	Walls    input.Directions
+	Target   input.Target
+	Robot    input.Robot
+	Position types.Position
 }
 
 // Board structure for organizing cells
@@ -31,4 +35,5 @@ type WebsiteData struct {
 	Board        Board
 	Targets      []input.Target
 	ActiveTarget input.Target
+	Robots       input.Robots
 }
