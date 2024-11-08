@@ -46,7 +46,17 @@ function updatePath(solveResponse) {
         }
     }
 
-    // Function to update the active span
+    // Function to move the robot to a specified cell
+    function changeRobotPosition(robotColor, position) {
+        const robot = document.querySelector(`.robot.${robotColor.toLowerCase()}`);
+        const targetCell = document.querySelector(`.cell[data-row="${position.row}"][data-column="${position.column}"]`);
+
+        if (robot && targetCell) {
+            targetCell.appendChild(robot); // Move the robot to the target cell
+        }
+    }
+
+    // Function to update the active span and move robots based on slider value
     function updateActiveSpan() {
         const spans = sliderValues.querySelectorAll('.slider-value');
         spans.forEach(span => {
@@ -56,17 +66,19 @@ function updatePath(solveResponse) {
             }
         });
 
-        // Update the path display based on the current slider value
+        // Update robot positions based on the current slider value
         const currentStep = solveResponse[parseInt(slider.value)];
-        console.log(currentStep);
+        currentStep.robots.forEach(robotData => {
+            changeRobotPosition(robotData.color, robotData.position);
+        });
     }
 
     // Create the slider values initially
     createSliderValues();
 
-    // Add event listener to update the active span when the slider changes
+    // Add event listener to update the active span and robot positions when the slider changes
     slider.addEventListener('input', updateActiveSpan);
 
-    // Initial update of the path display
+    // Initial update of the path display and robot positions
     updateActiveSpan();
 }
