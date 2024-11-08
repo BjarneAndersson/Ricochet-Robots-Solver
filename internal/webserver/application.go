@@ -168,6 +168,64 @@ func (s *Server) changeTarget() http.HandlerFunc {
 	}
 }
 
+func (s *Server) changeRobot() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var err error
+
+		robot := input.Robot{}
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			s.Logger.Error(err, "Reading request body")
+			http.Error(w, "Failed to read request body", http.StatusInternalServerError)
+			return
+		}
+
+		err = json.Unmarshal(body, &robot)
+		if err != nil {
+			s.Logger.Error(err, "Unmarshalling JSON")
+			http.Error(w, "Failed to unmarshal JSON", http.StatusBadRequest)
+			return
+		}
+
+		// check if the robot is in a valid position
+		if robot.Position.Column < 0 ||
+			robot.Position.Column >= 16 ||
+			robot.Position.Row < 0 ||
+			robot.Position.Row >= 16 ||
+			robot.Position.Column == 7 && (robot.Position.Row == 7 || robot.Position.Row == 8) ||
+			robot.Position.Column == 8 && (robot.Position.Row == 7 || robot.Position.Row == 8) {
+			s.Logger.Error(err, "Invalid robot position")
+			http.Error(w, "Invalid robot position", http.StatusBadRequest)
+			return
+		}
+
+		switch robot.Color {
+		case "Yellow":
+			s.Config.Board.Robots.Yellow.Position = robot.Position
+		case "Red":
+			s.Config.Board.Robots.Red.Position = robot.Position
+		case "Green":
+			s.Config.Board.Robots.Green.Position = robot.Position
+		case "Blue":
+			s.Config.Board.Robots.Blue.Position = robot.Position
+		default:
+			s.Logger.Error(err, "Invalid robot color")
+			http.Error(w, "Invalid robot color", http.StatusBadRequest)
+			return
+		}
+
+		err = s.loadBoard()
+		if err != nil {
+			s.Logger.Error(err, "Loading board data")
+			http.Error(w, "Failed to load board data", http.StatusInternalServerError)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
 // loadBoard handles the loading of the board data.
 func (s *Server) loadBoard() error {
 	s.Logger.Info("Loading board data")

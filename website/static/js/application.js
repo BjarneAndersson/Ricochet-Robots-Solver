@@ -33,8 +33,8 @@ function sendPostRequest(url, body = {}) {
         body: JSON.stringify(body)
     })
     .then(response => {
-        if (response.status === 204 || response.headers.get('content-length') === '0') {
-            return {};
+        if (response.status !== 200 || response.headers.get('content-length') === '0') {
+            return { };
         }
         return response.json();
     })
@@ -49,6 +49,14 @@ function sendPostRequest(url, body = {}) {
  * @returns {Promise<void>} - A promise that resolves when the
  */
 function solve() {
+    // Select all robots and cells
+    const robots = document.querySelectorAll('.robot');
+
+    // Make robots draggable
+    robots.forEach(robot => {
+        robot.setAttribute('draggable', false);
+    });
+
     sendPostRequest('/api/solve')
         .then(data => {
             console.log(data);
@@ -59,6 +67,11 @@ function solve() {
             updatePath(data.Path);
         })
         .catch(error => console.error('Error:', error));
+
+    // Make robots draggable
+    robots.forEach(robot => {
+        robot.setAttribute('draggable', true);
+    });
 }
 
 /**

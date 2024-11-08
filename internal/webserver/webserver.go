@@ -80,6 +80,7 @@ func (s *Server) setupRoutes() {
 	s.HandleFunc("/api/get-target", s.getTarget()).Methods("GET")
 	s.HandleFunc("/api/change-quarter-boards", s.changeAllQuarterBoards()).Methods("POST")
 	s.HandleFunc("/api/change-target", s.changeTarget()).Methods("POST")
+	s.HandleFunc("/api/change-robot", s.changeRobot()).Methods("POST")
 	s.HandleFunc("/api/solve", s.solve()).Methods("POST")
 	s.HandleFunc("/api/output/console", s.outputConsole()).Methods("POST")
 

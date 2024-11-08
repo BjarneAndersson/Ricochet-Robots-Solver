@@ -46,10 +46,10 @@
 <!-- Board container -->
 <div class="middle-center">
     <div class="board">
-        {{range $row := $Board.Rows}}
-        {{range $col := $row}}
+        {{range $rowIndex, $row := $Board.Rows}}
+        {{range $colIndex, $col := $row}}
         <!-- Cell container -->
-        <div class="cell">
+        <div class="cell" data-column="{{$colIndex}}" data-row="{{$rowIndex}}">
             <!-- Wall elements -->
             {{if $col.Walls.Top}}<div class="wall-top"></div>{{end}}
             {{if $col.Walls.Bottom}}<div class="wall-bottom"></div>{{end}}
